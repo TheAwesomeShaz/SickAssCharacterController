@@ -15,19 +15,10 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "High Profile Modifier",
-                    "type": "Button",
-                    "id": "94ddd152-4e3e-455a-9999-8e346846ca98",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "Press(behavior=2)",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Camera",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "c85e0d95-f14d-4804-bb74-b38477710500",
-                    "expectedControlType": "",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -146,28 +137,6 @@
                 },
                 {
                     "name": "",
-                    "id": "f9627aa8-cacd-409f-86a5-386a7180e3ef",
-                    "path": "<Gamepad>/rightShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "High Profile Modifier",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "034441c0-6491-47bd-92fe-bd20c87404b1",
-                    "path": "<Keyboard>/leftShift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "High Profile Modifier",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "4d80f9a9-9efa-4f22-aba9-171c1fed15df",
                     "path": "<Mouse>/delta",
                     "interactions": "",
@@ -178,13 +147,127 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "8bb0274f-a632-48fe-ac05-10100321f2aa",
-                    "path": "<Gamepad>/rightStick",
+                    "name": "Right Joystick",
+                    "id": "db2f34bf-20e7-4829-8e5d-980a5c5e4e80",
+                    "path": "2DVector(mode=2)",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Camera",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "153499e1-1f26-4004-b03a-e39febca9936",
+                    "path": "<Gamepad>/rightStick/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Camera",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "7b665e8c-adc0-4a7e-9f96-94a90f77df4b",
+                    "path": "<Gamepad>/rightStick/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Camera",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "681b996e-add2-4f3a-8e92-8309846549dc",
+                    "path": "<Gamepad>/rightStick/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Camera",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "d3418e6d-ae04-4769-9269-e1d28cd04242",
+                    "path": "<Gamepad>/rightStick/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Camera",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
+        },
+        {
+            "name": "PlayerActions",
+            "id": "910f1e92-f4ee-4a43-930d-8b2ea1c5a1cc",
+            "actions": [
+                {
+                    "name": "Jump",
+                    "type": "Button",
+                    "id": "b14983e9-171b-4f09-8dfb-b6be49b56a87",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "HighProfileModifier",
+                    "type": "Button",
+                    "id": "0985847e-a20e-4ef0-a2d2-e44c7cc1e51d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "012d64a1-825f-43d7-82d0-9f8032575ca9",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0359b138-28df-445a-82a1-d3519566bb9f",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "47e7acb2-2343-4704-98bb-4584ff13ca4d",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HighProfileModifier",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "99c6480c-4950-4234-b3bb-65409f0949b8",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HighProfileModifier",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

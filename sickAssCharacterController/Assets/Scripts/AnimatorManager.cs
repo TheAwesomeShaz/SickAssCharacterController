@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AnimationManager : MonoBehaviour
+public class AnimatorManager : MonoBehaviour
 {
-    Animator animator;
+    public Animator animator;
     int horizontal;
     int vertical;
 
@@ -15,11 +15,18 @@ public class AnimationManager : MonoBehaviour
         vertical = Animator.StringToHash("Vertical");
     }
 
-    public void UpdateAnimatorValues(float horizontalMovement, float verticalMovement)
+    public void PlayTargetAnimation(string targetAnimation, bool isInteracting)
+    {
+        animator.SetBool("isInteracting", isInteracting);
+        animator.CrossFade(targetAnimation, 0.2f);
+    }
+
+    public void UpdateAnimatorValues(float horizontalMovement, float verticalMovement, bool isSprinting)
     {
         // Animation Snapping
         float snappedHorizontal;
         float snappedVertical;
+
         #region Snapped Horizontal
         if (horizontalMovement > 0f && horizontalMovement < 0.55f)
         {
@@ -65,9 +72,14 @@ public class AnimationManager : MonoBehaviour
         }
         #endregion
 
+        if (isSprinting)
+        {
+            snappedHorizontal = horizontalMovement;
+            snappedVertical = 2f;
+        }
 
-        animator.SetFloat(horizontal, horizontalMovement,0.1f,Time.deltaTime);
-        animator.SetFloat(vertical, verticalMovement, 0.1f, Time.deltaTime);
+        animator.SetFloat(horizontal, snappedHorizontal,0.1f,Time.deltaTime);
+        animator.SetFloat(vertical, snappedVertical, 0.1f, Time.deltaTime);
     }
 
 }
