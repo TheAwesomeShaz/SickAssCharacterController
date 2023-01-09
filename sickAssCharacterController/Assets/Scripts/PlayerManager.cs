@@ -14,7 +14,7 @@ public class PlayerManager : MonoBehaviour
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        inputManager = GetComponent<InputManager>();    
+        inputManager = GetComponent<  InputManager>();    
         playerLocomotion = GetComponent<PlayerLocomotion>();    
         cameraManager = FindObjectOfType<CameraManager>();
     }
