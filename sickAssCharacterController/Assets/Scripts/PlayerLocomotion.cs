@@ -4,25 +4,24 @@ using UnityEngine;
 
 public class PlayerLocomotion : MonoBehaviour
 {
-    PlayerManager playerManager;
-    AnimatorManager animatorManager;
-    InputManager inputManager;
-    Rigidbody rb;
-    [SerializeField] Vector3 moveDirection;
-    Transform cameraObject;
 
-    [Header("Falling Settings")]
-    public float inAirTimer;
-    public float leapingVelocity;
-    public float fallingVelocity;
-    public float raycastHeightOffset = 0.5f;
-    private float maxRaycastDistance = 0.5f;
-    public LayerMask groundLayer;
-    
+    AnimatorManager animatorManager;
+
+    Vector3 moveDirection;
+    Transform cameraObject;
+    CharacterController characterController;
+
+
     [Header("Movement Flags")]
     public bool isSprinting;
     public bool isGrounded;
     public bool isJumping;
+
+    [Header("Ground Check and Falling Stuff")]
+    [SerializeField] float groundCheckRadius = 0.2f;
+    [SerializeField] Vector3 groundCheckOffset;
+    [SerializeField] LayerMask groundLayer;
+    float currentGravity;
 
     [Header("Movement Speeds")]
     public float walkingSpeed = 1.5f;
@@ -30,46 +29,61 @@ public class PlayerLocomotion : MonoBehaviour
     public float sprintingSpeed = 7f;
     public float rotationSpeed =15f;
 
-    [Header("Jump Speeds")]
-    public float jumpHeight = 3f;
-    public float gravityIntensity = -15f;
+    Quaternion targetRotation;
 
     private void Awake()
     {
+        characterController = GetComponent<CharacterController>();
         animatorManager = GetComponent<AnimatorManager>();
-        playerManager = GetComponent<PlayerManager>();  
-        inputManager = GetComponent<InputManager>();
-        rb = GetComponent<Rigidbody>();
         cameraObject = Camera.main.transform; 
     }
 
-    public void HandleAllMovement()
+    public void HandleAllMovement(Vector2 inputVector, bool isInteracting)
     {
-        HandleFallingAndLanding();
+        if (isInteracting) return;
 
         // Prevent player movement when locked in animation interaction
-        if (playerManager.isInteracting)
-            return;
+        //if (isInteracting)
+        //{
+        //    // set animator moveAmount to 0
+        //    animatorManager.UpdateAnimatorValues(0, 0, isSprinting);
+        //    targetRotation = transform.rotation;
+        //    return;
+        //}
 
-        HandleMovement();
-        HandleRotation();
+        //characterController.enabled = !isInteracting;
+
+
+
+        HandleFallingAndLanding();
+        HandleMovement(inputVector);
+        HandleRotation(inputVector);
     }
 
-    void HandleMovement()
+    public void SetControl(bool hasControl)
     {
-        if (isJumping) 
+        Debug.Log("has Control " + hasControl);
+        if (!hasControl)
         {
-            return; 
-        } 
+            // set animator moveAmount to 0
+            animatorManager.UpdateAnimatorValues(0, 0, isSprinting);
+            targetRotation = transform.rotation;
+        }
+
+        characterController.enabled = hasControl;
+    }
+
+    void HandleMovement(Vector2 inputVector)
+    {
 
         //movement direction in front back direction
-        moveDirection = cameraObject.forward * inputManager.verticalInput;
+        moveDirection = cameraObject.forward * inputVector.y;
         //movement direction in right left direction
-        moveDirection = moveDirection + cameraObject.right* inputManager.horizontalInput;
+        moveDirection = moveDirection + cameraObject.right* inputVector.x;
         //Keep the direction but reduce magnitude btwn 0 and 1
         moveDirection.Normalize();
         // Dont want the player moving vertically upwards lmao
-        moveDirection.y = 0;
+        moveDirection.y = currentGravity;
 
         if (isSprinting)
         {
@@ -77,7 +91,14 @@ public class PlayerLocomotion : MonoBehaviour
         }
         else
         {
-            if (inputManager.moveAmount >= 0.5f)
+            // clamping horizontal and vertical value between 0 and 1 for it 
+            // to make sense in animation blend tree
+            var moveAmount = Mathf.Clamp01(Mathf.Abs(inputVector.x) + Mathf.Abs(inputVector.y));
+
+            // TODO: Check if normalized approach is same as clamp Approach
+            //if (inputVector.normalized.magnitude >= 0.5f)
+
+            if (moveAmount>= 0.5f)
             {
                 moveDirection *= runningSpeed;
             }
@@ -87,21 +108,18 @@ public class PlayerLocomotion : MonoBehaviour
             }
         }        
 
-        if (isGrounded && !isJumping)
-        {
-            Vector3 movementVelocity = moveDirection;
-            rb.velocity = movementVelocity;
-        }
+        Vector3 movementVelocity = moveDirection;
+        characterController.Move(movementVelocity * Time.deltaTime);       
     }
     
-    void HandleRotation()
+    void HandleRotation(Vector2 inputVector)
     {
         if (isJumping) return;
 
         Vector3 targetDirection = Vector3.zero;
 
-        targetDirection = cameraObject.forward*inputManager.verticalInput;
-        targetDirection = targetDirection + cameraObject.right * inputManager.horizontalInput;
+        targetDirection = cameraObject.forward*inputVector.y;
+        targetDirection = targetDirection + cameraObject.right * inputVector.x;
         targetDirection.Normalize();
         targetDirection.y = 0;
 
@@ -110,59 +128,31 @@ public class PlayerLocomotion : MonoBehaviour
             targetDirection =  transform.forward;
         }
 
-        Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+        targetRotation = Quaternion.LookRotation(targetDirection);
         Quaternion playerRotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed *Time.deltaTime);
 
-        if (isGrounded && !isJumping)
-        {
-            transform.rotation = playerRotation;
-        }
+        transform.rotation = playerRotation;
     }
 
     void HandleFallingAndLanding()
     {
-        RaycastHit hit;
-        Vector3 raycastOrigin = transform.position;
-        raycastOrigin.y += raycastHeightOffset;
+        isGrounded = Physics.CheckSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius, groundLayer);
 
-        if (!isGrounded && !isJumping)
+        if (isGrounded)
         {
-            if (!playerManager.isInteracting)
-            {
-                animatorManager.PlayTargetAnimation("Falling", true);
-            }
-            inAirTimer += Time.deltaTime;
-            rb.AddForce(transform.forward * leapingVelocity);
-            rb.AddForce(-Vector3.up * fallingVelocity * inAirTimer);
-        }
-
-        if (Physics.SphereCast(raycastOrigin, 0.2f, -Vector3.up, out hit, maxRaycastDistance, groundLayer))
-        {
-            if (!isGrounded && !playerManager.isInteracting)
-            {
-                animatorManager.PlayTargetAnimation("Land", true);
-            }
-
-            inAirTimer = 0;
-            isGrounded = true;
+            currentGravity = -0.5f;
         }
         else
         {
-            isGrounded = false;
+            currentGravity += Physics.gravity.y * Time.deltaTime;
         }
     }
 
-    public void HandleJumping()
-    {
-        if (isGrounded)
-        {
-            animatorManager.animator.SetBool("isJumping", true);
-            animatorManager.PlayTargetAnimation("Jump",false);
+    // To Show Ground Check Sphere
 
-            float jumpingVelocity = Mathf.Sqrt(-2 * gravityIntensity * jumpHeight);
-            Vector3 playerVelocity = moveDirection;
-            playerVelocity.y = jumpingVelocity;
-            rb.velocity = playerVelocity;
-        }
-    }
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.color = new Color(0, 1, 0, 0.5f); 
+    //    Gizmos.DrawSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius);
+    //}
 }

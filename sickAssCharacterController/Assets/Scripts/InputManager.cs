@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.ShaderGraph;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class InputManager : MonoBehaviour
+public class InputManager : MonoBehaviour,PlayerControls.IPlayerMovementActions,PlayerControls.IPlayerActionsActions
 {
-    PlayerControls playerControls;
     PlayerLocomotion playerLocomotion;
     AnimatorManager animationManager;
 
@@ -21,30 +22,27 @@ public class InputManager : MonoBehaviour
     public bool highProfileInput;
     public bool jumpInput;
 
+    PlayerControls playerControls;
+
     private void Awake()
     {
         animationManager = GetComponent<AnimatorManager>();    
         playerLocomotion = GetComponent<PlayerLocomotion>();
     }
 
-    private void OnEnable()
+    void Start()
     {
-        if(playerControls == null) 
-        { 
-            playerControls = new PlayerControls();
-            playerControls.PlayerMovement.Movement.performed += ctx =>
-            {
-                movementInput = ctx.ReadValue<Vector2>();
-            };
-            playerControls.PlayerMovement.Camera.performed += ctx =>
-            {
-                cameraInput = ctx.ReadValue<Vector2>();
-            };
-            playerControls.PlayerActions.HighProfileModifier.performed += ctx => highProfileInput = true;
-            playerControls.PlayerActions.HighProfileModifier.canceled += ctx => highProfileInput = false;
-            playerControls.PlayerActions.Jump.performed += ctx => jumpInput = true; 
-        }
-        playerControls.Enable();    
+        playerControls = new PlayerControls();
+        playerControls.PlayerMovement.SetCallbacks(this);
+        playerControls.PlayerActions.SetCallbacks(this);
+        playerControls.PlayerMovement.Enable();
+        playerControls.PlayerActions.Enable();
+    }
+
+    void OnDestroy()
+    {
+        playerControls.PlayerMovement.Disable();
+        playerControls.PlayerActions.Disable();
     }
    
     private void OnDisable()
@@ -54,7 +52,6 @@ public class InputManager : MonoBehaviour
 
     public void HandleAllInputs()
     {
-        HandleJumpingInput();
         HandleMovementInput();
         HandleSprintingInput();
     }
@@ -85,12 +82,25 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    void HandleJumpingInput()
+    public void OnMovement(InputAction.CallbackContext context)
     {
-        if (jumpInput)
-        {
-            jumpInput = false;
-            playerLocomotion.HandleJumping();
-        }
+        movementInput = context.ReadValue<Vector2>();
+    }
+
+    public void OnCamera(InputAction.CallbackContext context)
+    {
+        cameraInput = context.ReadValue<Vector2>();
+    }
+
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        if (context.performed) { jumpInput = true; }
+        if (context.canceled) { jumpInput = false; }
+    }
+
+    public void OnHighProfileModifier(InputAction.CallbackContext context)
+    {
+        if(context.performed) highProfileInput = true;
+        if (context.canceled) highProfileInput = false;
     }
 }
