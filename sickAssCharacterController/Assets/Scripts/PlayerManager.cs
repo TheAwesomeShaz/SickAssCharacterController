@@ -4,33 +4,28 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-    Animator animator;
     InputManager inputManager;
     PlayerLocomotion playerLocomotion;
     CameraManager cameraManager;
     ParkourController parkourController;
 
-    public bool IsInteracting;
+    bool IsInteracting;
 
     private void Awake()
     {
         cameraManager = FindObjectOfType<CameraManager>();
-        animator = GetComponent<Animator>();
         inputManager = GetComponent<  InputManager>();    
         playerLocomotion = GetComponent<PlayerLocomotion>();    
         parkourController= GetComponent<ParkourController>();
 
         parkourController.OnSetInteracting += (boolValue) => {
-            //Debug.Log("Bool value " + boolValue);
             IsInteracting = boolValue;
             playerLocomotion.SetControl(!IsInteracting);
-            //Debug.Log("Is Interacting " + IsInteracting);
         };
     }
 
     private void Update()
     {
-        Debug.Log("isInteracting set in player manager to :" + IsInteracting);
 
         inputManager.HandleAllInputs();
 

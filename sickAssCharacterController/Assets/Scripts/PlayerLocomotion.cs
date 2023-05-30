@@ -27,7 +27,7 @@ public class PlayerLocomotion : MonoBehaviour
     public float walkingSpeed = 1.5f;
     public float runningSpeed = 5f;
     public float sprintingSpeed = 7f;
-    public float rotationSpeed =15f;
+    [field:SerializeField] public float RotationSpeed { get;private set; } = 15f;
 
     Quaternion targetRotation;
 
@@ -117,7 +117,7 @@ public class PlayerLocomotion : MonoBehaviour
         }
 
         targetRotation = Quaternion.LookRotation(targetDirection);
-        Quaternion playerRotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed *Time.deltaTime);
+        Quaternion playerRotation = Quaternion.Slerp(transform.rotation, targetRotation, RotationSpeed *Time.deltaTime);
 
         transform.rotation = playerRotation;
     }

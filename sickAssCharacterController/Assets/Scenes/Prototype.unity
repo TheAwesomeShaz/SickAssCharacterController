@@ -1230,6 +1230,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3719851338857467965, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
+      propertyPath: m_Height
+      value: 1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3719851338857467965, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
+      propertyPath: m_Radius
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3719851338857467965, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
+      propertyPath: m_Center.y
+      value: 0.82
+      objectReference: {fileID: 0}
+    - target: {fileID: 3719851338857467965, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
+      propertyPath: m_Center.z
+      value: 0.07
+      objectReference: {fileID: 0}
     - target: {fileID: 4535405649727302596, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
       propertyPath: obstacleLayer.m_Bits
       value: 1
@@ -1258,3 +1274,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de5214d4dd5b66b44be2bd5721dce16d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parkoutActions:
+  - {fileID: 11400000, guid: 8a840a55f7552aa43bf2e908c58a77b8, type: 2}
+  - {fileID: 11400000, guid: 410d20a904b06f547be86ce1f51b87e1, type: 2}
+  rotateTowardsObstacleSpeed: 500

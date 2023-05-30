@@ -36,13 +36,12 @@ public class EnvironmentScanner : MonoBehaviour
         }
 
         return hitData;
-    }
-    
-    public struct ObstacleHitData
-    {
-        public bool forwardHitFound;
-        public bool heightHitFound;
-        public RaycastHit forwardHit;
-        public RaycastHit heightHit;
-    }
+    }   
+}
+public struct ObstacleHitData
+{
+    public bool forwardHitFound;
+    public bool heightHitFound;
+    public RaycastHit forwardHit;
+    public RaycastHit heightHit;
 }
