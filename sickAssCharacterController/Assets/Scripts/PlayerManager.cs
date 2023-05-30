@@ -21,15 +21,17 @@ public class PlayerManager : MonoBehaviour
         parkourController= GetComponent<ParkourController>();
 
         parkourController.OnSetInteracting += (boolValue) => {
-            Debug.Log("Bool value " + boolValue);
+            //Debug.Log("Bool value " + boolValue);
             IsInteracting = boolValue;
-            playerLocomotion.SetControl(!boolValue);
-            Debug.Log("Is Interacting " + IsInteracting);
+            playerLocomotion.SetControl(!IsInteracting);
+            //Debug.Log("Is Interacting " + IsInteracting);
         };
     }
 
     private void Update()
     {
+        Debug.Log("isInteracting set in player manager to :" + IsInteracting);
+
         inputManager.HandleAllInputs();
 
         //TODO: Change jump input to high profile modifier later
@@ -44,7 +46,6 @@ public class PlayerManager : MonoBehaviour
     {
         cameraManager.HandleAllCameraMovement();
         
-        IsInteracting = animator.GetBool("isInteracting");
         //playerLocomotion.isJumping = animator.GetBool("isJumping");
         //animator.SetBool("isGrounded", playerLocomotion.isGrounded);
     }

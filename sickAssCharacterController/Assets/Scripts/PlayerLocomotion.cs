@@ -40,21 +40,10 @@ public class PlayerLocomotion : MonoBehaviour
 
     public void HandleAllMovement(Vector2 inputVector, bool isInteracting)
     {
+        // Prevent player movement when locked in animation interaction
         if (isInteracting) return;
 
-        // Prevent player movement when locked in animation interaction
-        //if (isInteracting)
-        //{
-        //    // set animator moveAmount to 0
-        //    animatorManager.UpdateAnimatorValues(0, 0, isSprinting);
-        //    targetRotation = transform.rotation;
-        //    return;
-        //}
-
-        //characterController.enabled = !isInteracting;
-
-
-
+       
         HandleFallingAndLanding();
         HandleMovement(inputVector);
         HandleRotation(inputVector);
@@ -114,7 +103,6 @@ public class PlayerLocomotion : MonoBehaviour
     
     void HandleRotation(Vector2 inputVector)
     {
-        if (isJumping) return;
 
         Vector3 targetDirection = Vector3.zero;
 

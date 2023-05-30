@@ -26,7 +26,7 @@ public class ParkourController : MonoBehaviour
 
     public void HandleObstacleCheck(bool jumpInput, bool isInteracting)
     {
-        Debug.Log("JumpInput " + jumpInput);
+
         if (jumpInput && !isInteracting)
         {
             Debug.Log("Inside handleObstacle");
@@ -49,13 +49,13 @@ public class ParkourController : MonoBehaviour
         yield return null;
 
         var animState = animatorManager.animator.GetNextAnimatorStateInfo(0);
-        Debug.Log("anim State" +animState.ToString());
 
         // wait for the current parkour animation to complete
         yield return new WaitForSeconds(animState.length);
 
         isInteracting = false;
         OnSetInteracting?.Invoke(isInteracting);
+
     }
 
 }
