@@ -1231,16 +1231,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3719851338857467965, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
-      propertyPath: m_Height
-      value: 1.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 3719851338857467965, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
       propertyPath: m_Radius
       value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 3719851338857467965, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
-      propertyPath: m_Center.y
-      value: 0.92
       objectReference: {fileID: 0}
     - target: {fileID: 3719851338857467965, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
       propertyPath: m_Center.z
@@ -1277,4 +1269,5 @@ MonoBehaviour:
   parkoutActions:
   - {fileID: 11400000, guid: 8a840a55f7552aa43bf2e908c58a77b8, type: 2}
   - {fileID: 11400000, guid: 410d20a904b06f547be86ce1f51b87e1, type: 2}
+  - {fileID: 11400000, guid: 7c5ad5e10dfdd8b47bfdafb497181743, type: 2}
   rotateTowardsObstacleSpeed: 500
