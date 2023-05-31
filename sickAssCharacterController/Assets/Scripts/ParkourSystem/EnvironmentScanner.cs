@@ -36,7 +36,8 @@ public class EnvironmentScanner : MonoBehaviour
         }
 
         return hitData;
-    }   
+    }
+
 }
 public struct ObstacleHitData
 {

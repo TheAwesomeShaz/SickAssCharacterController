@@ -9,6 +9,7 @@ public class ParkourController : MonoBehaviour
 
     EnvironmentScanner environmentScanner;
     AnimatorManager animatorManager;
+    Animator animator;
     [SerializeField] float rotateTowardsObstacleSpeed = 500f;
     bool isInteracting;
 
@@ -18,6 +19,7 @@ public class ParkourController : MonoBehaviour
     {
         environmentScanner = GetComponent<EnvironmentScanner>();
         animatorManager = GetComponent<AnimatorManager>();
+        animator = GetComponent<Animator>();
     }
 
     public void HandleAllParkour(bool jumpInput, bool isInteracting)
@@ -53,10 +55,12 @@ public class ParkourController : MonoBehaviour
 
         animatorManager.PlayTargetAnimation(action.AnimName);
 
+        animator.SetBool("MirrorAction", action.Mirror);
+
         // we return null to wait for this frame to end before fetching the animator State
         yield return null;
 
-        var animState = animatorManager.animator.GetNextAnimatorStateInfo(0);
+        var animState = animator.GetNextAnimatorStateInfo(0);
         if (!animState.IsName(action.AnimName))
             Debug.LogError("Parkour Animation Name is spelled wrong");
 
@@ -74,10 +78,14 @@ public class ParkourController : MonoBehaviour
             if (action.IstargetMatchingEnabled)
                 MatchTarget(action);
 
+            if(animator.IsInTransition(0) && timer >= 0.5f)
+                break;
 
             // return null makes it do nothing i.e it makes it wait till end of while loop?
             yield return null;
         }
+
+        yield return new WaitForSeconds(action.PostActionDelay);
 
         isInteracting = false;
         OnSetInteracting?.Invoke(isInteracting);
@@ -85,10 +93,10 @@ public class ParkourController : MonoBehaviour
 
     void MatchTarget(ParkourAction action)
     {
-        if (animatorManager.animator.isMatchingTarget) return;
+        if (animator.isMatchingTarget) return;
 
-        animatorManager.animator.MatchTarget(action.MatchPos,transform.rotation,
-            action.MatchBodyPart,new MatchTargetWeightMask(new Vector3(0f,1f,0f),0),
+        animator.MatchTarget(action.MatchPos,transform.rotation,
+            action.MatchBodyPart,new MatchTargetWeightMask(action.MatchPosWeight,0),
             action.MatchStartTime,action.MatchTargetTime);
     }
 
