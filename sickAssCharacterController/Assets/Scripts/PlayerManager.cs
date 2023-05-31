@@ -18,10 +18,12 @@ public class PlayerManager : MonoBehaviour
         playerLocomotion = GetComponent<PlayerLocomotion>();    
         parkourController= GetComponent<ParkourController>();
 
-        parkourController.OnSetInteracting += (boolValue) => {
-            IsInteracting = boolValue;
+        parkourController.OnSetInteractingOrLedge += (isInteracting,isOnLedge) => {
+            IsInteracting = isInteracting;
+            playerLocomotion.IsOnLedge = isOnLedge;
             playerLocomotion.SetControl(!IsInteracting);
         };
+
     }
 
     private void Update()
@@ -31,7 +33,7 @@ public class PlayerManager : MonoBehaviour
 
         //TODO: Change jump input to high profile modifier later
         // when it starts making a bit more sense
-        parkourController.HandleAllParkour(inputManager.jumpInput,IsInteracting);       
+        parkourController.HandleAllParkour(inputManager.jumpInput,IsInteracting, playerLocomotion.IsOnLedge);       
         
         playerLocomotion.HandleAllMovement(inputManager.movementInput,IsInteracting);
     }

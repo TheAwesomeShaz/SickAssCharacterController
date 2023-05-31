@@ -1483,4 +1483,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 410d20a904b06f547be86ce1f51b87e1, type: 2}
   - {fileID: 11400000, guid: 8a840a55f7552aa43bf2e908c58a77b8, type: 2}
   - {fileID: 11400000, guid: 7c5ad5e10dfdd8b47bfdafb497181743, type: 2}
+  jumpDownAction: {fileID: 11400000, guid: 8eff2017d58122a498bef7712049127d, type: 2}
   rotateTowardsObstacleSpeed: 500

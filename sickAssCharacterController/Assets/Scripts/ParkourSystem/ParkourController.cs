@@ -5,15 +5,17 @@ using UnityEngine;
 
 public class ParkourController : MonoBehaviour
 {
-    [SerializeField] List<ParkourAction> parkourActions;    
+    [SerializeField] List<ParkourAction> parkourActions;
+    [SerializeField] ParkourAction jumpDownAction;
 
     EnvironmentScanner environmentScanner;
     AnimatorManager animatorManager;
     Animator animator;
     [SerializeField] float rotateTowardsObstacleSpeed = 500f;
     bool isInteracting;
+    bool isOnLedge;
 
-    public event Action<bool> OnSetInteracting;
+    public event Action<bool,bool> OnSetInteractingOrLedge;
 
     private void Awake()
     {
@@ -22,9 +24,20 @@ public class ParkourController : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    public void HandleAllParkour(bool jumpInput, bool isInteracting)
+    public void HandleAllParkour(bool jumpInput, bool isInteracting,bool isOnLedge)
     {
         HandleObstacleCheck(jumpInput, isInteracting);
+        HandleLedgeCheck(jumpInput, isInteracting, isOnLedge);
+    }
+
+    private void HandleLedgeCheck(bool jumpInput, bool isInteracting, bool isOnLedge)
+    {
+        if (isOnLedge && !isInteracting)
+        {
+            StartCoroutine(DoParkourAction(jumpDownAction));
+            this.isOnLedge = false;
+            OnSetInteractingOrLedge?.Invoke(isInteracting, this.isOnLedge);
+        }
     }
 
     public void HandleObstacleCheck(bool jumpInput, bool isInteracting)
@@ -46,12 +59,15 @@ public class ParkourController : MonoBehaviour
 
             }
         }
+
+
+
     }
 
     IEnumerator DoParkourAction(ParkourAction action)
     {
         isInteracting = true;
-        OnSetInteracting?.Invoke(isInteracting);
+        OnSetInteractingOrLedge?.Invoke(isInteracting,isOnLedge);
 
         animatorManager.PlayTargetAnimation(action.AnimName);
 
@@ -88,7 +104,7 @@ public class ParkourController : MonoBehaviour
         yield return new WaitForSeconds(action.PostActionDelay);
 
         isInteracting = false;
-        OnSetInteracting?.Invoke(isInteracting);
+        OnSetInteractingOrLedge?.Invoke(isInteracting,isOnLedge);
     }
 
     void MatchTarget(ParkourAction action)

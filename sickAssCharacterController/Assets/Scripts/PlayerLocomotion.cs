@@ -6,6 +6,7 @@ public class PlayerLocomotion : MonoBehaviour
 {
 
     AnimatorManager animatorManager;
+    EnvironmentScanner envScanner;
 
     Vector3 moveDirection;
     Transform cameraObject;
@@ -16,6 +17,7 @@ public class PlayerLocomotion : MonoBehaviour
     public bool isSprinting;
     public bool isGrounded;
     public bool isJumping;
+    [field: SerializeField] public bool IsOnLedge { get; set; }
 
     [Header("Ground Check and Falling Stuff")]
     [SerializeField] float groundCheckRadius = 0.2f;
@@ -30,11 +32,13 @@ public class PlayerLocomotion : MonoBehaviour
     [field:SerializeField] public float RotationSpeed { get;private set; } = 15f;
 
     Quaternion targetRotation;
+    private float currentSpeed;
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
         animatorManager = GetComponent<AnimatorManager>();
+        envScanner = GetComponent<EnvironmentScanner>();    
         cameraObject = Camera.main.transform; 
     }
 
@@ -73,10 +77,28 @@ public class PlayerLocomotion : MonoBehaviour
         moveDirection.Normalize();
         // Dont want the player moving vertically upwards lmao
         moveDirection.y = currentGravity;
+        
+        if (isGrounded)
+        {
+            SetMovementSpeed(inputVector);
+            moveDirection *= currentSpeed;
+        }
+        else
+        {
+            // move forward while jumping, jumpforwardSpeed = currentSpeed/2
+            moveDirection = transform.forward * currentSpeed/ 2;
+        }
 
+        Vector3 movementVelocity = moveDirection;
+        characterController.Move(movementVelocity * Time.deltaTime);       
+    }
+
+    private void SetMovementSpeed(Vector2 inputVector)
+    {
         if (isSprinting)
         {
-            moveDirection *= sprintingSpeed;
+            currentSpeed = sprintingSpeed;
+            //moveDirection *= sprintingSpeed;
         }
         else
         {
@@ -87,20 +109,19 @@ public class PlayerLocomotion : MonoBehaviour
             // TODO: Check if normalized approach is same as clamp Approach
             //if (inputVector.normalized.magnitude >= 0.5f)
 
-            if (moveAmount>= 0.5f)
+            if (moveAmount >= 0.5f)
             {
-                moveDirection *= runningSpeed;
+                currentSpeed = runningSpeed;
+                //moveDirection *= runningSpeed;
             }
             else
             {
-                moveDirection *= walkingSpeed;
+                currentSpeed = walkingSpeed;
+                //moveDirection *= walkingSpeed;
             }
-        }        
-
-        Vector3 movementVelocity = moveDirection;
-        characterController.Move(movementVelocity * Time.deltaTime);       
+        }
     }
-    
+
     void HandleRotation(Vector2 inputVector)
     {
 
@@ -129,11 +150,15 @@ public class PlayerLocomotion : MonoBehaviour
         if (isGrounded)
         {
             currentGravity = -0.5f;
+            IsOnLedge = envScanner.LedgeCheck(moveDirection);
+            if(IsOnLedge) { Debug.Log("Player is On Ledge"); }
         }
         else
         {
             currentGravity += Physics.gravity.y * Time.deltaTime;
         }
+
+        animatorManager.animator.SetBool("IsGrounded", isGrounded);
     }
 
     // To Show Ground Check Sphere
