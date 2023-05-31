@@ -19,7 +19,7 @@ MonoBehaviour:
   <RotateToObstacle>k__BackingField: 0
   <HeightIndependent>k__BackingField: 0
   <PostActionDelay>k__BackingField: 0
-  <IstargetMatchingEnabled>k__BackingField: 0
+  <IstargetMatchingEnabled>k__BackingField: 1
   <MatchBodyPart>k__BackingField: 0
   <MatchStartTime>k__BackingField: 0
   <MatchTargetTime>k__BackingField: 0

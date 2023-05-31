@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerLocomotion : MonoBehaviour
 {
 
-    AnimatorManager animatorManager;
+    AnimatorManager parkourController;
     EnvironmentScanner envScanner;
 
     Vector3 moveDirection;
@@ -37,7 +37,7 @@ public class PlayerLocomotion : MonoBehaviour
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
-        animatorManager = GetComponent<AnimatorManager>();
+        parkourController = GetComponent<AnimatorManager>();
         envScanner = GetComponent<EnvironmentScanner>();    
         cameraObject = Camera.main.transform; 
     }
@@ -55,11 +55,10 @@ public class PlayerLocomotion : MonoBehaviour
 
     public void SetControl(bool hasControl)
     {
-        Debug.Log("has Control " + hasControl);
         if (!hasControl)
         {
             // set animator moveAmount to 0
-            animatorManager.UpdateAnimatorValues(0, 0, isSprinting);
+            parkourController.UpdateAnimatorValues(0, 0, isSprinting);
             targetRotation = transform.rotation;
         }
 
@@ -93,7 +92,7 @@ public class PlayerLocomotion : MonoBehaviour
         characterController.Move(movementVelocity * Time.deltaTime);       
     }
 
-    private void SetMovementSpeed(Vector2 inputVector)
+    void SetMovementSpeed(Vector2 inputVector)
     {
         if (isSprinting)
         {
@@ -147,6 +146,8 @@ public class PlayerLocomotion : MonoBehaviour
     {
         isGrounded = Physics.CheckSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius, groundLayer);
 
+        parkourController.SetAnimatorBool(parkourController.IsGrounded, isGrounded);
+
         if (isGrounded)
         {
             currentGravity = -0.5f;
@@ -157,8 +158,6 @@ public class PlayerLocomotion : MonoBehaviour
         {
             currentGravity += Physics.gravity.y * Time.deltaTime;
         }
-
-        animatorManager.animator.SetBool("IsGrounded", isGrounded);
     }
 
     // To Show Ground Check Sphere

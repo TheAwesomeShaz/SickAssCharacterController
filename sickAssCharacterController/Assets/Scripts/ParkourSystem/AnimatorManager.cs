@@ -3,44 +3,121 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ParkourController : MonoBehaviour
+public class AnimatorManager : MonoBehaviour
 {
     [SerializeField] List<ParkourAction> parkourActions;
     [SerializeField] ParkourAction jumpDownAction;
 
     EnvironmentScanner environmentScanner;
-    AnimatorManager animatorManager;
-    Animator animator;
     [SerializeField] float rotateTowardsObstacleSpeed = 500f;
     bool isInteracting;
     bool isOnLedge;
+
+    public Animator animator;
+
+    readonly int horizontal = Animator.StringToHash("Horizontal");
+    readonly int vertical = Animator.StringToHash("Vertical");
+    public readonly int IsGrounded = Animator.StringToHash("IsGrounded");
 
     public event Action<bool,bool> OnSetInteractingOrLedge;
 
     private void Awake()
     {
         environmentScanner = GetComponent<EnvironmentScanner>();
-        animatorManager = GetComponent<AnimatorManager>();
         animator = GetComponent<Animator>();
+    }
+
+    public void SetAnimatorBool(int hash, bool value)
+    {
+        animator.SetBool(hash, value);
+    }
+
+    public void PlayTargetAnimation(string targetAnimationHash)
+    {
+        animator.CrossFade(targetAnimationHash, 0.2f);
+    }
+
+    public void UpdateAnimatorValues(float horizontalMovement, float verticalMovement, bool isSprinting)
+    {
+        // Animation Snapping
+        float snappedHorizontal;
+        float snappedVertical;
+
+        #region Snapped Horizontal
+        if (horizontalMovement > 0f && horizontalMovement < 0.55f)
+        {
+            snappedHorizontal = 0.5f;
+        }
+        else if (horizontalMovement > 0.55f)
+        {
+            snappedHorizontal = 1f;
+        }
+        else if (horizontalMovement < 0f && horizontalMovement > -0.55f)
+        {
+            snappedHorizontal = -0.5f;
+        }
+        else if (horizontalMovement < -0.55f)
+        {
+            snappedHorizontal = -1f;
+        }
+        else
+        {
+            snappedHorizontal = 0f;
+        }
+        #endregion
+        #region Snapped Vertical
+        if (verticalMovement > 0f && verticalMovement < 0.55f)
+        {
+            snappedVertical = 0.5f;
+        }
+        else if (verticalMovement > 0.55f)
+        {
+            snappedVertical = 1f;
+        }
+        else if (verticalMovement < 0f && verticalMovement > -0.55f)
+        {
+            snappedVertical = -0.5f;
+        }
+        else if (verticalMovement < -0.55f)
+        {
+            snappedVertical = -1f;
+        }
+        else
+        {
+            snappedVertical = 0f;
+        }
+        #endregion
+
+        if (isSprinting)
+        {
+            snappedHorizontal = horizontalMovement;
+            snappedVertical = 2f;
+        }
+
+        animator.SetFloat(horizontal, snappedHorizontal, 0.1f, Time.deltaTime);
+        animator.SetFloat(vertical, snappedVertical, 0.1f, Time.deltaTime);
     }
 
     public void HandleAllParkour(bool jumpInput, bool isInteracting,bool isOnLedge)
     {
-        HandleObstacleCheck(jumpInput, isInteracting);
-        HandleLedgeCheck(jumpInput, isInteracting, isOnLedge);
+        this.isOnLedge = isOnLedge;
+        this.isInteracting = isInteracting;
+
+        HandleObstacleCheck(jumpInput);
+        HandleLedgeCheck();
     }
 
-    private void HandleLedgeCheck(bool jumpInput, bool isInteracting, bool isOnLedge)
+    void HandleLedgeCheck()
     {
         if (isOnLedge && !isInteracting)
         {
             StartCoroutine(DoParkourAction(jumpDownAction));
-            this.isOnLedge = false;
-            OnSetInteractingOrLedge?.Invoke(isInteracting, this.isOnLedge);
+            isOnLedge = false;
+            OnSetInteractingOrLedge?.Invoke(isInteracting, isOnLedge);
         }
     }
 
-    public void HandleObstacleCheck(bool jumpInput, bool isInteracting)
+    void HandleObstacleCheck(bool jumpInput)
     {
 
         if (jumpInput && !isInteracting)
@@ -69,7 +146,7 @@ public class ParkourController : MonoBehaviour
         isInteracting = true;
         OnSetInteractingOrLedge?.Invoke(isInteracting,isOnLedge);
 
-        animatorManager.PlayTargetAnimation(action.AnimName);
+        PlayTargetAnimation(action.AnimName);
 
         animator.SetBool("MirrorAction", action.Mirror);
 

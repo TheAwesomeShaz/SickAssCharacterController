@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 public class InputManager : MonoBehaviour,PlayerControls.IPlayerMovementActions,PlayerControls.IPlayerActionsActions
 {
     PlayerLocomotion playerLocomotion;
-    AnimatorManager animationManager;
+    AnimatorManager parkourController;
 
     public Vector2 movementInput;
     public Vector2 cameraInput;
@@ -26,7 +26,7 @@ public class InputManager : MonoBehaviour,PlayerControls.IPlayerMovementActions,
 
     private void Awake()
     {
-        animationManager = GetComponent<AnimatorManager>();    
+        parkourController = GetComponent<AnimatorManager>();
         playerLocomotion = GetComponent<PlayerLocomotion>();
     }
 
@@ -68,7 +68,7 @@ public class InputManager : MonoBehaviour,PlayerControls.IPlayerMovementActions,
         // DOUBT: we are clamping the move amount between zero and 1 due to the blend tree stuff
         //in the animator it can only take values from zero to one due to some reason? will probably fix later
         moveAmount = Mathf.Clamp01(Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput));
-        animationManager.UpdateAnimatorValues(0, moveAmount, playerLocomotion.isSprinting);
+        parkourController.UpdateAnimatorValues(0, moveAmount, playerLocomotion.isSprinting);
     }
 
     void HandleSprintingInput()

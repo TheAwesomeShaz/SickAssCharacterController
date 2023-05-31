@@ -1045,10 +1045,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa3849f88a9886242b6c92c03a3ed138, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveDirection: {x: 0, y: 0, z: 0}
   isSprinting: 0
   isGrounded: 1
   isJumping: 0
+  <IsOnLedge>k__BackingField: 0
   groundCheckRadius: 0.2
   groundCheckOffset: {x: 0, y: 0.15, z: 0.07}
   groundLayer:
@@ -1057,7 +1057,7 @@ MonoBehaviour:
   walkingSpeed: 3
   runningSpeed: 5
   sprintingSpeed: 15
-  rotationSpeed: 15
+  <RotationSpeed>k__BackingField: 15
 --- !u!114 &3719851338857467967
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1070,7 +1070,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb90cf5a93f5c9444896b949f7f93f2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isInteracting: 0
 --- !u!114 &3719851338857467964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1080,9 +1079,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 264504559927857822}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa64c34e702e9d648820d5259d2de545, type: 3}
+  m_Script: {fileID: 11500000, guid: de5214d4dd5b66b44be2bd5721dce16d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parkourActions:
+  - {fileID: 11400000, guid: 8a840a55f7552aa43bf2e908c58a77b8, type: 2}
+  - {fileID: 11400000, guid: 4864d457144dc1847aa765e13b86882c, type: 2}
+  - {fileID: 11400000, guid: 86974ff2d494e8d4ea4300c330ced902, type: 2}
+  - {fileID: 11400000, guid: 410d20a904b06f547be86ce1f51b87e1, type: 2}
+  - {fileID: 11400000, guid: 7c5ad5e10dfdd8b47bfdafb497181743, type: 2}
+  jumpDownAction: {fileID: 11400000, guid: 8eff2017d58122a498bef7712049127d, type: 2}
+  rotateTowardsObstacleSpeed: 500
   animator: {fileID: 0}
 --- !u!114 &4535405649727302596
 MonoBehaviour:
@@ -1098,9 +1105,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   forwardRayOffset: {x: 0, y: 0.25, z: 0}
   forwardRayLength: 0.8
+  heightRayLength: 5
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 0
+  ledgeRayLength: 10
+  minLedgeHeight: 0.75
 --- !u!1 &264504559927858106
 GameObject:
   m_ObjectHideFlags: 0

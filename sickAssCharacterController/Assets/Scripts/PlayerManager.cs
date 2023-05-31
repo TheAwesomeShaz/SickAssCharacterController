@@ -7,18 +7,18 @@ public class PlayerManager : MonoBehaviour
     InputManager inputManager;
     PlayerLocomotion playerLocomotion;
     CameraManager cameraManager;
-    ParkourController parkourController;
+    AnimatorManager animatorManager;
 
     bool IsInteracting;
 
     private void Awake()
     {
         cameraManager = FindObjectOfType<CameraManager>();
-        inputManager = GetComponent<  InputManager>();    
+        inputManager = GetComponent<InputManager>();    
         playerLocomotion = GetComponent<PlayerLocomotion>();    
-        parkourController= GetComponent<ParkourController>();
+        animatorManager = GetComponent<AnimatorManager>();
 
-        parkourController.OnSetInteractingOrLedge += (isInteracting,isOnLedge) => {
+        animatorManager.OnSetInteractingOrLedge += (isInteracting,isOnLedge) => {
             IsInteracting = isInteracting;
             playerLocomotion.IsOnLedge = isOnLedge;
             playerLocomotion.SetControl(!IsInteracting);
@@ -33,7 +33,7 @@ public class PlayerManager : MonoBehaviour
 
         //TODO: Change jump input to high profile modifier later
         // when it starts making a bit more sense
-        parkourController.HandleAllParkour(inputManager.jumpInput,IsInteracting, playerLocomotion.IsOnLedge);       
+        animatorManager.HandleAllParkour(inputManager.jumpInput,IsInteracting, playerLocomotion.IsOnLedge);       
         
         playerLocomotion.HandleAllMovement(inputManager.movementInput,IsInteracting);
     }
