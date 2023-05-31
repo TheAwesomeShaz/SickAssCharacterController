@@ -12,6 +12,7 @@ public class ParkourAction : ScriptableObject
     [field: SerializeField] public float MinHeight { get; set; }
     [field: SerializeField] public float MaxHeight { get; set; }
     [field: SerializeField] public bool RotateToObstacle { get; set; }
+    [field: SerializeField] public bool HeightIndependent{ get; set; }
 
     [field: Tooltip("Length of the animation after the current animation before reaching the locomotion blend tree")]
     [field: SerializeField] public float PostActionDelay { get; set; }
@@ -46,7 +47,7 @@ public class ParkourAction : ScriptableObject
             MatchPos = hitData.heightHit.point;
 
         // Dont check height for tagged animation return here itself
-        if (hitData.forwardHit.transform.tag == CurrentObstacleTag)
+        if (HeightIndependent && hitData.forwardHit.transform.tag == CurrentObstacleTag)
         {
             return true;
         }
