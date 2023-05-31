@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Vault
   m_EditorClassIdentifier: 
   <AnimName>k__BackingField: VaultFence
-  <ObstacleTag>k__BackingField: Fence
+  <CurrentObstacleTag>k__BackingField: Fence
   <MinHeight>k__BackingField: 0.8
-  <MaxHeight>k__BackingField: 1.5
+  <MaxHeight>k__BackingField: 1.2
   <RotateToObstacle>k__BackingField: 1
   <PostActionDelay>k__BackingField: 0
   <IstargetMatchingEnabled>k__BackingField: 1
-  <MatchBodyPart>k__BackingField: 0
+  <MatchBodyPart>k__BackingField: 4
   <MatchStartTime>k__BackingField: 0.1
   <MatchTargetTime>k__BackingField: 0.4
   <MatchPosWeight>k__BackingField: {x: 0, y: 1, z: 1}

@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dbdd5492f48b27b4d8c2f1926ac39dc6, type: 3}
-  m_Name: ClimbUp
+  m_Name: Slide
   m_EditorClassIdentifier: 
-  <AnimName>k__BackingField: ClimbUp
-  <CurrentObstacleTag>k__BackingField: 
+  <AnimName>k__BackingField: Slide
+  <CurrentObstacleTag>k__BackingField: Slide
   <MinHeight>k__BackingField: 1.6
-  <MaxHeight>k__BackingField: 2.6
+  <MaxHeight>k__BackingField: 2.5
   <RotateToObstacle>k__BackingField: 1
-  <PostActionDelay>k__BackingField: 0.2
-  <IstargetMatchingEnabled>k__BackingField: 1
-  <MatchBodyPart>k__BackingField: 5
-  <MatchStartTime>k__BackingField: 0.08
-  <MatchTargetTime>k__BackingField: 0.28
-  <MatchPosWeight>k__BackingField: {x: 0, y: 1, z: 1}
+  <PostActionDelay>k__BackingField: 0
+  <IstargetMatchingEnabled>k__BackingField: 0
+  <MatchBodyPart>k__BackingField: 3
+  <MatchStartTime>k__BackingField: 0
+  <MatchTargetTime>k__BackingField: 0
+  <MatchPosWeight>k__BackingField: {x: 0, y: 0, z: 0}

@@ -7,7 +7,7 @@ using UnityEngine;
 public class ParkourAction : ScriptableObject
 {
     [field: SerializeField] public string AnimName { get; set; }
-    [field: SerializeField] public string ObstacleTag { get; set; }
+    [field: SerializeField] public string CurrentObstacleTag { get; set; }
 
     [field: SerializeField] public float MinHeight { get; set; }
     [field: SerializeField] public float MaxHeight { get; set; }
@@ -34,23 +34,28 @@ public class ParkourAction : ScriptableObject
 
     public virtual bool CheckIfPossible(ObstacleHitData hitData, Transform player)
     {
-        
 
         // Check Tag (for parkour no climbing)
-        if(!string.IsNullOrEmpty(ObstacleTag) && hitData.forwardHit.transform.tag != ObstacleTag)
-        {
+        if(!string.IsNullOrEmpty(CurrentObstacleTag) && hitData.forwardHit.transform.tag != CurrentObstacleTag)
             return false;
-        }
-
-        // Getting the height of obstacle infront of the player
-        float obstacleHeight = hitData.heightHit.point.y - player.position.y;
-        if (obstacleHeight < MinHeight|| obstacleHeight>MaxHeight) return false;
 
         if (RotateToObstacle)
             TargetRotation = Quaternion.LookRotation(-hitData.forwardHit.normal);
 
         if (IstargetMatchingEnabled)
             MatchPos = hitData.heightHit.point;
+
+        // Dont check height for tagged animation return here itself
+        if (hitData.forwardHit.transform.tag == CurrentObstacleTag)
+        {
+            return true;
+        }
+
+        // Getting the height of obstacle infront of the player
+        float obstacleHeight = hitData.heightHit.point.y - player.position.y;
+        if (obstacleHeight < MinHeight|| obstacleHeight>MaxHeight) return false;
+
+        
 
         return true;
     }

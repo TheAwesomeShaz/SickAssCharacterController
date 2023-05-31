@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ParkourController : MonoBehaviour
 {
-    [SerializeField] List<ParkourAction> parkoutActions;    
+    [SerializeField] List<ParkourAction> parkourActions;    
 
     EnvironmentScanner environmentScanner;
     AnimatorManager animatorManager;
@@ -35,7 +35,7 @@ public class ParkourController : MonoBehaviour
             var hitData = environmentScanner.ObstacleCheck();
             if (hitData.forwardHitFound)
             {
-                foreach (var action in parkoutActions)
+                foreach (var action in parkourActions)
                 {
                     if (action.CheckIfPossible(hitData,transform))
                     {
