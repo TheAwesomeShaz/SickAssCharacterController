@@ -12,6 +12,7 @@ public class AnimatorManager : MonoBehaviour
     [SerializeField] float rotateTowardsObstacleSpeed = 500f;
     bool isInteracting;
     bool isOnLedge;
+    ObstacleHitData hitData;
 
     public Animator animator;
 
@@ -19,7 +20,8 @@ public class AnimatorManager : MonoBehaviour
     readonly int vertical = Animator.StringToHash("Vertical");
     public readonly int IsGrounded = Animator.StringToHash("IsGrounded");
 
-    public event Action<bool,bool> OnSetInteractingOrLedge;
+    public event Action<bool> OnSetInteracting;
+    public event Action<bool> OnSetIsOnLedge;
 
     private void Awake()
     {
@@ -27,6 +29,7 @@ public class AnimatorManager : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
+    #region Animator Stuff
     public void SetAnimatorBool(int hash, bool value)
     {
         animator.SetBool(hash, value);
@@ -97,23 +100,33 @@ public class AnimatorManager : MonoBehaviour
         animator.SetFloat(horizontal, snappedHorizontal, 0.1f, Time.deltaTime);
         animator.SetFloat(vertical, snappedVertical, 0.1f, Time.deltaTime);
     }
+    #endregion
 
-    public void HandleAllParkour(bool jumpInput, bool isInteracting,bool isOnLedge)
+    public void HandleAllParkour(bool jumpInput, bool isInteracting,bool isOnLedge,LedgeHitData ledgeHitData)
     {
         this.isOnLedge = isOnLedge;
         this.isInteracting = isInteracting;
 
+        hitData = environmentScanner.ObstacleCheck();
+
         HandleObstacleCheck(jumpInput);
-        HandleLedgeCheck();
+        HandleLedgeCheck(ledgeHitData);
     }
 
-    void HandleLedgeCheck()
+    void HandleLedgeCheck(LedgeHitData ledgeHitData)
     {
-        if (isOnLedge && !isInteracting)
+        if (isOnLedge && !isInteracting && !hitData.forwardHitFound)
         {
-            StartCoroutine(DoParkourAction(jumpDownAction));
-            isOnLedge = false;
-            OnSetInteractingOrLedge?.Invoke(isInteracting, isOnLedge);
+            // if large angle then dont jump down
+            if (ledgeHitData.angle <= 50f)
+            {
+                Debug.Log("JumpDOWN ANIMATION!!!!");
+                
+                isOnLedge = false;
+                OnSetIsOnLedge?.Invoke(isOnLedge);
+
+                StartCoroutine(DoParkourAction(jumpDownAction));
+            }                
         }
     }
 
@@ -122,9 +135,9 @@ public class AnimatorManager : MonoBehaviour
 
         if (jumpInput && !isInteracting)
         {
-            var hitData = environmentScanner.ObstacleCheck();
             if (hitData.forwardHitFound)
             {
+                
                 foreach (var action in parkourActions)
                 {
                     if (action.CheckIfPossible(hitData,transform))
@@ -133,18 +146,14 @@ public class AnimatorManager : MonoBehaviour
                         break;
                     }
                 }
-
             }
         }
-
-
-
     }
 
     IEnumerator DoParkourAction(ParkourAction action)
     {
         isInteracting = true;
-        OnSetInteractingOrLedge?.Invoke(isInteracting,isOnLedge);
+        OnSetInteracting?.Invoke(isInteracting);
 
         PlayTargetAnimation(action.AnimName);
 
@@ -154,8 +163,13 @@ public class AnimatorManager : MonoBehaviour
         yield return null;
 
         var animState = animator.GetNextAnimatorStateInfo(0);
+
+
         if (!animState.IsName(action.AnimName))
-            Debug.LogError("Parkour Animation Name is spelled wrong");
+        {
+            Debug.LogError("Parkour Animation Name is spelled wrong \n current animation name is "+animState.ToString()+" " +
+                "given name is "+action.AnimName);
+        }
 
         // wait for the current parkour animation to complete
         // The loop below means that while "the action is being performed" do this 
@@ -181,7 +195,7 @@ public class AnimatorManager : MonoBehaviour
         yield return new WaitForSeconds(action.PostActionDelay);
 
         isInteracting = false;
-        OnSetInteractingOrLedge?.Invoke(isInteracting,isOnLedge);
+        OnSetInteracting?.Invoke(isInteracting);
     }
 
     void MatchTarget(ParkourAction action)

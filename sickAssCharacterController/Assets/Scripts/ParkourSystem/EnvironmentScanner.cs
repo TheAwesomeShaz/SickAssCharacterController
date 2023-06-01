@@ -13,6 +13,7 @@ public class EnvironmentScanner : MonoBehaviour
     [SerializeField] LayerMask obstacleLayer;
 
     [Header("Ledge Detection")]
+    [SerializeField] float ledgeCheckOriginOffset = 0.5f;
     [SerializeField] float ledgeRayLength = 10f;
     [Tooltip("Minimum Height required for ledge detection and jumping off ledge")]
     [SerializeField] float minLedgeHeight = 0.75f;
@@ -43,21 +44,32 @@ public class EnvironmentScanner : MonoBehaviour
         return hitData;
     }
 
-    public bool LedgeCheck(Vector3 moveDir)
+    public bool LedgeCheck(Vector3 moveDir, out LedgeHitData ledgeHitData)
     {
+        ledgeHitData = new LedgeHitData();
+
         if(moveDir == Vector3.zero) return false;
 
-        float originOffset = 0.5f;
-        var origin = transform.position + moveDir * originOffset + Vector3.up;
+        var origin = transform.position + moveDir * ledgeCheckOriginOffset + Vector3.up;
 
         if(Physics.Raycast(origin, Vector3.down, out RaycastHit hit, ledgeRayLength, obstacleLayer))
         {
             Debug.DrawRay(origin, Vector3.down * ledgeRayLength, Color.green);
 
-           float obstacleHeight = transform.position.y - hit.point.y;
-            if(obstacleHeight > minLedgeHeight)
+            // we need the normal of the ledge so we are casting a ray on the face of the ledge
+            var ledgeFaceRayOrigin = transform.position + moveDir - new Vector3(0, 0.1f, 0);
+            if(Physics.Raycast(ledgeFaceRayOrigin,-moveDir,out RaycastHit ledgeFaceHit, 2f, obstacleLayer))
             {
-                return true;
+
+                float obstacleHeight = transform.position.y - hit.point.y;
+                if(obstacleHeight > minLedgeHeight)
+                {
+                    ledgeHitData.angle = Vector3.Angle(transform.forward, ledgeFaceHit.normal);
+                    ledgeHitData.height = obstacleHeight;
+                    ledgeHitData.ledgeFaceHit = ledgeFaceHit;
+
+                    return true;
+                }
             }
         }
         return false;
@@ -71,4 +83,11 @@ public struct ObstacleHitData
     public bool heightHitFound;
     public RaycastHit forwardHit;
     public RaycastHit heightHit;
+}
+
+public struct LedgeHitData
+{
+    public float height;
+    public float angle;
+    public RaycastHit ledgeFaceHit;
 }

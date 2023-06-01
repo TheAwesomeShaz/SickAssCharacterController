@@ -949,6 +949,7 @@ GameObject:
   - component: {fileID: 3719851338857467967}
   - component: {fileID: 3719851338857467964}
   - component: {fileID: 4535405649727302596}
+  - component: {fileID: 4230601099114453165}
   m_Layer: 3
   m_Name: PlayerParkour
   m_TagString: Player
@@ -987,7 +988,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 7215310e019eae94fbfe21a3be9add09, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -1006,12 +1007,12 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 2
   m_Height: 1.8
-  m_Radius: 0.2
+  m_Radius: 0.25
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.02
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.92, z: 0}
+  m_Center: {x: 0, y: 0.96, z: 0.07}
 --- !u!114 &3719851338857467953
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1108,9 +1109,31 @@ MonoBehaviour:
   heightRayLength: 5
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
+  ledgeCheckOriginOffset: 0.5
   ledgeRayLength: 10
   minLedgeHeight: 0.75
+--- !u!114 &4230601099114453165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 264504559927857822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de5214d4dd5b66b44be2bd5721dce16d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parkourActions:
+  - {fileID: 11400000, guid: 4864d457144dc1847aa765e13b86882c, type: 2}
+  - {fileID: 11400000, guid: 86974ff2d494e8d4ea4300c330ced902, type: 2}
+  - {fileID: 11400000, guid: 410d20a904b06f547be86ce1f51b87e1, type: 2}
+  - {fileID: 11400000, guid: 8a840a55f7552aa43bf2e908c58a77b8, type: 2}
+  - {fileID: 11400000, guid: 7c5ad5e10dfdd8b47bfdafb497181743, type: 2}
+  jumpDownAction: {fileID: 11400000, guid: 8eff2017d58122a498bef7712049127d, type: 2}
+  rotateTowardsObstacleSpeed: 500
+  animator: {fileID: 0}
 --- !u!1 &264504559927858106
 GameObject:
   m_ObjectHideFlags: 0

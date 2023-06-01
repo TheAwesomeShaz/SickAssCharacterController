@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class PlayerLocomotion : MonoBehaviour
 {
 
-    AnimatorManager parkourController;
+    AnimatorManager animatorManager;
     EnvironmentScanner envScanner;
 
     Vector3 moveDirection;
@@ -23,6 +24,8 @@ public class PlayerLocomotion : MonoBehaviour
     [SerializeField] float groundCheckRadius = 0.2f;
     [SerializeField] Vector3 groundCheckOffset;
     [SerializeField] LayerMask groundLayer;
+    [SerializeField] float gravityForce = -10;
+    [field: SerializeField] public LedgeHitData LedgeHitData { get; set; }
     float currentGravity;
 
     [Header("Movement Speeds")]
@@ -33,13 +36,18 @@ public class PlayerLocomotion : MonoBehaviour
 
     Quaternion targetRotation;
     private float currentSpeed;
+    
+    private bool canCheckLedge = true;
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
-        parkourController = GetComponent<AnimatorManager>();
+        animatorManager = GetComponent<AnimatorManager>();
         envScanner = GetComponent<EnvironmentScanner>();    
-        cameraObject = Camera.main.transform; 
+        cameraObject = Camera.main.transform;
+
+        animatorManager.OnSetIsOnLedge += (value) => IsOnLedge = value;
+
     }
 
     public void HandleAllMovement(Vector2 inputVector, bool isInteracting)
@@ -58,7 +66,7 @@ public class PlayerLocomotion : MonoBehaviour
         if (!hasControl)
         {
             // set animator moveAmount to 0
-            parkourController.UpdateAnimatorValues(0, 0, isSprinting);
+            animatorManager.UpdateAnimatorValues(0, 0, isSprinting);
             targetRotation = transform.rotation;
         }
 
@@ -76,19 +84,27 @@ public class PlayerLocomotion : MonoBehaviour
         moveDirection.Normalize();
         // Dont want the player moving vertically upwards lmao
         moveDirection.y = currentGravity;
-        
+
+        Debug.Log("gravity is " + moveDirection.y);
+
+        Vector3 movementVelocity = Vector3.zero;
+
         if (isGrounded)
         {
             SetMovementSpeed(inputVector);
-            moveDirection *= currentSpeed;
+            movementVelocity = moveDirection * currentSpeed;
         }
         else
         {
             // move forward while jumping, jumpforwardSpeed = currentSpeed/2
-            moveDirection = transform.forward * currentSpeed/ 2;
-        }
+            //Vector3 forwardJumpForce = transform.forward * currentSpeed / 2;
+            
+            Vector3 forwardJumpForce = transform.forward * currentSpeed;
+            Vector3 downwardGravityForce = Vector3.up * moveDirection.y;
 
-        Vector3 movementVelocity = moveDirection;
+            movementVelocity = forwardJumpForce+downwardGravityForce;
+        }
+        
         characterController.Move(movementVelocity * Time.deltaTime);       
     }
 
@@ -144,20 +160,51 @@ public class PlayerLocomotion : MonoBehaviour
 
     void HandleFallingAndLanding()
     {
+
+
         isGrounded = Physics.CheckSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius, groundLayer);
 
-        parkourController.SetAnimatorBool(parkourController.IsGrounded, isGrounded);
+        animatorManager.SetAnimatorBool(animatorManager.IsGrounded, isGrounded);
+
+        // Root motion should be false when not grounded in free fall state
+        // since we need to apply gravity by ourselves and not by the animation
+        animatorManager.animator.applyRootMotion = isGrounded;
 
         if (isGrounded)
         {
             currentGravity = -0.5f;
-            IsOnLedge = envScanner.LedgeCheck(moveDirection);
-            if(IsOnLedge) { Debug.Log("Player is On Ledge"); }
+
+            //TODO: find a way other than using a boolean+coroutine to fix this issue
+            LedgeHitData ledgeHitData = default;
+
+            Debug.Log("Can check Ledge "+canCheckLedge);
+
+            if (canCheckLedge)
+            {
+                IsOnLedge = envScanner.LedgeCheck(moveDirection,out ledgeHitData);
+                
+                if(IsOnLedge) 
+                {
+                    LedgeHitData = ledgeHitData;
+
+                    //TODO: find a way other than using a boolean+coroutine to fix this issue
+                    canCheckLedge = false;
+                    StartCoroutine(SetCanCheckLedgeActiveAfterTime());
+                    Debug.Log("Player is On Ledge"); 
+                }
+            }
         }
         else
         {
-            currentGravity += Physics.gravity.y * Time.deltaTime;
+            currentGravity += gravityForce * Time.deltaTime;
+            Debug.Log("Applying Gravity");
         }
+    }
+
+    IEnumerator SetCanCheckLedgeActiveAfterTime()
+    {
+        yield return new WaitForSeconds(1f);
+        canCheckLedge = true;
     }
 
     // To Show Ground Check Sphere
