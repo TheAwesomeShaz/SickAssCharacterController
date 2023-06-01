@@ -13,6 +13,8 @@ public class PlayerManager : MonoBehaviour
 
     private void Awake()
     {
+        //Time.timeScale = 0.5f;
+
         cameraManager = FindObjectOfType<CameraManager>();
         inputManager = GetComponent<InputManager>();    
         playerLocomotion = GetComponent<PlayerLocomotion>();    

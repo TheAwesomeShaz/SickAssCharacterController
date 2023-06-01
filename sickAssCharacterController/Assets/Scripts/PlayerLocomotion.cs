@@ -108,35 +108,6 @@ public class PlayerLocomotion : MonoBehaviour
         characterController.Move(movementVelocity * Time.deltaTime);       
     }
 
-    void SetMovementSpeed(Vector2 inputVector)
-    {
-        if (isSprinting)
-        {
-            currentSpeed = sprintingSpeed;
-            //moveDirection *= sprintingSpeed;
-        }
-        else
-        {
-            // clamping horizontal and vertical value between 0 and 1 for it 
-            // to make sense in animation blend tree
-            var moveAmount = Mathf.Clamp01(Mathf.Abs(inputVector.x) + Mathf.Abs(inputVector.y));
-
-            // TODO: Check if normalized approach is same as clamp Approach
-            //if (inputVector.normalized.magnitude >= 0.5f)
-
-            if (moveAmount >= 0.5f)
-            {
-                currentSpeed = runningSpeed;
-                //moveDirection *= runningSpeed;
-            }
-            else
-            {
-                currentSpeed = walkingSpeed;
-                //moveDirection *= walkingSpeed;
-            }
-        }
-    }
-
     void HandleRotation(Vector2 inputVector)
     {
 
@@ -174,25 +145,19 @@ public class PlayerLocomotion : MonoBehaviour
         {
             currentGravity = -0.5f;
 
-            //TODO: find a way other than using a boolean+coroutine to fix this issue
-            LedgeHitData ledgeHitData = default;
-
+           
             Debug.Log("Can check Ledge "+canCheckLedge);
 
-            if (canCheckLedge)
-            {
-                IsOnLedge = envScanner.LedgeCheck(moveDirection,out ledgeHitData);
+           
+                IsOnLedge = envScanner.LedgeCheck(moveDirection,out LedgeHitData ledgeHitData);
                 
                 if(IsOnLedge) 
                 {
                     LedgeHitData = ledgeHitData;
 
-                    //TODO: find a way other than using a boolean+coroutine to fix this issue
-                    canCheckLedge = false;
-                    StartCoroutine(SetCanCheckLedgeActiveAfterTime());
+                    
                     Debug.Log("Player is On Ledge"); 
                 }
-            }
         }
         else
         {
@@ -200,11 +165,44 @@ public class PlayerLocomotion : MonoBehaviour
             Debug.Log("Applying Gravity");
         }
     }
-
-    IEnumerator SetCanCheckLedgeActiveAfterTime()
+    //TODO:limit ledge movement
+    void HandleLedgeMovement()
     {
-        yield return new WaitForSeconds(1f);
-        canCheckLedge = true;
+        float ledgeNormalMoveAngle = Vector3.Angle(LedgeHitData.ledgeFaceHit.normal, moveDirection);
+
+        if(ledgeNormalMoveAngle < 90)
+        {
+
+        }
+    }
+    
+    void SetMovementSpeed(Vector2 inputVector)
+    {
+        if (isSprinting)
+        {
+            currentSpeed = sprintingSpeed;
+            //moveDirection *= sprintingSpeed;
+        }
+        else
+        {
+            // clamping horizontal and vertical value between 0 and 1 for it 
+            // to make sense in animation blend tree
+            var moveAmount = Mathf.Clamp01(Mathf.Abs(inputVector.x) + Mathf.Abs(inputVector.y));
+
+            // TODO: Check if normalized approach is same as clamp Approach
+            //if (inputVector.normalized.magnitude >= 0.5f)
+
+            if (moveAmount >= 0.5f)
+            {
+                currentSpeed = runningSpeed;
+                //moveDirection *= runningSpeed;
+            }
+            else
+            {
+                currentSpeed = walkingSpeed;
+                //moveDirection *= walkingSpeed;
+            }
+        }
     }
 
     // To Show Ground Check Sphere

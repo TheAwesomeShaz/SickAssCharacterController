@@ -110,12 +110,12 @@ public class AnimatorManager : MonoBehaviour
         hitData = environmentScanner.ObstacleCheck();
 
         HandleObstacleCheck(jumpInput);
-        HandleLedgeCheck(ledgeHitData);
+        HandleLedgeCheck(jumpInput,ledgeHitData);
     }
 
-    void HandleLedgeCheck(LedgeHitData ledgeHitData)
+    void HandleLedgeCheck(bool jumpInput,LedgeHitData ledgeHitData)
     {
-        if (isOnLedge && !isInteracting && !hitData.forwardHitFound)
+        if (isOnLedge && !isInteracting && !hitData.forwardHitFound )
         {
             // if large angle then dont jump down
             if (ledgeHitData.angle <= 50f)
