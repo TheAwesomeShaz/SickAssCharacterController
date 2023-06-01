@@ -18,7 +18,7 @@ public class AnimatorManager : MonoBehaviour
 
     readonly int horizontal = Animator.StringToHash("Horizontal");
     readonly int vertical = Animator.StringToHash("Vertical");
-    public readonly int IsGrounded = Animator.StringToHash("IsGrounded");
+    public readonly int IsGroundedHash = Animator.StringToHash("IsGrounded");
 
     public event Action<bool> OnSetInteracting;
     public event Action<bool> OnSetIsOnLedge;
@@ -115,7 +115,8 @@ public class AnimatorManager : MonoBehaviour
 
     void HandleLedgeCheck(bool jumpInput,LedgeHitData ledgeHitData)
     {
-        if (isOnLedge && !isInteracting && !hitData.forwardHitFound )
+
+        if (isOnLedge && !isInteracting && !hitData.forwardHitFound)
         {
             // if large angle then dont jump down
             if (ledgeHitData.angle <= 50f)
@@ -123,28 +124,24 @@ public class AnimatorManager : MonoBehaviour
                 Debug.Log("JumpDOWN ANIMATION!!!!");
                 
                 isOnLedge = false;
-                OnSetIsOnLedge?.Invoke(isOnLedge);
 
+                OnSetIsOnLedge?.Invoke(isOnLedge);
                 StartCoroutine(DoParkourAction(jumpDownAction));
             }                
         }
+
     }
 
     void HandleObstacleCheck(bool jumpInput)
     {
-
-        if (jumpInput && !isInteracting)
+        if (jumpInput && !isInteracting && hitData.forwardHitFound)
         {
-            if (hitData.forwardHitFound)
+            foreach (var action in parkourActions)
             {
-                
-                foreach (var action in parkourActions)
+                if (action.CheckIfPossible(hitData,transform))
                 {
-                    if (action.CheckIfPossible(hitData,transform))
-                    {
-                        StartCoroutine(DoParkourAction(action));
-                        break;
-                    }
+                    StartCoroutine(DoParkourAction(action));
+                    break;
                 }
             }
         }
@@ -152,6 +149,8 @@ public class AnimatorManager : MonoBehaviour
 
     IEnumerator DoParkourAction(ParkourAction action)
     {
+        isOnLedge = false;
+
         isInteracting = true;
         OnSetInteracting?.Invoke(isInteracting);
 

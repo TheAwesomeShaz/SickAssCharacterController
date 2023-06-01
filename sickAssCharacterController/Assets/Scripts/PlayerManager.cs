@@ -13,8 +13,6 @@ public class PlayerManager : MonoBehaviour
 
     private void Awake()
     {
-        //Time.timeScale = 0.5f;
-
         cameraManager = FindObjectOfType<CameraManager>();
         inputManager = GetComponent<InputManager>();    
         playerLocomotion = GetComponent<PlayerLocomotion>();    
@@ -32,9 +30,10 @@ public class PlayerManager : MonoBehaviour
 
         inputManager.HandleAllInputs();
 
-        //TODO: Change jump input to high profile modifier later
-        // when it starts making a bit more sense
-        animatorManager.HandleAllParkour(inputManager.jumpInput,IsInteracting, playerLocomotion.IsOnLedge, playerLocomotion.LedgeHitData);       
+        // TODO: Change jump input to high profile modifier later
+        // when the controls starts making a bit more sense
+        animatorManager.HandleAllParkour(inputManager.jumpInput,IsInteracting, 
+            playerLocomotion.IsOnLedge, playerLocomotion.LedgeHitData);       
         
         playerLocomotion.HandleAllMovement(inputManager.movementInput,IsInteracting);
     }

@@ -66,7 +66,7 @@ public class InputManager : MonoBehaviour,PlayerControls.IPlayerMovementActions,
         cameraInputY = cameraInput.y;
 
         // DOUBT: we are clamping the move amount between zero and 1 due to the blend tree stuff
-        //in the animator it can only take values from zero to one due to some reason? will probably fix later
+        // EXPLAINATION: blend tree only takes values from 0 to 1 so we normalize in a way
         moveAmount = Mathf.Clamp01(Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput));
         animatorManager.UpdateAnimatorValues(0, moveAmount, playerLocomotion.isSprinting);
     }

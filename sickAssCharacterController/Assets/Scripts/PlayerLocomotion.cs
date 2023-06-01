@@ -135,7 +135,7 @@ public class PlayerLocomotion : MonoBehaviour
 
         isGrounded = Physics.CheckSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius, groundLayer);
 
-        animatorManager.SetAnimatorBool(animatorManager.IsGrounded, isGrounded);
+        animatorManager.SetAnimatorBool(animatorManager.IsGroundedHash, isGrounded);
 
         // Root motion should be false when not grounded in free fall state
         // since we need to apply gravity by ourselves and not by the animation
@@ -145,19 +145,14 @@ public class PlayerLocomotion : MonoBehaviour
         {
             currentGravity = -0.5f;
 
-           
-            Debug.Log("Can check Ledge "+canCheckLedge);
+                       
+            IsOnLedge = envScanner.LedgeCheck(moveDirection,out LedgeHitData ledgeHitData);              
 
-           
-                IsOnLedge = envScanner.LedgeCheck(moveDirection,out LedgeHitData ledgeHitData);
-                
-                if(IsOnLedge) 
-                {
-                    LedgeHitData = ledgeHitData;
-
-                    
-                    Debug.Log("Player is On Ledge"); 
-                }
+            if(IsOnLedge) 
+            {
+                LedgeHitData = ledgeHitData;                    
+                Debug.Log("Player is On Ledge"); 
+            }
         }
         else
         {
@@ -165,6 +160,7 @@ public class PlayerLocomotion : MonoBehaviour
             Debug.Log("Applying Gravity");
         }
     }
+
     //TODO:limit ledge movement
     void HandleLedgeMovement()
     {
