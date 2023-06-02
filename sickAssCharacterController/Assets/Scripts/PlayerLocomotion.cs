@@ -55,7 +55,7 @@ public class PlayerLocomotion : MonoBehaviour
         cameraObject = Camera.main.transform;
 
         animatorManager.OnSetIsOnLedge += (value) => IsOnLedge = value;
-
+        animatorManager.OnResetSpeed += (resetSpeed) => currentSpeed = resetSpeed ? 0 : currentSpeed;
     }
 
     public void HandleAllMovement(Vector2 inputVector, bool isInteracting)
@@ -95,9 +95,7 @@ public class PlayerLocomotion : MonoBehaviour
     {
         SetControl(false);
     }
-
-
-
+  
     void HandleMovement(Vector2 inputVector)
     {
 

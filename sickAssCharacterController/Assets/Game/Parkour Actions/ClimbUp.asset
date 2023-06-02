@@ -18,6 +18,7 @@ MonoBehaviour:
   <MaxHeight>k__BackingField: 2.6
   <RotateToObstacle>k__BackingField: 1
   <HeightIndependent>k__BackingField: 0
+  <ResetMovementSpeed>k__BackingField: 1
   <PostActionDelay>k__BackingField: 0.3
   <IstargetMatchingEnabled>k__BackingField: 1
   <MatchBodyPart>k__BackingField: 5

@@ -13,9 +13,12 @@ public class ParkourAction : ScriptableObject
     [field: SerializeField] public float MaxHeight { get; set; }
     [field: SerializeField] public bool RotateToObstacle { get; set; }
     [field: SerializeField] public bool HeightIndependent{ get; set; }
+    
+    [field: SerializeField] public bool ResetMovementSpeed{ get; set; }
 
     [field: Tooltip("Length of the animation after the current animation before reaching the locomotion blend tree")]
     [field: SerializeField] public float PostActionDelay { get; set; }
+
 
 
     [field: Header("Target Matching")]

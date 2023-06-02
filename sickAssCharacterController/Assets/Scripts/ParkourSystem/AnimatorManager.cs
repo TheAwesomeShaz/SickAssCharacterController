@@ -23,6 +23,7 @@ public class AnimatorManager : MonoBehaviour
 
     public event Action<bool> OnSetInteracting;
     public event Action<bool> OnSetIsOnLedge;
+    public event Action<bool> OnResetSpeed;
 
     private void Awake()
     {
@@ -119,8 +120,6 @@ public class AnimatorManager : MonoBehaviour
 
         if (isOnLedge && !isInteracting && !hitData.forwardHitFound)
         {
-
-
             // if large angle then dont jump down
             if (ledgeHitData.angle <= 50f)
             {
@@ -164,6 +163,7 @@ public class AnimatorManager : MonoBehaviour
         PlayTargetAnimation(action.AnimName);
 
         animator.SetBool("MirrorAction", action.Mirror);
+        if (action.ResetMovementSpeed) OnResetSpeed?.Invoke(action.ResetMovementSpeed);
 
         // we return null to wait for this frame to end before fetching the animator State
         yield return null;
