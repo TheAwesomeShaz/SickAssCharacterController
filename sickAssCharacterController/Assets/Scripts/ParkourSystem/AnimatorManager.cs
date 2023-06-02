@@ -7,6 +7,7 @@ public class AnimatorManager : MonoBehaviour
 {
     [SerializeField] List<ParkourAction> parkourActions;
     [SerializeField] ParkourAction jumpDownAction;
+    [SerializeField] ParkourAction jumpOffAction;
 
     EnvironmentScanner environmentScanner;
     [SerializeField] float rotateTowardsObstacleSpeed = 500f;
@@ -102,7 +103,7 @@ public class AnimatorManager : MonoBehaviour
     }
     #endregion
 
-    public void HandleAllParkour(bool jumpInput, bool isInteracting,bool isOnLedge,LedgeHitData ledgeHitData)
+    public void HandleAllParkour(bool jumpInput, bool isInteracting,bool isOnLedge,LedgeHitData ledgeHitData, bool sprintingInput)
     {
         this.isOnLedge = isOnLedge;
         this.isInteracting = isInteracting;
@@ -110,24 +111,28 @@ public class AnimatorManager : MonoBehaviour
         hitData = environmentScanner.ObstacleCheck();
 
         HandleObstacleCheck(jumpInput);
-        HandleLedgeCheck(jumpInput,ledgeHitData);
+        HandleLedgeCheck(jumpInput,ledgeHitData,sprintingInput);
     }
 
-    void HandleLedgeCheck(bool jumpInput,LedgeHitData ledgeHitData)
+    void HandleLedgeCheck(bool jumpInput,LedgeHitData ledgeHitData,bool sprintingInput)
     {
 
         if (isOnLedge && !isInteracting && !hitData.forwardHitFound)
         {
+
+
             // if large angle then dont jump down
             if (ledgeHitData.angle <= 50f)
             {
-                Debug.Log("JumpDOWN ANIMATION!!!!");
+                //Debug.Log("JumpDOWN ANIMATION!!!!");
                 
                 isOnLedge = false;
-
                 OnSetIsOnLedge?.Invoke(isOnLedge);
-                StartCoroutine(DoParkourAction(jumpDownAction));
-            }                
+
+                var jumptype = sprintingInput ? jumpOffAction : jumpDownAction;
+
+                StartCoroutine(DoParkourAction(jumptype));
+            }
         }
 
     }
@@ -151,7 +156,9 @@ public class AnimatorManager : MonoBehaviour
     {
         isOnLedge = false;
 
+
         isInteracting = true;
+        animator.applyRootMotion = true;
         OnSetInteracting?.Invoke(isInteracting);
 
         PlayTargetAnimation(action.AnimName);

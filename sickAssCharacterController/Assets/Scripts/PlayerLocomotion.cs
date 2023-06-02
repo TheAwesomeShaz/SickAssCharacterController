@@ -26,18 +26,26 @@ public class PlayerLocomotion : MonoBehaviour
     [SerializeField] LayerMask groundLayer;
     [SerializeField] float gravityForce = -10;
     [field: SerializeField] public LedgeHitData LedgeHitData { get; set; }
+
     float currentGravity;
 
     [Header("Movement Speeds")]
     public float walkingSpeed = 1.5f;
     public float runningSpeed = 5f;
     public float sprintingSpeed = 7f;
+    [Tooltip("The amount of speed which will get added/subtracted every frame to increase/decrease speed smoothly")]
+    [SerializeField] float movementSpeedDampingValue = 0.5f;
+
     [field:SerializeField] public float RotationSpeed { get;private set; } = 15f;
 
     Quaternion targetRotation;
-    private float currentSpeed;
-    
-    private bool canCheckLedge = true;
+    [SerializeField] float currentSpeed;
+
+
+    private void Start()
+    {
+        
+    }
 
     private void Awake()
     {
@@ -56,13 +64,14 @@ public class PlayerLocomotion : MonoBehaviour
         if (isInteracting) return;
 
        
-        HandleFallingAndLanding();
+        HandleFallingAndLanding(isInteracting);
         HandleMovement(inputVector);
         HandleRotation(inputVector);
     }
 
     public void SetControl(bool hasControl)
     {
+        Debug.Log(hasControl);
         if (!hasControl)
         {
             // set animator moveAmount to 0
@@ -70,8 +79,24 @@ public class PlayerLocomotion : MonoBehaviour
             targetRotation = transform.rotation;
         }
 
+        // speed should go down to zero when player doesnt have control
+        // but it should only happen when not climbing so not the thing below
+        // currentSpeed = hasControl ? currentSpeed : 0f;
+
         characterController.enabled = hasControl;
     }
+
+    //TODO: imrpove this mess of animation event functions later
+    public void SetControlTrue()
+    {
+        SetControl(true);
+    }
+    public void SetControlFalse()
+    {
+        SetControl(false);
+    }
+
+
 
     void HandleMovement(Vector2 inputVector)
     {
@@ -85,21 +110,20 @@ public class PlayerLocomotion : MonoBehaviour
         // Dont want the player moving vertically upwards lmao
         moveDirection.y = currentGravity;
 
-        Debug.Log("gravity is " + moveDirection.y);
 
         Vector3 movementVelocity = Vector3.zero;
 
+        SetMovementSpeed(inputVector);
+        //Debug.Log(currentSpeed);
+
         if (isGrounded)
         {
-            SetMovementSpeed(inputVector);
             movementVelocity = moveDirection * currentSpeed;
         }
         else
         {
-            // move forward while jumping, jumpforwardSpeed = currentSpeed/2
-            //Vector3 forwardJumpForce = transform.forward * currentSpeed / 2;
-            
-            Vector3 forwardJumpForce = transform.forward * currentSpeed;
+            // move forward while jumping, forward jumpinf speed is currentSpeed/2
+            Vector3 forwardJumpForce = transform.forward * currentSpeed / 1.2f;
             Vector3 downwardGravityForce = Vector3.up * moveDirection.y;
 
             movementVelocity = forwardJumpForce+downwardGravityForce;
@@ -129,35 +153,30 @@ public class PlayerLocomotion : MonoBehaviour
         transform.rotation = playerRotation;
     }
 
-    void HandleFallingAndLanding()
+    void HandleFallingAndLanding(bool isInteracting)
     {
-
-
         isGrounded = Physics.CheckSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius, groundLayer);
 
         animatorManager.SetAnimatorBool(animatorManager.IsGroundedHash, isGrounded);
 
         // Root motion should be false when not grounded in free fall state
         // since we need to apply gravity by ourselves and not by the animation
-        animatorManager.animator.applyRootMotion = isGrounded;
+        animatorManager.animator.applyRootMotion = !isInteracting && isGrounded;
 
         if (isGrounded)
         {
             currentGravity = -0.5f;
-
-                       
             IsOnLedge = envScanner.LedgeCheck(moveDirection,out LedgeHitData ledgeHitData);              
 
             if(IsOnLedge) 
             {
-                LedgeHitData = ledgeHitData;                    
-                Debug.Log("Player is On Ledge"); 
+                LedgeHitData = ledgeHitData; 
             }
         }
         else
         {
             currentGravity += gravityForce * Time.deltaTime;
-            Debug.Log("Applying Gravity");
+            //Debug.Log("Applying Gravity");
         }
     }
 
@@ -176,8 +195,13 @@ public class PlayerLocomotion : MonoBehaviour
     {
         if (isSprinting)
         {
-            currentSpeed = sprintingSpeed;
-            //moveDirection *= sprintingSpeed;
+            //currentSpeed = sprintingSpeed;
+            
+            // for smoothly increasing speed to sprinting
+            if (currentSpeed < sprintingSpeed)
+            {
+                currentSpeed+=movementSpeedDampingValue;
+            }
         }
         else
         {
@@ -190,13 +214,34 @@ public class PlayerLocomotion : MonoBehaviour
 
             if (moveAmount >= 0.5f)
             {
-                currentSpeed = runningSpeed;
-                //moveDirection *= runningSpeed;
+
+                //currentSpeed = runningSpeed;
+
+                // for smoothly decreasing speed from sprinting to running
+                if (currentSpeed > runningSpeed)
+                {
+                    currentSpeed-=movementSpeedDampingValue;
+                }
+                // for smoothly increasing speed from walking to running
+                else if (currentSpeed < runningSpeed)
+                {
+                    currentSpeed+=movementSpeedDampingValue;
+                }
             }
             else
             {
-                currentSpeed = walkingSpeed;
-                //moveDirection *= walkingSpeed;
+                //currentSpeed = walkingSpeed;
+
+                // for smoothly decreasing speed to walking
+                if(currentSpeed > walkingSpeed)
+                {
+                    currentSpeed-=movementSpeedDampingValue;
+                }
+                // immediately set to walking speed or else it wont feel responsive
+                else
+                {
+                    currentSpeed = walkingSpeed;
+                }
             }
         }
     }

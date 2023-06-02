@@ -32,8 +32,10 @@ public class PlayerManager : MonoBehaviour
 
         // TODO: Change jump input to high profile modifier later
         // when the controls starts making a bit more sense
+
+
         animatorManager.HandleAllParkour(inputManager.jumpInput,IsInteracting, 
-            playerLocomotion.IsOnLedge, playerLocomotion.LedgeHitData);       
+            playerLocomotion.IsOnLedge, playerLocomotion.LedgeHitData,inputManager.highProfileInput);       
         
         playerLocomotion.HandleAllMovement(inputManager.movementInput,IsInteracting);
     }

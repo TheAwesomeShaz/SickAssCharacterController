@@ -25,11 +25,11 @@ public class CameraManager : MonoBehaviour
     public float minimumCollisionOffset = 0.1f; // How much distance camera maintains from player while jumping off of objects it is colliding with
     public float cameraCollisionAdjustSpeed = 0.2f; // Speed with which camera will jump off when colliding 
 
-    public float lookAngle; // for looking Up and down
-    public float pivotAngle; // for looking left and right
+    public float lookAngle; // for looking Right and Left
+    public float pivotAngle; // for looking Up and Down
 
-    private float minPivotAngle = -35f;
-    private float maxPivotAngle = 35f;
+    [SerializeField] float minPivotAngle = -40f;
+    [SerializeField] float maxPivotAngle = 70f;
 
     private void Awake()
     {
@@ -98,4 +98,11 @@ public class CameraManager : MonoBehaviour
         cameraVectorPosition.z = Mathf.Lerp(cameraTransform.localPosition.z, targetPosition, Time.deltaTime/cameraCollisionAdjustSpeed);
         cameraTransform.localPosition = cameraVectorPosition;   
     }
+
+    // TODO: whenever UI is made maybe change sensitivity like this?
+    //void SetSensitivity(float xSensitivty, float ySensitivity)
+    //{
+    //    cameraLookSpeed = xSensitivty;
+    //    cameraPivotSpeed = ySensitivity;
+    //}
 }

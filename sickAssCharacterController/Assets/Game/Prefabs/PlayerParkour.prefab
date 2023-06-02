@@ -1012,7 +1012,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.02
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.96, z: 0.07}
+  m_Center: {x: 0, y: 0.96, z: 0}
 --- !u!114 &3719851338857467953
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1055,10 +1055,13 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
+  gravityForce: -35
   walkingSpeed: 3
   runningSpeed: 5
   sprintingSpeed: 15
+  movementSpeedDampingValue: 0.1
   <RotationSpeed>k__BackingField: 15
+  currentSpeed: 0
 --- !u!114 &3719851338857467967
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1090,6 +1093,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 410d20a904b06f547be86ce1f51b87e1, type: 2}
   - {fileID: 11400000, guid: 7c5ad5e10dfdd8b47bfdafb497181743, type: 2}
   jumpDownAction: {fileID: 11400000, guid: 8eff2017d58122a498bef7712049127d, type: 2}
+  jumpOffAction: {fileID: 11400000, guid: e0b89d92d63badd4f9095bdf74ddb152, type: 2}
   rotateTowardsObstacleSpeed: 500
   animator: {fileID: 0}
 --- !u!114 &4535405649727302596
@@ -1105,7 +1109,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   forwardRayOffset: {x: 0, y: 0.25, z: 0}
-  forwardRayLength: 0.8
+  forwardRayLength: 1
   heightRayLength: 5
   obstacleLayer:
     serializedVersion: 2
@@ -1132,6 +1136,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8a840a55f7552aa43bf2e908c58a77b8, type: 2}
   - {fileID: 11400000, guid: 7c5ad5e10dfdd8b47bfdafb497181743, type: 2}
   jumpDownAction: {fileID: 11400000, guid: 8eff2017d58122a498bef7712049127d, type: 2}
+  jumpOffAction: {fileID: 0}
   rotateTowardsObstacleSpeed: 500
   animator: {fileID: 0}
 --- !u!1 &264504559927858106
