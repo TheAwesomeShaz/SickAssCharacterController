@@ -9,7 +9,6 @@ public class PlayerLocomotion : MonoBehaviour
     AnimatorManager animatorManager;
     EnvironmentScanner envScanner;
 
-    Vector3 moveDirection;
     Transform cameraObject;
     CharacterController characterController;
 
@@ -38,14 +37,11 @@ public class PlayerLocomotion : MonoBehaviour
 
     [field:SerializeField] public float RotationSpeed { get;private set; } = 15f;
 
+    Vector3 desiredMoveDirection;
+    Vector3 moveDirection;
+    [SerializeField] Vector3 movementVelocity;
     Quaternion targetRotation;
     [SerializeField] float currentSpeed;
-
-
-    private void Start()
-    {
-        
-    }
 
     private void Awake()
     {
@@ -58,20 +54,21 @@ public class PlayerLocomotion : MonoBehaviour
         animatorManager.OnResetSpeed += (resetSpeed) => currentSpeed = resetSpeed ? 0 : currentSpeed;
     }
 
-    public void HandleAllMovement(Vector2 inputVector, bool isInteracting)
+    public void HandleAllMovement(Vector2 inputVector, bool isInteracting, bool highProfileInput)
     {
         // Prevent player movement when locked in animation interaction
         if (isInteracting) return;
 
-       
+
+        SetMovementDirection(inputVector,highProfileInput);
         HandleFallingAndLanding(isInteracting);
-        HandleMovement(inputVector);
+        SetMovementSpeed(inputVector);
+        HandleMovement(inputVector,highProfileInput);
         HandleRotation(inputVector);
     }
 
     public void SetControl(bool hasControl)
     {
-        Debug.Log(hasControl);
         if (!hasControl)
         {
             // set animator moveAmount to 0
@@ -86,61 +83,67 @@ public class PlayerLocomotion : MonoBehaviour
         characterController.enabled = hasControl;
     }
 
-    //TODO: imrpove this mess of animation event functions later
-    public void SetControlTrue()
+    private void SetMovementDirection(Vector2 inputVector,bool highProfileInput)
     {
-        SetControl(true);
-    }
-    public void SetControlFalse()
-    {
-        SetControl(false);
-    }
-  
-    void HandleMovement(Vector2 inputVector)
-    {
+
+        var moveAmount = Mathf.Clamp01(Mathf.Abs(inputVector.x) + Mathf.Abs(inputVector.y));
+        
+        this.isSprinting = highProfileInput&&moveAmount>0.5f;
 
         //movement direction in front back direction
-        moveDirection = cameraObject.forward * inputVector.y;
+        desiredMoveDirection = cameraObject.forward * inputVector.y;
         //movement direction in right left direction
-        moveDirection = moveDirection + cameraObject.right* inputVector.x;
+        desiredMoveDirection = desiredMoveDirection + cameraObject.right * inputVector.x;
         //Keep the direction but reduce magnitude btwn 0 and 1
-        moveDirection.Normalize();
+        desiredMoveDirection.Normalize();
         // Dont want the player moving vertically upwards lmao
-        moveDirection.y = currentGravity;
+        desiredMoveDirection.y = currentGravity;
 
-
-        Vector3 movementVelocity = Vector3.zero;
-
-        SetMovementSpeed(inputVector);
-        //Debug.Log(currentSpeed);
+        moveDirection = desiredMoveDirection;
+    }
+     
+    void HandleMovement(Vector2 inputVector,bool highProfileinput)
+    {
 
         if (isGrounded)
         {
             movementVelocity = moveDirection * currentSpeed;
         }
+
         else
         {
             // move forward while jumping, forward jumpinf speed is currentSpeed/2
             Vector3 forwardJumpForce = transform.forward * currentSpeed / 1.2f;
             Vector3 downwardGravityForce = Vector3.up * moveDirection.y;
 
-            movementVelocity = forwardJumpForce+downwardGravityForce;
+            movementVelocity = forwardJumpForce + downwardGravityForce;
         }
-        
-        characterController.Move(movementVelocity * Time.deltaTime);       
+
+        characterController.Move(movementVelocity * Time.deltaTime);
+
+        Vector3 moveAmountVelocity = movementVelocity;
+        moveAmountVelocity.y = 0;
+
+        var moveAmount = Mathf.Clamp(moveAmountVelocity.magnitude / currentSpeed, 0, 2);
+        this.isSprinting = movementVelocity.x != 0 && highProfileinput;
+
+
+        animatorManager.UpdateAnimatorValues(0, moveAmount, isSprinting);
+
     }
+
 
     void HandleRotation(Vector2 inputVector)
     {
 
-        Vector3 targetDirection = Vector3.zero;
+        Vector3 targetDirection = moveDirection;
 
-        targetDirection = cameraObject.forward*inputVector.y;
-        targetDirection = targetDirection + cameraObject.right * inputVector.x;
-        targetDirection.Normalize();
+        //targetDirection = cameraObject.forward*inputVector.y;
+        //targetDirection = targetDirection + cameraObject.right * inputVector.x;
+        //targetDirection.Normalize();
         targetDirection.y = 0;
 
-        if(targetDirection == Vector3.zero)
+        if (targetDirection == Vector3.zero)
         {
             targetDirection =  transform.forward;
         }
@@ -164,28 +167,49 @@ public class PlayerLocomotion : MonoBehaviour
         if (isGrounded)
         {
             currentGravity = -0.5f;
-            IsOnLedge = envScanner.LedgeCheck(moveDirection,out LedgeHitData ledgeHitData);              
+            IsOnLedge = envScanner.LedgeCheck(desiredMoveDirection,out LedgeHitData ledgeHitData);              
 
             if(IsOnLedge) 
             {
                 LedgeHitData = ledgeHitData; 
+                HandleLedgeMovement();
             }
         }
         else
         {
             currentGravity += gravityForce * Time.deltaTime;
-            //Debug.Log("Applying Gravity");
         }
     }
 
     //TODO:limit ledge movement
     void HandleLedgeMovement()
     {
-        float ledgeNormalMoveAngle = Vector3.Angle(LedgeHitData.ledgeFaceHit.normal, moveDirection);
+        float signedLedgeNormalMoveAngle = Vector3.SignedAngle(LedgeHitData.ledgeFaceHit.normal, desiredMoveDirection,Vector3.up);
+        float ledgeNormalMoveAngle = Mathf.Abs(signedLedgeNormalMoveAngle);
 
-        if(ledgeNormalMoveAngle < 90)
+        if (Vector3.Angle(desiredMoveDirection, transform.forward) >= 80) 
         {
+            // dont move just rotate
+            movementVelocity = Vector3.zero;
+            return;
+        }
+        
 
+        if (ledgeNormalMoveAngle < 60)
+        {
+            movementVelocity = Vector3.zero;
+            moveDirection = Vector3.zero;
+        }
+        else if(ledgeNormalMoveAngle < 90)
+        {
+            // angle is btwn 60 and 90, so limit velocity to horizontal direction
+
+            // cross product of normal and up vector gives us the left vector
+            var left = Vector3.Cross(Vector3.up, LedgeHitData.ledgeFaceHit.normal);
+            var direction = left * Mathf.Sign(signedLedgeNormalMoveAngle);
+
+            movementVelocity = movementVelocity.magnitude * direction;
+            moveDirection = direction;
         }
     }
     
@@ -242,6 +266,20 @@ public class PlayerLocomotion : MonoBehaviour
                 }
             }
         }
+    }
+    
+    //TODO: improve this mess of animation event functions later
+    public void SetControlTrue()
+    {
+        SetControl(true);
+    }
+    public void SetControlFalse()
+    {
+        SetControl(false);
+    }
+    public void SetSpeedToLess()
+    {
+        currentSpeed = 5;
     }
 
     // To Show Ground Check Sphere

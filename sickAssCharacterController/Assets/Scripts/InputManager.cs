@@ -67,8 +67,11 @@ public class InputManager : MonoBehaviour,PlayerControls.IPlayerMovementActions,
 
         // DOUBT: we are clamping the move amount between zero and 1 due to the blend tree stuff
         // EXPLAINATION: blend tree only takes values from 0 to 1 so we normalize in a way
-        moveAmount = Mathf.Clamp01(Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput));
-        animatorManager.UpdateAnimatorValues(0, moveAmount, playerLocomotion.isSprinting);
+        //moveAmount = Mathf.Clamp01(Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput));
+        //animatorManager.UpdateAnimatorValues(0, moveAmount, playerLocomotion.isSprinting);
+
+        // We are not using the above code, we are just setting the moveamount according to the velocity of the player
+        // from the playerLocomotion script
     }
 
     void HandleSprintingInput()

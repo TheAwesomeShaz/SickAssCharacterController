@@ -37,7 +37,7 @@ public class PlayerManager : MonoBehaviour
         animatorManager.HandleAllParkour(inputManager.jumpInput,IsInteracting, 
             playerLocomotion.IsOnLedge, playerLocomotion.LedgeHitData,inputManager.highProfileInput);       
         
-        playerLocomotion.HandleAllMovement(inputManager.movementInput,IsInteracting);
+        playerLocomotion.HandleAllMovement(inputManager.movementInput,IsInteracting,inputManager.highProfileInput);
     }
 
 

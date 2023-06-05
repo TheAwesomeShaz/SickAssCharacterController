@@ -50494,7 +50494,14 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 1.2666667
+  - time: 1.3333334
+    functionName: SetSpeedToLess
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 1.3666667
     functionName: SetControlTrue
     data: 
     objectReferenceParameter: {fileID: 0}

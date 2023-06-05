@@ -1,6 +1,7 @@
 using Mono.Cecil.Cil;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -13,7 +14,7 @@ public class EnvironmentScanner : MonoBehaviour
     [SerializeField] LayerMask obstacleLayer;
 
     [Header("Ledge Detection")]
-    [SerializeField] float ledgeCheckOriginOffset = 0.5f;
+    [SerializeField] float ledgeCheckOriginOffset = 0.8f;
     [SerializeField] float ledgeRayLength = 10f;
     [Tooltip("Minimum Height required for ledge detection and jumping off ledge")]
     [SerializeField] float minLedgeHeight = 0.75f;
@@ -52,25 +53,31 @@ public class EnvironmentScanner : MonoBehaviour
 
         var origin = transform.position + moveDir * ledgeCheckOriginOffset + Vector3.up;
 
-        if(Physics.Raycast(origin, Vector3.down, out RaycastHit hit, ledgeRayLength, obstacleLayer))
+        if(PhysicsUtil.ThreeRaycasts(origin, Vector3.down, 0.25f,transform, 
+            out List<RaycastHit> hits, ledgeRayLength, obstacleLayer,true))
         {
-            Debug.DrawRay(origin, Vector3.down * ledgeRayLength, Color.green);
+            var validHits = hits.Where(h => transform.position.y - h.point.y > minLedgeHeight).ToList();
 
-            // we need the normal of the ledge so we are casting a ray on the face of the ledge
-            var ledgeFaceRayOrigin = transform.position + moveDir - new Vector3(0, 0.1f, 0);
-            if(Physics.Raycast(ledgeFaceRayOrigin,-moveDir,out RaycastHit ledgeFaceHit, 2f, obstacleLayer))
+            if(validHits.Count > 0)
             {
+                // we need the normal of the ledge so we are casting a ray on the face of the ledge
+                var ledgeFaceRayOrigin = validHits[0].point;
+                // we are moving the ray origin below feet of player (minus a lil value) on the face of ledge
+                ledgeFaceRayOrigin.y = transform.position.y - 0.1f;
 
-                float obstacleHeight = transform.position.y - hit.point.y;
-                if(obstacleHeight > minLedgeHeight)
+                if(Physics.Raycast(ledgeFaceRayOrigin,transform.position-ledgeFaceRayOrigin,out RaycastHit ledgeFaceHit, 2f, obstacleLayer))
                 {
+                    Debug.DrawLine(ledgeFaceRayOrigin, transform.position, Color.cyan);
+
+
+                    float obstacleHeight = transform.position.y - validHits[0].point.y;
                     ledgeHitData.angle = Vector3.Angle(transform.forward, ledgeFaceHit.normal);
                     ledgeHitData.height = obstacleHeight;
                     ledgeHitData.ledgeFaceHit = ledgeFaceHit;
 
-                    return true;
+                        return true;
                 }
-            }
+        }
         }
         return false;
     }

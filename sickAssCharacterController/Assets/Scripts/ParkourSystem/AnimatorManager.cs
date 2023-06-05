@@ -8,6 +8,7 @@ public class AnimatorManager : MonoBehaviour
     [SerializeField] List<ParkourAction> parkourActions;
     [SerializeField] ParkourAction jumpDownAction;
     [SerializeField] ParkourAction jumpOffAction;
+    [SerializeField] float autoJumpHeightLimit = 1f;
 
     EnvironmentScanner environmentScanner;
     [SerializeField] float rotateTowardsObstacleSpeed = 500f;
@@ -120,8 +121,12 @@ public class AnimatorManager : MonoBehaviour
 
         if (isOnLedge && !isInteracting && !hitData.forwardHitFound)
         {
+            bool shouldJump = true;
+            if (ledgeHitData.height > autoJumpHeightLimit && !jumpInput) 
+                shouldJump = false;
+
             // if large angle then dont jump down
-            if (ledgeHitData.angle <= 50f)
+            if (shouldJump && ledgeHitData.angle <= 50f)
             {
                 //Debug.Log("JumpDOWN ANIMATION!!!!");
                 
