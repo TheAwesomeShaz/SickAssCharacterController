@@ -8,6 +8,7 @@ public class PlayerManager : MonoBehaviour
     PlayerLocomotion playerLocomotion;
     CameraManager cameraManager;
     AnimatorManager animatorManager;
+    ClimbController climbController;
 
     bool IsInteracting;
 
@@ -17,6 +18,7 @@ public class PlayerManager : MonoBehaviour
         inputManager = GetComponent<InputManager>();    
         playerLocomotion = GetComponent<PlayerLocomotion>();    
         animatorManager = GetComponent<AnimatorManager>();
+        climbController = GetComponent<ClimbController>();
 
         animatorManager.OnSetInteracting += (isInteracting) => {
             IsInteracting = isInteracting;
@@ -33,11 +35,13 @@ public class PlayerManager : MonoBehaviour
         // TODO: Change jump input to high profile modifier later
         // when the controls starts making a bit more sense
 
-
         animatorManager.HandleAllParkour(inputManager.jumpInput,IsInteracting, 
             playerLocomotion.IsOnLedge, playerLocomotion.LedgeHitData,inputManager.highProfileInput);       
         
         playerLocomotion.HandleAllMovement(inputManager.movementInput,IsInteracting,inputManager.highProfileInput);
+
+        climbController.HandleAllClimbing(inputManager.jumpInput);
+
     }
 
 

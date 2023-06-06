@@ -950,6 +950,7 @@ GameObject:
   - component: {fileID: 3719851338857467964}
   - component: {fileID: 4535405649727302596}
   - component: {fileID: 4230601099114453165}
+  - component: {fileID: 757230512408928233}
   m_Layer: 3
   m_Name: PlayerParkour
   m_TagString: Player
@@ -1061,6 +1062,7 @@ MonoBehaviour:
   sprintingSpeed: 15
   movementSpeedDampingValue: 0.1
   <RotationSpeed>k__BackingField: 15
+  movementVelocity: {x: 0, y: 0, z: 0}
   currentSpeed: 0
 --- !u!114 &3719851338857467967
 MonoBehaviour:
@@ -1094,6 +1096,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7c5ad5e10dfdd8b47bfdafb497181743, type: 2}
   jumpDownAction: {fileID: 11400000, guid: 8eff2017d58122a498bef7712049127d, type: 2}
   jumpOffAction: {fileID: 11400000, guid: e0b89d92d63badd4f9095bdf74ddb152, type: 2}
+  autoJumpHeightLimit: 2
   rotateTowardsObstacleSpeed: 500
   animator: {fileID: 0}
 --- !u!114 &4535405649727302596
@@ -1117,6 +1120,10 @@ MonoBehaviour:
   ledgeCheckOriginOffset: 0.5
   ledgeRayLength: 10
   minLedgeHeight: 0.75
+  climbLedgeRayLength: 1.5
+  climbLedgeLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!114 &4230601099114453165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1137,8 +1144,21 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7c5ad5e10dfdd8b47bfdafb497181743, type: 2}
   jumpDownAction: {fileID: 11400000, guid: 8eff2017d58122a498bef7712049127d, type: 2}
   jumpOffAction: {fileID: 0}
+  autoJumpHeightLimit: 1.25
   rotateTowardsObstacleSpeed: 500
   animator: {fileID: 0}
+--- !u!114 &757230512408928233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 264504559927857822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8c20a463ff2e324fa2e068e9cdfe906, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &264504559927858106
 GameObject:
   m_ObjectHideFlags: 0

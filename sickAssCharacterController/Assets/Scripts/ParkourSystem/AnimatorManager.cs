@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AnimatorManager : MonoBehaviour
@@ -8,7 +9,7 @@ public class AnimatorManager : MonoBehaviour
     [SerializeField] List<ParkourAction> parkourActions;
     [SerializeField] ParkourAction jumpDownAction;
     [SerializeField] ParkourAction jumpOffAction;
-    [SerializeField] float autoJumpHeightLimit = 1f;
+    [SerializeField] float autoJumpHeightLimit = 2f;
 
     EnvironmentScanner environmentScanner;
     [SerializeField] float rotateTowardsObstacleSpeed = 500f;
@@ -160,15 +161,33 @@ public class AnimatorManager : MonoBehaviour
     {
         isOnLedge = false;
 
-
         isInteracting = true;
         animator.applyRootMotion = true;
         OnSetInteracting?.Invoke(isInteracting);
 
-        PlayTargetAnimation(action.AnimName);
+        var matchTargetParams = new MatchTargetParams
+        {
+            pos = action.MatchPos,
+            bodyPart = action.MatchBodyPart,
+            posWeight = action.MatchPosWeight,
+            startTime = action.MatchStartTime,
+            targetTime = action.MatchTargetTime,
+        };
 
-        animator.SetBool("MirrorAction", action.Mirror);
-        if (action.ResetMovementSpeed) OnResetSpeed?.Invoke(action.ResetMovementSpeed);
+        yield return DoAction(action.AnimName, matchTargetParams, action.TargetRotation,
+            action.RotateToObstacle, action.ResetMovementSpeed, action.PostActionDelay, action.Mirror);
+
+        isInteracting = false;
+        OnSetInteracting?.Invoke(isInteracting);
+    }
+
+    IEnumerator DoAction(string animName,MatchTargetParams matchTargetParams, Quaternion targetRotation,
+        bool resetMovementSpeed = false,bool rotate = false, float postActionDelay=0f, bool mirror = false)
+    {
+       
+        PlayTargetAnimation(animName);
+        animator.SetBool("MirrorAction", mirror);
+        if (resetMovementSpeed) OnResetSpeed?.Invoke(resetMovementSpeed);
 
         // we return null to wait for this frame to end before fetching the animator State
         yield return null;
@@ -176,10 +195,10 @@ public class AnimatorManager : MonoBehaviour
         var animState = animator.GetNextAnimatorStateInfo(0);
 
 
-        if (!animState.IsName(action.AnimName))
+        if (!animState.IsName(animName))
         {
-            Debug.LogError("Parkour Animation Name is spelled wrong \n current animation name is "+animState.ToString()+" " +
-                "given name is "+action.AnimName);
+            Debug.LogError("Parkour Animation Name is spelled wrong \n current animation name is " + animState.ToString() + " " +
+                "given name is " + animName);
         }
 
         // wait for the current parkour animation to complete
@@ -188,34 +207,43 @@ public class AnimatorManager : MonoBehaviour
         while (timer <= animState.length)
         {
             timer += Time.deltaTime;
-            
-            if(action.RotateToObstacle) 
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, 
-                    action.TargetRotation, rotateTowardsObstacleSpeed* Time.deltaTime);
 
-            if (action.IstargetMatchingEnabled)
-                MatchTarget(action);
+            if (rotate)
+                transform.rotation = Quaternion.RotateTowards(transform.rotation,
+                    targetRotation, rotateTowardsObstacleSpeed * Time.deltaTime);
 
-            if(animator.IsInTransition(0) && timer >= 0.5f)
+            if (matchTargetParams != null)
+                MatchTarget(matchTargetParams);
+
+            if (animator.IsInTransition(0) && timer >= 0.5f)
                 break;
 
             // return null makes it do nothing i.e it makes it wait till end of while loop?
             yield return null;
         }
 
-        yield return new WaitForSeconds(action.PostActionDelay);
+        yield return new WaitForSeconds(postActionDelay);
 
-        isInteracting = false;
-        OnSetInteracting?.Invoke(isInteracting);
+      
     }
 
-    void MatchTarget(ParkourAction action)
+    void MatchTarget(MatchTargetParams mtp)
     {
         if (animator.isMatchingTarget) return;
 
-        animator.MatchTarget(action.MatchPos,transform.rotation,
-            action.MatchBodyPart,new MatchTargetWeightMask(action.MatchPosWeight,0),
-            action.MatchStartTime,action.MatchTargetTime);
+        animator.MatchTarget(mtp.pos,transform.rotation,
+            mtp.bodyPart,new MatchTargetWeightMask(mtp.posWeight,0),
+            mtp.startTime,mtp.targetTime);
     }
 
 }
+
+public class MatchTargetParams
+{
+    public Vector3 pos;
+    public AvatarTarget bodyPart;
+    public Vector3 posWeight;
+    public float startTime;
+    public float targetTime;
+}
+

@@ -1,4 +1,3 @@
-using Mono.Cecil.Cil;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +17,10 @@ public class EnvironmentScanner : MonoBehaviour
     [SerializeField] float ledgeRayLength = 10f;
     [Tooltip("Minimum Height required for ledge detection and jumping off ledge")]
     [SerializeField] float minLedgeHeight = 0.75f;
+
+    [Header("Climb Ledge Detection")]
+    [SerializeField] float climbLedgeRayLength = 1.5f;
+    [SerializeField] LayerMask climbLedgeLayer;
 
     public ObstacleHitData ObstacleCheck()
     {
@@ -45,9 +48,34 @@ public class EnvironmentScanner : MonoBehaviour
         return hitData;
     }
 
-    public bool LedgeCheck(Vector3 moveDir, out LedgeHitData ledgeHitData)
+    public bool ClimbLedgeCheck(Vector3 dir, out RaycastHit climbLedgeHit)
     {
-        ledgeHitData = new LedgeHitData();
+        climbLedgeHit = new RaycastHit();
+
+        if(dir == Vector3.zero)
+            return false;
+
+        // The raycasts must start from above the player's neck
+        var origin = transform.position + Vector3.up * 1.5f;
+        var offset = new Vector3(0, 0.18f, 0);
+
+        for (int i = 0; i < 10; i++)
+        {
+            Debug.DrawRay(origin + offset * i, dir);
+
+            if(Physics.Raycast(origin + offset * i, dir, out RaycastHit hit, climbLedgeRayLength, climbLedgeLayer))
+            {
+                climbLedgeHit = hit;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public bool EdgeLedgeCheck(Vector3 moveDir, out LedgeHitData edgeLedgeHitData)
+    {
+        edgeLedgeHitData = new LedgeHitData();
 
         if(moveDir == Vector3.zero) return false;
 
@@ -71,9 +99,9 @@ public class EnvironmentScanner : MonoBehaviour
 
 
                     float obstacleHeight = transform.position.y - validHits[0].point.y;
-                    ledgeHitData.angle = Vector3.Angle(transform.forward, ledgeFaceHit.normal);
-                    ledgeHitData.height = obstacleHeight;
-                    ledgeHitData.ledgeFaceHit = ledgeFaceHit;
+                    edgeLedgeHitData.angle = Vector3.Angle(transform.forward, ledgeFaceHit.normal);
+                    edgeLedgeHitData.height = obstacleHeight;
+                    edgeLedgeHitData.ledgeFaceHit = ledgeFaceHit;
 
                         return true;
                 }

@@ -167,7 +167,7 @@ public class PlayerLocomotion : MonoBehaviour
         if (isGrounded)
         {
             currentGravity = -0.5f;
-            IsOnLedge = envScanner.LedgeCheck(desiredMoveDirection,out LedgeHitData ledgeHitData);              
+            IsOnLedge = envScanner.EdgeLedgeCheck(desiredMoveDirection,out LedgeHitData ledgeHitData);              
 
             if(IsOnLedge) 
             {
