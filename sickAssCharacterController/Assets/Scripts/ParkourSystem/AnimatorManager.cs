@@ -15,6 +15,8 @@ public class AnimatorManager : MonoBehaviour
     [SerializeField] float rotateTowardsObstacleSpeed = 500f;
     bool isInteracting;
     bool isOnLedge;
+    public bool IsHanging { get; set; }
+
     ObstacleHitData hitData;
 
     public Animator animator;
@@ -26,6 +28,8 @@ public class AnimatorManager : MonoBehaviour
     public event Action<bool> OnSetInteracting;
     public event Action<bool> OnSetIsOnLedge;
     public event Action<bool> OnResetSpeed;
+    public event Action<bool> OnSetIsHanging;
+
 
     private void Awake()
     {
@@ -106,6 +110,7 @@ public class AnimatorManager : MonoBehaviour
     }
     #endregion
 
+    #region Parkour Stuff
     public void HandleAllParkour(bool jumpInput, bool isInteracting,bool isOnLedge,LedgeHitData ledgeHitData, bool sprintingInput)
     {
         this.isOnLedge = isOnLedge;
@@ -162,7 +167,6 @@ public class AnimatorManager : MonoBehaviour
         isOnLedge = false;
 
         isInteracting = true;
-        animator.applyRootMotion = true;
         OnSetInteracting?.Invoke(isInteracting);
 
         var matchTargetParams = new MatchTargetParams
@@ -180,11 +184,14 @@ public class AnimatorManager : MonoBehaviour
         isInteracting = false;
         OnSetInteracting?.Invoke(isInteracting);
     }
+    #endregion
 
-    IEnumerator DoAction(string animName,MatchTargetParams matchTargetParams, Quaternion targetRotation,
+    public IEnumerator DoAction(string animName,MatchTargetParams matchTargetParams, Quaternion targetRotation,
         bool resetMovementSpeed = false,bool rotate = false, float postActionDelay=0f, bool mirror = false)
     {
-       
+        animator.applyRootMotion = true;
+        OnSetIsHanging?.Invoke(IsHanging);
+
         PlayTargetAnimation(animName);
         animator.SetBool("MirrorAction", mirror);
         if (resetMovementSpeed) OnResetSpeed?.Invoke(resetMovementSpeed);
@@ -226,6 +233,49 @@ public class AnimatorManager : MonoBehaviour
 
       
     }
+
+
+    public void HandleAllClimbing(bool jumpInput, bool isHanging,bool isInteracting)
+    {
+        IsHanging = isHanging;
+
+
+        if (!IsHanging && jumpInput && !isInteracting) 
+        { 
+            if (environmentScanner.ClimbLedgeCheck(transform.forward, out RaycastHit climbLedgeHit))
+            {
+                // TODO: organize this mess using scriptable objects or creating data class for climbing animations
+                StartCoroutine(JumpToLedge("IdleToHanging", climbLedgeHit.transform, 0.41f, 0.65f));
+            }
+        }
+        else
+        {
+            // ledge to ledge jump
+        }
+
+    }
+
+    IEnumerator JumpToLedge(string anim, Transform ledge, float matchStartTime, float matchTargetTime)
+    {
+        var matchParams = new MatchTargetParams()
+        {
+            pos = ledge.position,
+            bodyPart = AvatarTarget.RightHand,
+            startTime = matchStartTime,
+            targetTime = matchTargetTime,
+            posWeight = Vector3.one,
+        };
+
+        var targetRot = Quaternion.LookRotation(-ledge.forward);
+
+        // This will cause execution to wait until the DoAction Coroutine is complete
+        yield return DoAction(anim, matchParams, targetRot, true, true);
+
+        IsHanging = true;
+        OnSetIsHanging?.Invoke(IsHanging);
+
+    }
+
 
     void MatchTarget(MatchTargetParams mtp)
     {

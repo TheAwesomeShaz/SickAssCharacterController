@@ -40,7 +40,7 @@ public class PlayerManager : MonoBehaviour
         
         playerLocomotion.HandleAllMovement(inputManager.movementInput,IsInteracting,inputManager.highProfileInput);
 
-        climbController.HandleAllClimbing(inputManager.jumpInput);
+        animatorManager.HandleAllClimbing(inputManager.jumpInput,playerLocomotion.IsHanging,IsInteracting);
 
     }
 

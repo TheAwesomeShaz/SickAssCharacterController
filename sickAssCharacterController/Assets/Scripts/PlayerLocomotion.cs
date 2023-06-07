@@ -18,6 +18,7 @@ public class PlayerLocomotion : MonoBehaviour
     public bool isGrounded;
     public bool isJumping;
     [field: SerializeField] public bool IsOnLedge { get; set; }
+    [field: SerializeField] public bool IsHanging { get; set; }
 
     [Header("Ground Check and Falling Stuff")]
     [SerializeField] float groundCheckRadius = 0.2f;
@@ -52,15 +53,18 @@ public class PlayerLocomotion : MonoBehaviour
 
         animatorManager.OnSetIsOnLedge += (value) => IsOnLedge = value;
         animatorManager.OnResetSpeed += (resetSpeed) => currentSpeed = resetSpeed ? 0 : currentSpeed;
+        animatorManager.OnSetIsHanging += (value) => IsHanging = value;
     }
 
     public void HandleAllMovement(Vector2 inputVector, bool isInteracting, bool highProfileInput)
     {
         // Prevent player movement when locked in animation interaction
         if (isInteracting) return;
-
+        if (IsHanging) return;
 
         SetMovementDirection(inputVector,highProfileInput);
+
+
         HandleFallingAndLanding(isInteracting);
         SetMovementSpeed(inputVector);
         HandleMovement(inputVector,highProfileInput);
