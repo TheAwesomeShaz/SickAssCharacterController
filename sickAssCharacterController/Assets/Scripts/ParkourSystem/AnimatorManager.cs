@@ -179,7 +179,7 @@ public class AnimatorManager : MonoBehaviour
         };
 
         yield return DoAction(action.AnimName, matchTargetParams, action.TargetRotation,
-            action.RotateToObstacle, action.ResetMovementSpeed, action.PostActionDelay, action.Mirror);
+            action.ResetMovementSpeed,action.RotateToObstacle, action.PostActionDelay, action.Mirror);
 
         isInteracting = false;
         OnSetInteracting?.Invoke(isInteracting);
@@ -189,6 +189,8 @@ public class AnimatorManager : MonoBehaviour
     public IEnumerator DoAction(string animName,MatchTargetParams matchTargetParams, Quaternion targetRotation,
         bool resetMovementSpeed = false,bool rotate = false, float postActionDelay=0f, bool mirror = false)
     {
+        Debug.Log("Reset Movement Speed "+resetMovementSpeed);
+
         animator.applyRootMotion = true;
         OnSetIsHanging?.Invoke(IsHanging);
 
