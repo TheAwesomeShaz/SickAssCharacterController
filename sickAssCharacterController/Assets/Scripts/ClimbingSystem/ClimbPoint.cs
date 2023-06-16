@@ -33,17 +33,18 @@ public class ClimbPoint : MonoBehaviour
     public Neighbour GetNeighbourInDirection(Vector2 direction)
     {
         Neighbour neighbour = null;
-
+        Debug.Log(direction.x+" "+direction.y);
         // This way is kinda more accurate but let's follow the course ig?
         //neighbour = neighbours.FirstOrDefault(n => n.direction == direction);
 
 
-        if(direction.y!=0)
+        if (direction.y != 0)
             neighbour = neighbours.FirstOrDefault(n => n.direction.y == direction.y);
 
-        if(neighbour==null && direction.x!=0)
+        if (neighbour == null && direction.x != 0)
             neighbour = neighbours.FirstOrDefault(n => n.direction.x == direction.x);
 
+        Debug.Log(neighbour==null?"Neighbour is null what point u will get now ":neighbour.point);
         return neighbour;
     }
 

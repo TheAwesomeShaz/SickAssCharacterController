@@ -196,7 +196,7 @@ public class AnimatorManager : MonoBehaviour
     public IEnumerator DoAction(string animName,MatchTargetParams matchTargetParams, Quaternion targetRotation,
         bool resetMovementSpeed = false,bool rotate = false, float postActionDelay=0f, bool mirror = false)
     {
-        Debug.Log("Reset Movement Speed "+resetMovementSpeed);
+        //Debug.Log("Reset Movement Speed "+resetMovementSpeed);
 
         animator.applyRootMotion = true;
         OnSetIsHanging?.Invoke(IsHanging);
@@ -265,17 +265,18 @@ public class AnimatorManager : MonoBehaviour
             // ledge to ledge jump
             // find the neighbouring ledge in the direction of input
             
-            var neighbour = currentClimbPoint.GetNeighbourInDirection(inputDirection);
-
-            if(neighbour != null) return; 
+            Neighbour neighbour = currentClimbPoint.GetNeighbourInDirection(inputDirection);
+            if(neighbour == null) return; 
 
             if(neighbour.connectionType == ConnectionType.Jump && jumpInput)
             {
                 currentClimbPoint = neighbour.point;
 
+                Debug.Log(currentClimbPoint);
+
                 //TODO: make data class for climbing animations do not hard code values like this idiot here
                 if (neighbour.direction.y == 1)
-                    StartCoroutine(JumpToLedge("HangHopUp", currentClimbPoint.transform, 0.35f, 0.72f));
+                    StartCoroutine(JumpToLedge("HangHopUp", currentClimbPoint.transform, 0.35f, 0.89f));
                 if (neighbour.direction.y == -1)
                     StartCoroutine(JumpToLedge("HangHopDown", currentClimbPoint.transform, 0.43f, 0.72f));
             }
