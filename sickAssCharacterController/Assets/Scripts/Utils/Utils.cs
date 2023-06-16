@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PhysicsUtil 
+public class Utils 
 {
     public static bool ThreeRaycasts(Vector3 origin, Vector3 direction, float spacing, Transform transform,
         out List<RaycastHit> hits, float distance, LayerMask layer,bool debugDraw = false)
@@ -26,5 +26,19 @@ public class PhysicsUtil
         return hitFound;
 
     }
-       
+
+    public static Vector2[] directionArray = new Vector2[]
+    {
+        new Vector2(0,1),  // Up 
+        new Vector2(1,0),  // Right
+        new Vector2(-1,0), // Left
+        new Vector2(0,1), // Down
+
+        new Vector2(1,1), // TopRight
+        new Vector2(-1,1), // TopLeft
+        new Vector2(1,-1), // BottomRight
+        new Vector2(-1,-1), // BottomLeft
+};
+
+
 }

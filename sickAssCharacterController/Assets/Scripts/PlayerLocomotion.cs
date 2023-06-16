@@ -131,7 +131,6 @@ public class PlayerLocomotion : MonoBehaviour
         var moveAmount = Mathf.Clamp(moveAmountVelocity.magnitude / currentSpeed, 0, 2);
         this.isSprinting = movementVelocity.x != 0 && highProfileinput;
 
-
         animatorManager.UpdateAnimatorValues(0, moveAmount, isSprinting);
 
     }
@@ -166,7 +165,12 @@ public class PlayerLocomotion : MonoBehaviour
 
         // Root motion should be false when not grounded in free fall state
         // since we need to apply gravity by ourselves and not by the animation
+        //if (IsHanging)
+        //{
+
+        //}
         animatorManager.animator.applyRootMotion = !isInteracting && isGrounded;
+
 
         if (isGrounded)
         {

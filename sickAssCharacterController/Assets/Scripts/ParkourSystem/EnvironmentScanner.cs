@@ -81,7 +81,7 @@ public class EnvironmentScanner : MonoBehaviour
 
         var origin = transform.position + moveDir * ledgeCheckOriginOffset + Vector3.up;
 
-        if(PhysicsUtil.ThreeRaycasts(origin, Vector3.down, 0.25f,transform, 
+        if(Utils.ThreeRaycasts(origin, Vector3.down, 0.25f,transform, 
             out List<RaycastHit> hits, ledgeRayLength, obstacleLayer,true))
         {
             var validHits = hits.Where(h => transform.position.y - h.point.y > minLedgeHeight).ToList();

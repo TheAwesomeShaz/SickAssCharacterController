@@ -6,29 +6,36 @@ using UnityEngine;
 
 public class AnimatorManager : MonoBehaviour
 {
+    // Component References
+    public Animator animator;
+    EnvironmentScanner environmentScanner;
+
+    [Header("Parkour Stuff")]
     [SerializeField] List<ParkourAction> parkourActions;
     [SerializeField] ParkourAction jumpDownAction;
     [SerializeField] ParkourAction jumpOffAction;
     [SerializeField] float autoJumpHeightLimit = 2f;
-
-    EnvironmentScanner environmentScanner;
     [SerializeField] float rotateTowardsObstacleSpeed = 500f;
-    bool isInteracting;
-    bool isOnLedge;
-    public bool IsHanging { get; set; }
 
-    ObstacleHitData hitData;
-
-    public Animator animator;
-
+    // Readonly Stuff
     readonly int horizontal = Animator.StringToHash("Horizontal");
     readonly int vertical = Animator.StringToHash("Vertical");
     public readonly int IsGroundedHash = Animator.StringToHash("IsGrounded");
 
+    // Events
     public event Action<bool> OnSetInteracting;
     public event Action<bool> OnSetIsOnLedge;
     public event Action<bool> OnResetSpeed;
     public event Action<bool> OnSetIsHanging;
+
+    // Booleans
+    public bool IsHanging { get; set; }
+    bool isInteracting;
+    bool isOnLedge;
+
+    // Other Stuff
+    ClimbPoint currentClimbPoint;
+    ObstacleHitData hitData;
 
 
     private void Awake()
@@ -237,22 +244,42 @@ public class AnimatorManager : MonoBehaviour
     }
 
 
-    public void HandleAllClimbing(bool jumpInput, bool isHanging,bool isInteracting)
+    public void HandleAllClimbing(Vector2 inputDir, bool jumpInput, bool isHanging,bool isInteracting)
     {
         IsHanging = isHanging;
-
+        var inputDirection = inputDir;
 
         if (!IsHanging && jumpInput && !isInteracting) 
         { 
             if (environmentScanner.ClimbLedgeCheck(transform.forward, out RaycastHit climbLedgeHit))
             {
+                currentClimbPoint = climbLedgeHit.transform.GetComponent<ClimbPoint>();
+
                 // TODO: organize this mess using scriptable objects or creating data class for climbing animations
-                StartCoroutine(JumpToLedge("IdleToHanging", climbLedgeHit.transform, 0.41f, 0.65f));
+                StartCoroutine(JumpToLedge("IdleToHanging", climbLedgeHit.transform, 0.435f, 0.85f));
             }
         }
+
         else
         {
             // ledge to ledge jump
+            // find the neighbouring ledge in the direction of input
+            
+            var neighbour = currentClimbPoint.GetNeighbourInDirection(inputDirection);
+
+            if(neighbour != null) return; 
+
+            if(neighbour.connectionType == ConnectionType.Jump && jumpInput)
+            {
+                currentClimbPoint = neighbour.point;
+
+                //TODO: make data class for climbing animations do not hard code values like this idiot here
+                if (neighbour.direction.y == 1)
+                    StartCoroutine(JumpToLedge("HangHopUp", currentClimbPoint.transform, 0.35f, 0.72f));
+                if (neighbour.direction.y == -1)
+                    StartCoroutine(JumpToLedge("HangHopDown", currentClimbPoint.transform, 0.43f, 0.72f));
+            }
+
         }
 
     }
@@ -261,7 +288,7 @@ public class AnimatorManager : MonoBehaviour
     {
         var matchParams = new MatchTargetParams()
         {
-            pos = ledge.position,
+            pos = GetHandPosition(ledge),
             bodyPart = AvatarTarget.RightHand,
             startTime = matchStartTime,
             targetTime = matchTargetTime,
@@ -270,14 +297,23 @@ public class AnimatorManager : MonoBehaviour
 
         var targetRot = Quaternion.LookRotation(-ledge.forward);
 
-        // This will cause execution to wait until the DoAction Coroutine is complete
-        yield return DoAction(anim, matchParams, targetRot, true, true);
-
+        // setting hanging to true before action cuz we need to disable rootMotion in the player controller
         IsHanging = true;
         OnSetIsHanging?.Invoke(IsHanging);
 
+        // This will cause execution to wait until the DoAction Coroutine is complete
+        yield return DoAction(anim, matchParams, targetRot, true, true);
+
+
     }
 
+    Vector3 GetHandPosition(Transform ledge)
+    {
+        // we are hardCoding X,Y and Z offset here 
+        //TODO: later add the offset in the "climb anim" scriptable object when we create one
+
+        return ledge.position + ledge.forward * -0.05f + Vector3.up * 0.09f - ledge.right * 0.35f;
+    }
 
     void MatchTarget(MatchTargetParams mtp)
     {
