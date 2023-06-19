@@ -27,6 +27,7 @@ public class AnimatorManager : MonoBehaviour
     public event Action<bool> OnSetIsOnLedge;
     public event Action<bool> OnResetSpeed;
     public event Action<bool> OnSetIsHanging;
+    public event Action<bool> OnSetPlayerControl;
 
     // Booleans
     public bool IsHanging { get; set; }
@@ -237,26 +238,23 @@ public class AnimatorManager : MonoBehaviour
             // return null makes it do nothing i.e it makes it wait till end of while loop?
             yield return null;
         }
-
         yield return new WaitForSeconds(postActionDelay);
-
-      
     }
 
 
     public void HandleAllClimbing(Vector2 inputDir, bool jumpInput, bool isHanging,bool isInteracting)
     {
         IsHanging = isHanging;
-        var inputDirection = inputDir;
+        var inputDirection = new Vector2(Mathf.Round(inputDir.x), Mathf.Round(inputDir.y));
 
         if (!IsHanging && jumpInput && !isInteracting) 
         { 
             if (environmentScanner.ClimbLedgeCheck(transform.forward, out RaycastHit climbLedgeHit))
             {
                 currentClimbPoint = climbLedgeHit.transform.GetComponent<ClimbPoint>();
-
+                OnSetPlayerControl?.Invoke(false);
                 // TODO: organize this mess using scriptable objects or creating data class for climbing animations
-                StartCoroutine(JumpToLedge("IdleToHanging", climbLedgeHit.transform, 0.435f, 0.85f));
+                StartCoroutine(JumpToLedge("IdleToHanging", climbLedgeHit.transform, 0.22f, 0.85f));
             }
         }
 
@@ -264,25 +262,22 @@ public class AnimatorManager : MonoBehaviour
         {
             // ledge to ledge jump
             // find the neighbouring ledge in the direction of input
-            
-            Neighbour neighbour = currentClimbPoint.GetNeighbourInDirection(inputDirection);
+            var  neighbour = currentClimbPoint.GetNeighbourInDirection(inputDirection);
+            Debug.Log(neighbour);
             if(neighbour == null) return; 
 
             if(neighbour.connectionType == ConnectionType.Jump && jumpInput)
             {
                 currentClimbPoint = neighbour.point;
 
-                Debug.Log(currentClimbPoint);
 
                 //TODO: make data class for climbing animations do not hard code values like this idiot here
                 if (neighbour.direction.y == 1)
-                    StartCoroutine(JumpToLedge("HangHopUp", currentClimbPoint.transform, 0.35f, 0.89f));
-                if (neighbour.direction.y == -1)
-                    StartCoroutine(JumpToLedge("HangHopDown", currentClimbPoint.transform, 0.43f, 0.72f));
+                    StartCoroutine(JumpToLedge("HangHopUp", currentClimbPoint.transform, 0.05f, 0.90f));
+                else if (neighbour.direction.y == -1)
+                    StartCoroutine(JumpToLedge("HangHopDown", currentClimbPoint.transform, 0.30f, 0.89f));
             }
-
         }
-
     }
 
     IEnumerator JumpToLedge(string anim, Transform ledge, float matchStartTime, float matchTargetTime)
@@ -298,13 +293,20 @@ public class AnimatorManager : MonoBehaviour
 
         var targetRot = Quaternion.LookRotation(-ledge.forward);
 
-        // setting hanging to true before action cuz we need to disable rootMotion in the player controller
-        IsHanging = true;
-        OnSetIsHanging?.Invoke(IsHanging);
+
+        // setting hanging to true before action in case of idleToHang cuz we need to disable rootMotion in the player controller
+        if(anim == "IdleToHanging")
+        {
+            animator.applyRootMotion = false;
+        }
+        //IsHanging = true;
+        //OnSetIsHanging?.Invoke(IsHanging);
 
         // This will cause execution to wait until the DoAction Coroutine is complete
         yield return DoAction(anim, matchParams, targetRot, true, true);
 
+        IsHanging = true;
+        OnSetIsHanging?.Invoke(IsHanging);
 
     }
 

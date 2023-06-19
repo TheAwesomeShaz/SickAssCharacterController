@@ -33,11 +33,10 @@ public class ClimbPoint : MonoBehaviour
     public Neighbour GetNeighbourInDirection(Vector2 direction)
     {
         Neighbour neighbour = null;
-        Debug.Log(direction.x+" "+direction.y);
-        // This way is kinda more accurate but let's follow the course ig?
-        //neighbour = neighbours.FirstOrDefault(n => n.direction == direction);
-
-
+        //Debug.Log(direction.x+" "+direction.y);
+       
+        // if input has up direction and there is a neighbour above this ledge irrespective of top left or top right
+        // then we pick that as the neighbour
         if (direction.y != 0)
             neighbour = neighbours.FirstOrDefault(n => n.direction.y == direction.y);
 

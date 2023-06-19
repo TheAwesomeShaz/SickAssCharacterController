@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 public class InputManager : MonoBehaviour,PlayerControls.IPlayerMovementActions,PlayerControls.IPlayerActionsActions
 {
     PlayerLocomotion playerLocomotion;
-    AnimatorManager animatorManager;
+    //AnimatorManager animatorManager;
 
     public Vector2 movementInput;
     public Vector2 cameraInput;
@@ -26,7 +26,7 @@ public class InputManager : MonoBehaviour,PlayerControls.IPlayerMovementActions,
 
     private void Awake()
     {
-        animatorManager = GetComponent<AnimatorManager>();
+        //animatorManager = GetComponent<AnimatorManager>();
         playerLocomotion = GetComponent<PlayerLocomotion>();
     }
 

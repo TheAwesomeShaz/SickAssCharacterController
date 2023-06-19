@@ -54,6 +54,8 @@ public class PlayerLocomotion : MonoBehaviour
         animatorManager.OnSetIsOnLedge += (value) => IsOnLedge = value;
         animatorManager.OnResetSpeed += (resetSpeed) => currentSpeed = resetSpeed ? 0 : currentSpeed;
         animatorManager.OnSetIsHanging += (value) => IsHanging = value;
+        animatorManager.OnSetPlayerControl += (value) => SetControl(value);
+
     }
 
     public void HandleAllMovement(Vector2 inputVector, bool isInteracting, bool highProfileInput)
