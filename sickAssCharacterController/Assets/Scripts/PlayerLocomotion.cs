@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using Unity.PlasticSCM.Editor.WebApi;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class PlayerLocomotion : MonoBehaviour
@@ -73,17 +75,17 @@ public class PlayerLocomotion : MonoBehaviour
         if (IsHanging) return;
 
 
-        SetMovementDirection(inputVector,highProfileInput);
+        SetMovementSpeed(inputVector);
 
         if (IsOnLadder) {
-            HandleLadderMovement();
+            HandleLadderMovement(inputVector);
             return;
         }
 
+        SetMovementDirection(inputVector,highProfileInput);
 
 
         HandleFallingAndLanding(isInteracting);
-        SetMovementSpeed(inputVector);
         HandleMovement(inputVector,highProfileInput);
         HandleRotation(inputVector);
     }
@@ -142,7 +144,11 @@ public class PlayerLocomotion : MonoBehaviour
         characterController.Move(movementVelocity * Time.deltaTime);
 
         Vector3 moveAmountVelocity = movementVelocity;
-        moveAmountVelocity.y = 0;
+        if (!IsOnLadder)
+        {
+            moveAmountVelocity.y = 0;
+        }
+
 
         var moveAmount = Mathf.Clamp(moveAmountVelocity.magnitude / currentSpeed, 0, 2);
         this.isSprinting = movementVelocity.x != 0 && highProfileinput;
@@ -179,6 +185,8 @@ public class PlayerLocomotion : MonoBehaviour
 
         animatorManager.SetAnimatorBool(animatorManager.IsGroundedHash, isGrounded);
 
+        if (IsOnLadder) return;
+
         // Root motion should be false when not grounded in free fall state
         // since we need to apply gravity by ourselves and not by the animation
         //if (IsHanging)
@@ -208,7 +216,7 @@ public class PlayerLocomotion : MonoBehaviour
     }
 
     // limits movement when on ladder
-    private void HandleLadderMovement()
+    private void HandleLadderMovement(Vector2 inputVector)
     {
         ladderhitData = envScanner.LadderCheck();
 
@@ -216,10 +224,11 @@ public class PlayerLocomotion : MonoBehaviour
 
         if(isGrounded && ladderhitData.ladderHitFound)
         {
-            Vector3 playerOnLadderPosition = new Vector3(ladderhitData.ladderHit.transform.position.x,transform.position.y, transform.position.z);
+            Vector3 playerOnLadderPosition = new(ladderhitData.ladderHit.transform.position.x,transform.position.y, transform.position.z);
             transform.position = playerOnLadderPosition;  
-            moveDirection = new Vector3(0f,desiredMoveDirection.z,0f);
+            moveDirection = new Vector3(0f,inputVector.y,0f);
             movementVelocity = moveDirection * ladderClimbingSpeed;
+            animatorManager.animator.applyRootMotion = false;
         }
 
         isGrounded = true;
@@ -258,6 +267,7 @@ public class PlayerLocomotion : MonoBehaviour
     
     void SetMovementSpeed(Vector2 inputVector)
     {
+        
         if (isSprinting)
         {
             //currentSpeed = sprintingSpeed;

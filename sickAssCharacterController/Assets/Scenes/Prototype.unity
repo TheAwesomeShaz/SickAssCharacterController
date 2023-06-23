@@ -2875,8 +2875,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: e0b89d92d63badd4f9095bdf74ddb152, type: 2}
     - target: {fileID: 4535405649727302596, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
+      propertyPath: ladderRayLength
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4535405649727302596, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
       propertyPath: ladderLayer.m_Bits
       value: 128
+      objectReference: {fileID: 0}
+    - target: {fileID: 4535405649727302596, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
+      propertyPath: ladderRayOriginOffset.y
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 757230512408928233, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
