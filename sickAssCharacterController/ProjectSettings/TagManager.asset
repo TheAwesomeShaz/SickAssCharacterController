@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Fence
   - Slide
+  - BottomLadder
+  - TopLadder
   layers:
   - Default
   - TransparentFX
@@ -14,7 +16,7 @@ TagManager:
   - Water
   - UI
   - ClimbLedges
-  - 
+  - Ladder
   - 
   - 
   - 

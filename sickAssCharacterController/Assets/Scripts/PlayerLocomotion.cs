@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -18,6 +19,10 @@ public class PlayerLocomotion : MonoBehaviour
     public bool isGrounded;
     public bool isJumping;
     [field: SerializeField] public bool IsOnLedge { get; set; }
+
+    private LadderHitData ladderhitData;
+
+    [field: SerializeField] public bool IsOnLadder { get; set; }
     [field: SerializeField] public bool IsHanging { get; set; }
 
     [Header("Ground Check and Falling Stuff")]
@@ -33,6 +38,8 @@ public class PlayerLocomotion : MonoBehaviour
     public float walkingSpeed = 1.5f;
     public float runningSpeed = 5f;
     public float sprintingSpeed = 7f;
+    public float ladderClimbingSpeed = 2f;
+
     [Tooltip("The amount of speed which will get added/subtracted every frame to increase/decrease speed smoothly")]
     [SerializeField] float movementSpeedDampingValue = 0.5f;
 
@@ -55,6 +62,7 @@ public class PlayerLocomotion : MonoBehaviour
         animatorManager.OnResetSpeed += (resetSpeed) => currentSpeed = resetSpeed ? 0 : currentSpeed;
         animatorManager.OnSetIsHanging += (value) => IsHanging = value;
         animatorManager.OnSetPlayerControl += (value) => SetControl(value);
+        animatorManager.OnSetIsOnLadder += (value) => IsOnLadder = value;
 
     }
 
@@ -64,7 +72,14 @@ public class PlayerLocomotion : MonoBehaviour
         if (isInteracting) return;
         if (IsHanging) return;
 
+
         SetMovementDirection(inputVector,highProfileInput);
+
+        if (IsOnLadder) {
+            HandleLadderMovement();
+            return;
+        }
+
 
 
         HandleFallingAndLanding(isInteracting);
@@ -110,7 +125,6 @@ public class PlayerLocomotion : MonoBehaviour
      
     void HandleMovement(Vector2 inputVector,bool highProfileinput)
     {
-
         if (isGrounded)
         {
             movementVelocity = moveDirection * currentSpeed;
@@ -118,7 +132,7 @@ public class PlayerLocomotion : MonoBehaviour
 
         else
         {
-            // move forward while jumping, forward jumpinf speed is currentSpeed/2
+            // move forward while jumping, forward jumping speed is currentSpeed/2
             Vector3 forwardJumpForce = transform.forward * currentSpeed / 1.2f;
             Vector3 downwardGravityForce = Vector3.up * moveDirection.y;
 
@@ -171,14 +185,16 @@ public class PlayerLocomotion : MonoBehaviour
         //{
 
         //}
+
         animatorManager.animator.applyRootMotion = !isInteracting && isGrounded;
 
 
         if (isGrounded)
         {
             currentGravity = -0.5f;
-            IsOnLedge = envScanner.EdgeLedgeCheck(desiredMoveDirection,out LedgeHitData ledgeHitData);              
-
+            IsOnLedge = envScanner.EdgeLedgeCheck(desiredMoveDirection,out LedgeHitData ledgeHitData);
+            
+            // limit LedgeMovement
             if(IsOnLedge) 
             {
                 LedgeHitData = ledgeHitData; 
@@ -191,7 +207,25 @@ public class PlayerLocomotion : MonoBehaviour
         }
     }
 
-    //TODO:limit ledge movement
+    // limits movement when on ladder
+    private void HandleLadderMovement()
+    {
+        ladderhitData = envScanner.LadderCheck();
+
+        if (!ladderhitData.ladderHitFound) return;
+
+        if(isGrounded && ladderhitData.ladderHitFound)
+        {
+            Vector3 playerOnLadderPosition = new Vector3(ladderhitData.ladderHit.transform.position.x,transform.position.y, transform.position.z);
+            transform.position = playerOnLadderPosition;  
+            moveDirection = new Vector3(0f,desiredMoveDirection.z,0f);
+            movementVelocity = moveDirection * ladderClimbingSpeed;
+        }
+
+        isGrounded = true;
+    }
+
+    // limits ledge movement, prevents player from falling down from ledge
     void HandleLedgeMovement()
     {
         float signedLedgeNormalMoveAngle = Vector3.SignedAngle(LedgeHitData.ledgeFaceHit.normal, desiredMoveDirection,Vector3.up);
@@ -203,7 +237,6 @@ public class PlayerLocomotion : MonoBehaviour
             movementVelocity = Vector3.zero;
             return;
         }
-        
 
         if (ledgeNormalMoveAngle < 60)
         {

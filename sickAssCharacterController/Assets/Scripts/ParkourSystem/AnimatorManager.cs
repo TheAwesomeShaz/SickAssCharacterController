@@ -25,6 +25,7 @@ public class AnimatorManager : MonoBehaviour
     // Events
     public event Action<bool> OnSetInteracting;
     public event Action<bool> OnSetIsOnLedge;
+    public event Action<bool> OnSetIsOnLadder;
     public event Action<bool> OnResetSpeed;
     public event Action<bool> OnSetIsHanging;
     public event Action<bool> OnSetPlayerControl;
@@ -33,10 +34,12 @@ public class AnimatorManager : MonoBehaviour
     public bool IsHanging { get; set; }
     bool isInteracting;
     bool isOnLedge;
+    bool isOnLadder;
 
     // Other Stuff
     ClimbPoint currentClimbPoint;
-    ObstacleHitData hitData;
+    ObstacleHitData obstacleHitData;
+    LadderHitData ladderHitData;
 
 
     private void Awake()
@@ -124,16 +127,49 @@ public class AnimatorManager : MonoBehaviour
         this.isOnLedge = isOnLedge;
         this.isInteracting = isInteracting;
 
-        hitData = environmentScanner.ObstacleCheck();
+        obstacleHitData = environmentScanner.ObstacleCheck();
+        ladderHitData = environmentScanner.LadderCheck();
 
         HandleObstacleCheck(jumpInput);
         HandleLedgeCheck(jumpInput,ledgeHitData,sprintingInput);
+        HandleLadderCheck(jumpInput);
+    }
+
+    private void HandleLadderCheck(bool jumpInput)
+    {
+        if(jumpInput && ladderHitData.ladderHitFound)
+        {
+            if(!isOnLadder)
+            {
+                GrabLadder();
+                var targetRot = Quaternion.LookRotation(-ladderHitData.ladderHit.transform.forward);
+                StartCoroutine(DoAction("LadderClimbUpStart", null, targetRot, true, true));
+            }
+            
+        }
+
+        if (isOnLadder)
+        {
+            // Climb the ladder when up down input
+        }
+
+        else if(isOnLadder && ladderHitData.ladderHitFound)
+        {
+            StartCoroutine(DoAction("ClimbUpToStand", null, default, true, true));
+        }
+
+    }
+
+    private void GrabLadder()
+    {
+        isOnLadder = true;
+        OnSetIsOnLadder?.Invoke(isOnLadder);
     }
 
     void HandleLedgeCheck(bool jumpInput,LedgeHitData ledgeHitData,bool sprintingInput)
     {
 
-        if (isOnLedge && !isInteracting && !hitData.forwardHitFound)
+        if (isOnLedge && !isInteracting && !obstacleHitData.forwardHitFound)
         {
             bool shouldJump = true;
             if (ledgeHitData.height > autoJumpHeightLimit && !jumpInput) 
@@ -157,11 +193,11 @@ public class AnimatorManager : MonoBehaviour
 
     void HandleObstacleCheck(bool jumpInput)
     {
-        if (jumpInput && !isInteracting && hitData.forwardHitFound)
+        if (jumpInput && !isInteracting && obstacleHitData.forwardHitFound)
         {
             foreach (var action in parkourActions)
             {
-                if (action.CheckIfPossible(hitData,transform))
+                if (action.CheckIfPossible(obstacleHitData,transform))
                 {
                     StartCoroutine(DoParkourAction(action));
                     break;

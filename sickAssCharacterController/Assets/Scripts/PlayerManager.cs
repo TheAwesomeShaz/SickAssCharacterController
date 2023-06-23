@@ -38,7 +38,10 @@ public class PlayerManager : MonoBehaviour
         
         playerLocomotion.HandleAllMovement(inputManager.movementInput,IsInteracting,inputManager.highProfileInput);
 
-        animatorManager.HandleAllClimbing(inputManager.movementInput,inputManager.jumpInput,playerLocomotion.IsHanging,IsInteracting);
+
+
+        // Not Doing Climbing right now, will continue later if required currently shifted to making ladder system
+        //animatorManager.HandleAllClimbing(inputManager.movementInput,inputManager.jumpInput,playerLocomotion.IsHanging,IsInteracting);
 
     }
 

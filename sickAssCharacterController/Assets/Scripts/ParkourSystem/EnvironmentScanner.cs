@@ -22,6 +22,12 @@ public class EnvironmentScanner : MonoBehaviour
     [SerializeField] float climbLedgeRayLength = 1.5f;
     [SerializeField] LayerMask climbLedgeLayer;
 
+    [Header("Ladder Detection")]
+    [SerializeField] float ladderRayLength = 1.5f;
+    [SerializeField] Vector3 ladderRayOriginOffset = new Vector3(0f, 1f, 0f);
+    [SerializeField] LayerMask ladderLayer;
+
+
     public ObstacleHitData ObstacleCheck()
     {
         var hitData = new ObstacleHitData();
@@ -30,8 +36,8 @@ public class EnvironmentScanner : MonoBehaviour
         hitData.forwardHitFound = Physics.Raycast(forwardRayOrigin, transform.forward,
             out hitData.forwardHit, forwardRayLength, obstacleLayer);
 
-        Debug.DrawRay(forwardRayOrigin, transform.forward * forwardRayLength,
-            hitData.forwardHitFound?Color.red:Color.white);
+        //Debug.DrawRay(forwardRayOrigin, transform.forward * forwardRayLength,
+        //    hitData.forwardHitFound?Color.red:Color.white);
 
         if(hitData.forwardHitFound)
         {
@@ -110,6 +116,21 @@ public class EnvironmentScanner : MonoBehaviour
         return false;
     }
 
+    public LadderHitData LadderCheck()
+    {
+        var hitData = new LadderHitData();
+        var ladderRayOrigin = transform.position + ladderRayOriginOffset;
+
+        hitData.ladderHitFound= Physics.Raycast(ladderRayOrigin, transform.forward,
+            out hitData.ladderHit, ladderRayLength, ladderLayer);
+
+        Debug.DrawRay(ladderRayOrigin, transform.forward * ladderRayLength,
+           hitData.ladderHitFound ? Color.red : Color.white);
+
+        Debug.Log(hitData.ladderHitFound);
+
+        return hitData;
+    }
 
 }
 public struct ObstacleHitData
@@ -125,4 +146,10 @@ public struct LedgeHitData
     public float height;
     public float angle;
     public RaycastHit ledgeFaceHit;
+}
+
+public struct LadderHitData
+{
+    public bool ladderHitFound;
+    public RaycastHit ladderHit;
 }
