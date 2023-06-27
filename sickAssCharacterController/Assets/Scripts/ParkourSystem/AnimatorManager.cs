@@ -54,9 +54,14 @@ public class AnimatorManager : MonoBehaviour
         animator.SetBool(hash, value);
     }
 
-    public void PlayTargetAnimation(string targetAnimationHash)
+    public void PlayTargetAnimation(string targetAnimationName)
     {
-        animator.CrossFade(targetAnimationHash, 0.2f);
+        animator.CrossFade(targetAnimationName, 0.2f);
+    }
+
+    public void SetRootMotion(bool value)
+    {
+        animator.applyRootMotion = value;
     }
 
     public void UpdateAnimatorValues(float horizontalMovement, float verticalMovement, bool isSprinting)
@@ -141,29 +146,44 @@ public class AnimatorManager : MonoBehaviour
         {
             if(!isOnLadder)
             {
-                GrabLadder();
+                isOnLadder = true;
+                OnSetIsOnLadder?.Invoke(isOnLadder);
+
+            
                 var targetRot = Quaternion.LookRotation(-ladderHitData.ladderHit.transform.forward);
+
+                //DoAction Coroutine only used for rotating the player towards the ladder
                 StartCoroutine(DoAction("LadderClimbUpStart", null, targetRot, true, true));
             }
-            
+
         }
 
         if (isOnLadder)
         {
-            // Climb the ladder when up down input
+            SetRootMotion(false);
+
+            if (!ladderHitData.ladderHitFound)
+            {
+                isOnLadder = false;
+                OnSetIsOnLadder?.Invoke(false);
+
+                Debug.Log(obstacleHitData.heightHit.transform.name);
+
+                var matchParams = new MatchTargetParams
+                {
+                    pos = obstacleHitData.heightHit.point,
+                    bodyPart = AvatarTarget.LeftFoot,
+                    posWeight = new Vector3(0, 1, 1),
+                    startTime = 0.20f,
+                    targetTime = 0.57f,
+                };
+
+                StartCoroutine(DoAction("ClimbUpToStand", matchParams, default, true,true));
+
+               
+
+            }
         }
-
-        else if(isOnLadder && ladderHitData.ladderHitFound)
-        {
-            StartCoroutine(DoAction("ClimbUpToStand", null, default, true, true));
-        }
-
-    }
-
-    private void GrabLadder()
-    {
-        isOnLadder = true;
-        OnSetIsOnLadder?.Invoke(isOnLadder);
     }
 
     void HandleLedgeCheck(bool jumpInput,LedgeHitData ledgeHitData,bool sprintingInput)
@@ -247,7 +267,6 @@ public class AnimatorManager : MonoBehaviour
 
         var animState = animator.GetNextAnimatorStateInfo(0);
 
-
         if (!animState.IsName(animName))
         {
             Debug.LogError("Parkour Animation Name is spelled wrong \n current animation name is " + animState.ToString() + " " +
@@ -277,7 +296,8 @@ public class AnimatorManager : MonoBehaviour
         yield return new WaitForSeconds(postActionDelay);
     }
 
-
+    // TODO: fix climbing later rn these functions are not being called
+    #region Climbing Stuff
     public void HandleAllClimbing(Vector2 inputDir, bool jumpInput, bool isHanging,bool isInteracting)
     {
         IsHanging = isHanging;
@@ -315,7 +335,6 @@ public class AnimatorManager : MonoBehaviour
             }
         }
     }
-
     IEnumerator JumpToLedge(string anim, Transform ledge, float matchStartTime, float matchTargetTime)
     {
         var matchParams = new MatchTargetParams()
@@ -345,7 +364,6 @@ public class AnimatorManager : MonoBehaviour
         OnSetIsHanging?.Invoke(IsHanging);
 
     }
-
     Vector3 GetHandPosition(Transform ledge)
     {
         // we are hardCoding X,Y and Z offset here 
@@ -353,10 +371,12 @@ public class AnimatorManager : MonoBehaviour
 
         return ledge.position + ledge.forward * -0.05f + Vector3.up * 0.09f - ledge.right * 0.35f;
     }
+    #endregion
 
     void MatchTarget(MatchTargetParams mtp)
     {
         if (animator.isMatchingTarget) return;
+        if (animator.IsInTransition(0)) return;
 
         animator.MatchTarget(mtp.pos,transform.rotation,
             mtp.bodyPart,new MatchTargetWeightMask(mtp.posWeight,0),

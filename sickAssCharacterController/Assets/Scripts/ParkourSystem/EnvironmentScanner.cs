@@ -127,7 +127,7 @@ public class EnvironmentScanner : MonoBehaviour
         Debug.DrawRay(ladderRayOrigin, transform.forward * ladderRayLength,
            hitData.ladderHitFound ? Color.red : Color.white);
 
-        Debug.Log(hitData.ladderHitFound);
+        //Debug.Log(hitData.ladderHitFound);
 
         return hitData;
     }

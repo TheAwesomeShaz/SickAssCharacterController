@@ -21,6 +21,10 @@ public class PlayerLocomotion : MonoBehaviour
     public bool isGrounded;
     public bool isJumping;
     [field: SerializeField] public bool IsOnLedge { get; set; }
+    
+    bool isClimbingLadderUp = false;
+    bool isClimbingLadderDown = false;
+    bool isClimbingLadderIdle = false;
 
     private LadderHitData ladderhitData;
 
@@ -40,7 +44,7 @@ public class PlayerLocomotion : MonoBehaviour
     public float walkingSpeed = 1.5f;
     public float runningSpeed = 5f;
     public float sprintingSpeed = 7f;
-    public float ladderClimbingSpeed = 2f;
+    public float ladderClimbingSpeed = 0.5f;
 
     [Tooltip("The amount of speed which will get added/subtracted every frame to increase/decrease speed smoothly")]
     [SerializeField] float movementSpeedDampingValue = 0.5f;
@@ -75,14 +79,16 @@ public class PlayerLocomotion : MonoBehaviour
         if (IsHanging) return;
 
 
-        SetMovementSpeed(inputVector);
 
-        if (IsOnLadder) {
+        if (IsOnLadder)
+        {
             HandleLadderMovement(inputVector);
             return;
         }
 
+
         SetMovementDirection(inputVector,highProfileInput);
+        SetMovementSpeed(inputVector);
 
 
         HandleFallingAndLanding(isInteracting);
@@ -157,7 +163,6 @@ public class PlayerLocomotion : MonoBehaviour
 
     }
 
-
     void HandleRotation(Vector2 inputVector)
     {
 
@@ -183,19 +188,9 @@ public class PlayerLocomotion : MonoBehaviour
     {
         isGrounded = Physics.CheckSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius, groundLayer);
 
-        animatorManager.SetAnimatorBool(animatorManager.IsGroundedHash, isGrounded);
+        //animatorManager.SetAnimatorBool(animatorManager.IsGroundedHash, isGrounded);
 
         if (IsOnLadder) return;
-
-        // Root motion should be false when not grounded in free fall state
-        // since we need to apply gravity by ourselves and not by the animation
-        //if (IsHanging)
-        //{
-
-        //}
-
-        animatorManager.animator.applyRootMotion = !isInteracting && isGrounded;
-
 
         if (isGrounded)
         {
@@ -215,7 +210,7 @@ public class PlayerLocomotion : MonoBehaviour
         }
     }
 
-    // limits movement when on ladder
+    // TODO: change the movement to be independent of root motion, make it totally script based Y directino movement
     private void HandleLadderMovement(Vector2 inputVector)
     {
         ladderhitData = envScanner.LadderCheck();
@@ -224,17 +219,48 @@ public class PlayerLocomotion : MonoBehaviour
 
         if(isGrounded && ladderhitData.ladderHitFound)
         {
+            Debug.Log(" Up: " + isClimbingLadderUp + " Down: " + isClimbingLadderDown + " Idle: " + isClimbingLadderIdle);
+
+            // Set player's position in centre of the ladder pos
             Vector3 playerOnLadderPosition = new(ladderhitData.ladderHit.transform.position.x,transform.position.y, transform.position.z);
-            transform.position = playerOnLadderPosition;  
+            transform.position = playerOnLadderPosition;
+
             moveDirection = new Vector3(0f,inputVector.y,0f);
             movementVelocity = moveDirection * ladderClimbingSpeed;
-            animatorManager.animator.applyRootMotion = false;
+
+            characterController.Move(movementVelocity*Time.deltaTime);
+
+            if(inputVector.y > 0.99  && !isClimbingLadderUp)
+            {
+                SetAllLadderClimbingFalse();
+                animatorManager.PlayTargetAnimation("LadderClimbUpLoop");
+                isClimbingLadderUp = true;
+            }
+            else if (inputVector.y < 0 && !isClimbingLadderDown)
+            {
+                SetAllLadderClimbingFalse();
+                animatorManager.PlayTargetAnimation("LadderClimbDownLoop");
+                isClimbingLadderDown = true;
+            }
+            else if (Mathf.Equals(inputVector.y, 0) && !isClimbingLadderIdle){
+                SetAllLadderClimbingFalse();
+                animatorManager.PlayTargetAnimation("LadderIdle");
+                isClimbingLadderIdle = true;
+            }
+
         }
 
-        isGrounded = true;
+    }
+
+    void SetAllLadderClimbingFalse()
+    {
+        isClimbingLadderUp = false;
+        isClimbingLadderIdle = false;
+        isClimbingLadderDown = false;
     }
 
     // limits ledge movement, prevents player from falling down from ledge
+    // TODO: add a looking down animation state to fix the falling off ledge error
     void HandleLedgeMovement()
     {
         float signedLedgeNormalMoveAngle = Vector3.SignedAngle(LedgeHitData.ledgeFaceHit.normal, desiredMoveDirection,Vector3.up);
@@ -287,7 +313,7 @@ public class PlayerLocomotion : MonoBehaviour
             // TODO: Check if normalized approach is same as clamp Approach
             //if (inputVector.normalized.magnitude >= 0.5f)
 
-            if (moveAmount >= 0.5f)
+            if (moveAmount >= 0.1f)
             {
 
                 //currentSpeed = runningSpeed;
@@ -322,24 +348,16 @@ public class PlayerLocomotion : MonoBehaviour
     }
     
     //TODO: improve this mess of animation event functions later
-    public void SetControlTrue()
+    public void SetSpeedToRunning()
     {
-        SetControl(true);
-    }
-    public void SetControlFalse()
-    {
-        SetControl(false);
-    }
-    public void SetSpeedToLess()
-    {
-        currentSpeed = 5;
+        currentSpeed = runningSpeed;
     }
 
     // To Show Ground Check Sphere
 
-    //private void OnDrawGizmos()
-    //{
-    //    Gizmos.color = new Color(0, 1, 0, 0.5f);
-    //    Gizmos.DrawSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius);
-    //}
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(0, 1, 0, 0.5f);
+        Gizmos.DrawSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius);
+    }
 }
