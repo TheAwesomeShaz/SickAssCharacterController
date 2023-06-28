@@ -14,6 +14,8 @@ public class AnimatorManager : MonoBehaviour
     [SerializeField] List<ParkourAction> parkourActions;
     [SerializeField] ParkourAction jumpDownAction;
     [SerializeField] ParkourAction jumpOffAction;
+    [SerializeField] ParkourAction climbUpLadderAction;
+
     [SerializeField] float autoJumpHeightLimit = 2f;
     [SerializeField] float rotateTowardsObstacleSpeed = 500f;
 
@@ -153,7 +155,8 @@ public class AnimatorManager : MonoBehaviour
                 var targetRot = Quaternion.LookRotation(-ladderHitData.ladderHit.transform.forward);
 
                 //DoAction Coroutine only used for rotating the player towards the ladder
-                StartCoroutine(DoAction("LadderClimbUpStart", null, targetRot, true, true));
+                //StartCoroutine(DoParkourAction("LadderClimbUpStart", null, targetRot, true, true));
+
             }
 
         }
@@ -169,19 +172,21 @@ public class AnimatorManager : MonoBehaviour
 
                 Debug.Log(obstacleHitData.heightHit.transform.name);
 
-                var matchParams = new MatchTargetParams
-                {
-                    pos = obstacleHitData.heightHit.point,
-                    bodyPart = AvatarTarget.LeftFoot,
-                    posWeight = new Vector3(0, 1, 1),
-                    startTime = 0.20f,
-                    targetTime = 0.57f,
-                };
+                // Old Do Action Approach
+                //var matchParams = new MatchTargetParams
+                //{
+                //    pos = obstacleHitData.heightHit.point,
+                //    bodyPart = AvatarTarget.LeftFoot,
+                //    posWeight = new Vector3(0, 1, 1),
+                //    startTime = 0.20f,
+                //    targetTime = 0.57f,
+                //};
+                //SetRootMotion(true);
+                //isInteracting = true;
+                //OnSetInteracting?.Invoke(isInteracting);
+                //StartCoroutine(DoAction("ClimbUpToStand", matchParams, default, true,true));
 
-                StartCoroutine(DoAction("ClimbUpToStand", matchParams, default, true,true));
-
-               
-
+                StartCoroutine(DoParkourAction(climbUpLadderAction));
             }
         }
     }
@@ -253,9 +258,9 @@ public class AnimatorManager : MonoBehaviour
     public IEnumerator DoAction(string animName,MatchTargetParams matchTargetParams, Quaternion targetRotation,
         bool resetMovementSpeed = false,bool rotate = false, float postActionDelay=0f, bool mirror = false)
     {
-        //Debug.Log("Reset Movement Speed "+resetMovementSpeed);
+        //Debug.Log("Reset Movement Speed " + resetMovementSpeed);
 
-        animator.applyRootMotion = true;
+        SetRootMotion(true);
         OnSetIsHanging?.Invoke(IsHanging);
 
         PlayTargetAnimation(animName);
@@ -269,7 +274,7 @@ public class AnimatorManager : MonoBehaviour
 
         if (!animState.IsName(animName))
         {
-            Debug.LogError("Parkour Animation Name is spelled wrong \n current animation name is " + animState.ToString() + " " +
+            Debug.LogError("Parkour Animation Name is spelled wrong \n current animation name is " + animState.GetHashCode() + " " +
                 "given name is " + animName);
         }
 
@@ -293,6 +298,7 @@ public class AnimatorManager : MonoBehaviour
             // return null makes it do nothing i.e it makes it wait till end of while loop?
             yield return null;
         }
+
         yield return new WaitForSeconds(postActionDelay);
     }
 

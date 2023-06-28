@@ -6,19 +6,22 @@ public class JumpBehaviour : StateMachineBehaviour
 {
     [SerializeField] float setControlTrueDelay = 0.05f;
     PlayerLocomotion playerLocomotion;
+    bool hasSetControlTrue;
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         if (playerLocomotion == null) { playerLocomotion = animator.GetComponent<PlayerLocomotion>(); }
+        hasSetControlTrue = false;
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if(stateInfo.normalizedTime == setControlTrueDelay)
+        if(!hasSetControlTrue && stateInfo.normalizedTime == setControlTrueDelay)
         {
             playerLocomotion.SetControl(true);
+            hasSetControlTrue = true;
         }
 
     }

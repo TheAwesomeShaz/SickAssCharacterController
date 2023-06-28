@@ -2670,6 +2670,14 @@ PrefabInstance:
       propertyPath: animator
       value: 
       objectReference: {fileID: 757230512408928233}
+    - target: {fileID: 3719851338857467964, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
+      propertyPath: climbUpLadderAction
+      value: 
+      objectReference: {fileID: 11400000, guid: e9e04c68e2ac6484dbd9787472da602d, type: 2}
+    - target: {fileID: 3719851338857467966, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
+      propertyPath: ladderClimbingSpeed
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4230601099114453165, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
       propertyPath: animator
       value: 
@@ -2680,7 +2688,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: e0b89d92d63badd4f9095bdf74ddb152, type: 2}
     - target: {fileID: 4535405649727302596, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
       propertyPath: ladderRayLength
-      value: 1
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 4535405649727302596, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
       propertyPath: ladderLayer.m_Bits
@@ -2787,8 +2795,8 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!64 &8164078558048760207
-MeshCollider:
+--- !u!65 &8164078558048760207
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2797,7 +2805,6 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -2432090755550338912, guid: f2083651815172244b04d51e7dd54b86, type: 3}
+  serializedVersion: 2
+  m_Size: {x: 0.83000016, y: 3.5800843, z: 0.11499995}
+  m_Center: {x: 0.01727271, y: -0.12950397, z: 0.0034090243}

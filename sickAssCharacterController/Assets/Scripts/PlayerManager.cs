@@ -18,7 +18,11 @@ public class PlayerManager : MonoBehaviour
         playerLocomotion = GetComponent<PlayerLocomotion>();    
         animatorManager = GetComponent<AnimatorManager>();
 
-        animatorManager.OnSetInteracting += (isInteracting) => {
+        // This was bad so it is not exist anymore
+        // TODO: delete below stuff if nothing breaks 
+
+        animatorManager.OnSetInteracting += (isInteracting) =>
+        {
             IsInteracting = isInteracting;
             playerLocomotion.SetControl(!IsInteracting);
         };

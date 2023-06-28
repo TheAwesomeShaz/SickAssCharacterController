@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbdd5492f48b27b4d8c2f1926ac39dc6, type: 3}
+  m_Name: ClimbFromLadder
+  m_EditorClassIdentifier: 
+  <AnimName>k__BackingField: ClimbUpToStand
+  <CurrentObstacleTag>k__BackingField: 
+  <MinHeight>k__BackingField: 0
+  <MaxHeight>k__BackingField: 0
+  <RotateToObstacle>k__BackingField: 1
+  <HeightIndependent>k__BackingField: 1
+  <ResetMovementSpeed>k__BackingField: 1
+  <PostActionDelay>k__BackingField: 0
+  <IstargetMatchingEnabled>k__BackingField: 1
+  <MatchBodyPart>k__BackingField: 2
+  <MatchStartTime>k__BackingField: 0.2
+  <MatchTargetTime>k__BackingField: 0.57
+  <MatchPosWeight>k__BackingField: {x: 0, y: 1, z: 1}

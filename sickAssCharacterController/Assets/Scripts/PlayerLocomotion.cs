@@ -21,10 +21,10 @@ public class PlayerLocomotion : MonoBehaviour
     public bool isGrounded;
     public bool isJumping;
     [field: SerializeField] public bool IsOnLedge { get; set; }
-    
-    bool isClimbingLadderUp = false;
-    bool isClimbingLadderDown = false;
-    bool isClimbingLadderIdle = false;
+
+    [SerializeField] bool isClimbingLadderUp = false;
+    [SerializeField] bool isClimbingLadderDown = false;
+    [SerializeField] bool isClimbingLadderIdle = false;
 
     private LadderHitData ladderhitData;
 
@@ -68,7 +68,7 @@ public class PlayerLocomotion : MonoBehaviour
         animatorManager.OnResetSpeed += (resetSpeed) => currentSpeed = resetSpeed ? 0 : currentSpeed;
         animatorManager.OnSetIsHanging += (value) => IsHanging = value;
         animatorManager.OnSetPlayerControl += (value) => SetControl(value);
-        animatorManager.OnSetIsOnLadder += (value) => IsOnLadder = value;
+        animatorManager.OnSetIsOnLadder += (value) => { IsOnLadder = value; SetAllLadderClimbingFalse(); };
 
     }
 
@@ -230,22 +230,21 @@ public class PlayerLocomotion : MonoBehaviour
 
             characterController.Move(movementVelocity*Time.deltaTime);
 
-            if(inputVector.y > 0.99  && !isClimbingLadderUp)
+            if(inputVector.y > 0 && !isClimbingLadderUp)
             {
                 SetAllLadderClimbingFalse();
                 animatorManager.PlayTargetAnimation("LadderClimbUpLoop");
                 isClimbingLadderUp = true;
             }
-            else if (inputVector.y < 0 && !isClimbingLadderDown)
+            if (inputVector.y < 0 && !isClimbingLadderDown)
             {
                 SetAllLadderClimbingFalse();
                 animatorManager.PlayTargetAnimation("LadderClimbDownLoop");
                 isClimbingLadderDown = true;
             }
-            else if (Mathf.Equals(inputVector.y, 0) && !isClimbingLadderIdle){
+            if (inputVector.y == 0){
                 SetAllLadderClimbingFalse();
                 animatorManager.PlayTargetAnimation("LadderIdle");
-                isClimbingLadderIdle = true;
             }
 
         }

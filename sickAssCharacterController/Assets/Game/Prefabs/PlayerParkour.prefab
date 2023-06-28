@@ -950,7 +950,6 @@ GameObject:
   - component: {fileID: 3719851338857467964}
   - component: {fileID: 4535405649727302596}
   - component: {fileID: 4230601099114453165}
-  - component: {fileID: 757230512408928233}
   m_Layer: 3
   m_Name: PlayerParkour
   m_TagString: Player
@@ -989,7 +988,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 7215310e019eae94fbfe21a3be9add09, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -1051,6 +1050,11 @@ MonoBehaviour:
   isGrounded: 1
   isJumping: 0
   <IsOnLedge>k__BackingField: 0
+  isClimbingLadderUp: 0
+  isClimbingLadderDown: 0
+  isClimbingLadderIdle: 0
+  <IsOnLadder>k__BackingField: 0
+  <IsHanging>k__BackingField: 0
   groundCheckRadius: 0.2
   groundCheckOffset: {x: 0, y: 0.15, z: 0.07}
   groundLayer:
@@ -1060,6 +1064,7 @@ MonoBehaviour:
   walkingSpeed: 3
   runningSpeed: 5
   sprintingSpeed: 15
+  ladderClimbingSpeed: 1
   movementSpeedDampingValue: 0.1
   <RotationSpeed>k__BackingField: 15
   movementVelocity: {x: 0, y: 0, z: 0}
@@ -1088,6 +1093,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de5214d4dd5b66b44be2bd5721dce16d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 264504559918604946}
   parkourActions:
   - {fileID: 11400000, guid: 8a840a55f7552aa43bf2e908c58a77b8, type: 2}
   - {fileID: 11400000, guid: 4864d457144dc1847aa765e13b86882c, type: 2}
@@ -1096,9 +1102,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7c5ad5e10dfdd8b47bfdafb497181743, type: 2}
   jumpDownAction: {fileID: 11400000, guid: 8eff2017d58122a498bef7712049127d, type: 2}
   jumpOffAction: {fileID: 11400000, guid: e0b89d92d63badd4f9095bdf74ddb152, type: 2}
+  climbUpLadderAction: {fileID: 11400000, guid: e9e04c68e2ac6484dbd9787472da602d, type: 2}
   autoJumpHeightLimit: 2
   rotateTowardsObstacleSpeed: 500
-  animator: {fileID: 0}
 --- !u!114 &4535405649727302596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1124,6 +1130,11 @@ MonoBehaviour:
   climbLedgeLayer:
     serializedVersion: 2
     m_Bits: 64
+  ladderRayLength: 0.7
+  ladderRayOriginOffset: {x: 0, y: 1, z: 0}
+  ladderLayer:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!114 &4230601099114453165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1136,6 +1147,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de5214d4dd5b66b44be2bd5721dce16d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 264504559918604946}
   parkourActions:
   - {fileID: 11400000, guid: 4864d457144dc1847aa765e13b86882c, type: 2}
   - {fileID: 11400000, guid: 86974ff2d494e8d4ea4300c330ced902, type: 2}
@@ -1143,22 +1155,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8a840a55f7552aa43bf2e908c58a77b8, type: 2}
   - {fileID: 11400000, guid: 7c5ad5e10dfdd8b47bfdafb497181743, type: 2}
   jumpDownAction: {fileID: 11400000, guid: 8eff2017d58122a498bef7712049127d, type: 2}
-  jumpOffAction: {fileID: 0}
+  jumpOffAction: {fileID: 11400000, guid: e0b89d92d63badd4f9095bdf74ddb152, type: 2}
+  climbUpLadderAction: {fileID: 0}
   autoJumpHeightLimit: 1.25
   rotateTowardsObstacleSpeed: 500
-  animator: {fileID: 0}
---- !u!114 &757230512408928233
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 264504559927857822}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8c20a463ff2e324fa2e068e9cdfe906, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &264504559927858106
 GameObject:
   m_ObjectHideFlags: 0

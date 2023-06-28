@@ -99,7 +99,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: LadderClimbDownLoop
-  m_Speed: 1
+  m_Speed: -1.5
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -111,7 +111,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 8993902097722301239, guid: 1e16527af90ad1a40aa87dd40a0e0d1d, type: 3}
+  m_Motion: {fileID: 8993902097722301239, guid: 2df6473aeca5edc45a17f8526d0e7451, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -437,6 +437,20 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
+--- !u!114 &-5423914521080834326
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7db979e8b1e8084d800efbf5193902c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  setControlFalseDelay: 0
+  setControlTrueDelay: 1
 --- !u!1102 &-4468587393357494409
 AnimatorState:
   serializedVersion: 6
@@ -445,7 +459,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: LadderClimbUpLoop
-  m_Speed: 0
+  m_Speed: 1.5
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -529,11 +543,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db979e8b1e8084d800efbf5193902c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerLocomotion: {fileID: 0}
   setControlFalseDelay: 0
   setControlTrueDelay: 1
-  hasSetControlFalse: 0
-  hasSetControlTrue: 0
 --- !u!1101 &-3221787517796049130
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -612,11 +623,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db979e8b1e8084d800efbf5193902c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerLocomotion: {fileID: 0}
   setControlFalseDelay: 0.2
   setControlTrueDelay: 0.7
-  hasSetControlFalse: 0
-  hasSetControlTrue: 0
 --- !u!1102 &-1455365637674765141
 AnimatorState:
   serializedVersion: 6
@@ -808,7 +816,8 @@ AnimatorState:
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -1082485928446818424}
-  m_StateMachineBehaviours: []
+  m_StateMachineBehaviours:
+  - {fileID: -5423914521080834326}
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
@@ -1107,22 +1116,22 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: -1455365637674765141}
-    m_Position: {x: 170, y: 350, z: 0}
+    m_Position: {x: 200, y: 360, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7678928793518997353}
     m_Position: {x: 450, y: 240, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -4468587393357494409}
-    m_Position: {x: 480, y: 70, z: 0}
+    m_Position: {x: 550, y: 130, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7198141261817118456}
-    m_Position: {x: 170, y: 270, z: 0}
+    m_Position: {x: 200, y: 180, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7769006247428987972}
-    m_Position: {x: 270, y: 70, z: 0}
+    m_Position: {x: 320, y: 70, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 295241676851928376}
-    m_Position: {x: 760, y: 120, z: 0}
+    m_Position: {x: 740, y: 220, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -1194,11 +1203,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db979e8b1e8084d800efbf5193902c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerLocomotion: {fileID: 0}
   setControlFalseDelay: 0
   setControlTrueDelay: 0.13
-  hasSetControlFalse: 0
-  hasSetControlTrue: 0
 --- !u!1102 &7680780189658959024
 AnimatorState:
   serializedVersion: 6
