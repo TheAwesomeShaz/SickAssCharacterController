@@ -2614,10 +2614,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 264504559918604946, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
-      propertyPath: m_ApplyRootMotion
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 264504559927857822, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
       propertyPath: m_Name
       value: Player
@@ -2666,49 +2662,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3719851338857467964, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
-      propertyPath: animator
-      value: 
-      objectReference: {fileID: 757230512408928233}
-    - target: {fileID: 3719851338857467964, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
-      propertyPath: climbUpLadderAction
-      value: 
-      objectReference: {fileID: 11400000, guid: e9e04c68e2ac6484dbd9787472da602d, type: 2}
-    - target: {fileID: 3719851338857467966, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
-      propertyPath: ladderClimbingSpeed
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4230601099114453165, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
-      propertyPath: animator
-      value: 
-      objectReference: {fileID: 757230512408928233}
-    - target: {fileID: 4230601099114453165, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
-      propertyPath: jumpOffAction
-      value: 
-      objectReference: {fileID: 11400000, guid: e0b89d92d63badd4f9095bdf74ddb152, type: 2}
-    - target: {fileID: 4535405649727302596, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
-      propertyPath: ladderRayLength
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 4535405649727302596, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
-      propertyPath: ladderLayer.m_Bits
-      value: 128
-      objectReference: {fileID: 0}
-    - target: {fileID: 4535405649727302596, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
-      propertyPath: ladderRayOriginOffset.y
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 757230512408928233, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
 --- !u!4 &757230512408928224 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 264504559928137590, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
-  m_PrefabInstance: {fileID: 660213153438910614}
-  m_PrefabAsset: {fileID: 0}
---- !u!95 &757230512408928233 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 264504559918604946, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
   m_PrefabInstance: {fileID: 660213153438910614}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1151388029068190389
