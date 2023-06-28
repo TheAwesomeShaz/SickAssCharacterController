@@ -1,18 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class FallingLoopBehaviour : StateMachineBehaviour
 {
     PlayerLocomotion playerLocomotion;
     [SerializeField] float groundedCheckDelay = 0.5f;
     bool hasTransitioned;
-    
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        hasTransitioned = false;
 
-        playerLocomotion = animator.GetComponent<PlayerLocomotion>();
+        if (playerLocomotion == null) { playerLocomotion = animator.GetComponent<PlayerLocomotion>(); }
         playerLocomotion.SetControl(true);
 
     }
@@ -21,8 +22,9 @@ public class FallingLoopBehaviour : StateMachineBehaviour
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
 
-        if (!hasTransitioned && stateInfo.normalizedTime == groundedCheckDelay && playerLocomotion.isGrounded)
+        if (!hasTransitioned && stateInfo.normalizedTime >= groundedCheckDelay && playerLocomotion.isGrounded)
         {
+            Debug.Log("Inside the condition");
             if (stateInfo.IsName("FallForward"))
                 animator.CrossFade("FallRoll", 0.2f);
 
@@ -37,7 +39,6 @@ public class FallingLoopBehaviour : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     //override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     //{
-    //    
     //}
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class LandingBehaviour : StateMachineBehaviour
@@ -7,37 +8,51 @@ public class LandingBehaviour : StateMachineBehaviour
     PlayerLocomotion playerLocomotion;
     [SerializeField] float setControlFalseDelay = 0.2f;
     [SerializeField] float setControlTrueDelay = 0.2f;
+    bool hasSetControlFalse;
+    bool hasSetControlTrue;
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        playerLocomotion = animator.GetComponent<PlayerLocomotion>();
+        if(playerLocomotion == null) { playerLocomotion = animator.GetComponent<PlayerLocomotion>(); }
 
-        if(setControlFalseDelay <= 0) { 
+        hasSetControlFalse = false;
+        hasSetControlTrue = false;
+
+        if(setControlFalseDelay == 0) {
+            Debug.Log("Set Control False for normal Land anim");
             playerLocomotion.SetControl(false);
+            hasSetControlFalse = true;
         }
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if(stateInfo.normalizedTime ==setControlFalseDelay)
+        if (!hasSetControlFalse && stateInfo.normalizedTime >= setControlFalseDelay)
+        {
             playerLocomotion.SetControl(false);
-        //setControlFalseDelay-=Time.deltaTime;
-        //if(setControlFalseDelay <= 0) {  playerLocomotion.SetControl(false);}
-
-
-        if (stateInfo.normalizedTime == setControlTrueDelay)
+            Debug.Log("SetControl is False");
+            hasSetControlFalse = true;
+        }
+        
+        if (!hasSetControlTrue && stateInfo.normalizedTime >= setControlTrueDelay)
+        {
             playerLocomotion.SetControl(true);
-        //setControlTrueDelay -= Time.deltaTime;
-        //if (setControlTrueDelay <= 0) { playerLocomotion.SetControl(true); }
+            Debug.Log("SetControl is True");
+            hasSetControlTrue = true;
+        }
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if(stateInfo.IsName("FallRoll"))
+        if (stateInfo.IsName("FallRoll"))
+        {
             playerLocomotion.SetSpeedToRunning();
+        }
+        playerLocomotion.SetControl(true);
+
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
