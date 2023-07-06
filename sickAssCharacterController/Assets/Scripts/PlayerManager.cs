@@ -18,9 +18,6 @@ public class PlayerManager : MonoBehaviour
         playerLocomotion = GetComponent<PlayerLocomotion>();    
         animatorManager = GetComponent<AnimatorManager>();
 
-        // This was bad so it is not exist anymore
-        // TODO: delete below stuff if nothing breaks 
-
         animatorManager.OnSetInteracting += (isInteracting) =>
         {
             IsInteracting = isInteracting;
@@ -36,13 +33,10 @@ public class PlayerManager : MonoBehaviour
 
         // TODO: Change jump input to high profile modifier later
         // when the controls starts making a bit more sense
+        playerLocomotion.HandleAllMovement(inputManager.movementInput,IsInteracting,inputManager.highProfileInput);
 
         animatorManager.HandleAllParkour(inputManager.jumpInput,IsInteracting, 
             playerLocomotion.IsOnLedge, playerLocomotion.LedgeHitData,inputManager.highProfileInput);       
-        
-        playerLocomotion.HandleAllMovement(inputManager.movementInput,IsInteracting,inputManager.highProfileInput);
-
-
 
         // Not Doing Climbing right now, will continue later if required currently shifted to making ladder system
         //animatorManager.HandleAllClimbing(inputManager.movementInput,inputManager.jumpInput,playerLocomotion.IsHanging,IsInteracting);

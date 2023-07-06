@@ -39,7 +39,7 @@ public class LandingBehaviour : StateMachineBehaviour
         if (!hasSetControlTrue && stateInfo.normalizedTime >= setControlTrueDelay)
         {
             playerLocomotion.SetControl(true);
-            Debug.Log("SetControl is True");
+            Debug.Log("Set Control is True");
             hasSetControlTrue = true;
         }
     }

@@ -150,13 +150,11 @@ public class AnimatorManager : MonoBehaviour
             {
                 isOnLadder = true;
                 OnSetIsOnLadder?.Invoke(isOnLadder);
-
-            
+                
                 var targetRot = Quaternion.LookRotation(-ladderHitData.ladderHit.transform.forward);
 
                 //DoAction Coroutine only used for rotating the player towards the ladder
                 //StartCoroutine(DoParkourAction("LadderClimbUpStart", null, targetRot, true, true));
-
             }
 
         }
@@ -168,25 +166,30 @@ public class AnimatorManager : MonoBehaviour
             if (!ladderHitData.ladderHitFound)
             {
                 isOnLadder = false;
-                OnSetIsOnLadder?.Invoke(false);
+                OnSetIsOnLadder?.Invoke(isOnLadder);
 
                 Debug.Log(obstacleHitData.heightHit.transform.name);
 
-                // Old Do Action Approach
-                //var matchParams = new MatchTargetParams
-                //{
-                //    pos = obstacleHitData.heightHit.point,
-                //    bodyPart = AvatarTarget.LeftFoot,
-                //    posWeight = new Vector3(0, 1, 1),
-                //    startTime = 0.20f,
-                //    targetTime = 0.57f,
-                //};
-                //SetRootMotion(true);
-                //isInteracting = true;
-                //OnSetInteracting?.Invoke(isInteracting);
-                //StartCoroutine(DoAction("ClimbUpToStand", matchParams, default, true,true));
+                //Old Do Action Approach
+                var matchParams = new MatchTargetParams
+                {
+                    pos = obstacleHitData.heightHit.point,
+                    bodyPart = AvatarTarget.LeftFoot,
+                    posWeight = new Vector3(0, 1, 1),
+                    startTime = 0.20f,
+                    targetTime = 0.57f,
+                };
+                SetRootMotion(true);
+                isInteracting = true;
+                OnSetInteracting?.Invoke(isInteracting);
+                StartCoroutine(DoAction("ClimbUpToStand", matchParams, default, true, true));
 
-                StartCoroutine(DoParkourAction(climbUpLadderAction));
+                isInteracting = false;
+                OnSetInteracting?.Invoke(isInteracting);
+
+                // Do a parkour Action instead of a normal action
+
+                //StartCoroutine(DoParkourAction(climbUpLadderAction));
             }
         }
     }
@@ -255,6 +258,7 @@ public class AnimatorManager : MonoBehaviour
     }
     #endregion
 
+    // for all non parkour actions
     public IEnumerator DoAction(string animName,MatchTargetParams matchTargetParams, Quaternion targetRotation,
         bool resetMovementSpeed = false,bool rotate = false, float postActionDelay=0f, bool mirror = false)
     {

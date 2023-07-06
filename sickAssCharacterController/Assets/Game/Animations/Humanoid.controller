@@ -213,10 +213,10 @@ AnimatorStateMachine:
     m_Position: {x: 490, y: -100, z: 0}
   - serializedVersion: 1
     m_StateMachine: {fileID: -6649849419499392589}
-    m_Position: {x: 480, y: 110, z: 0}
+    m_Position: {x: 400, y: 110, z: 0}
   - serializedVersion: 1
     m_StateMachine: {fileID: 5805264335399699847}
-    m_Position: {x: 650, y: 20, z: 0}
+    m_Position: {x: 590, y: 20, z: 0}
   m_AnyStateTransitions: []
   m_EntryTransitions: []
   m_StateMachineTransitions: {}
@@ -450,7 +450,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   setControlFalseDelay: 0
-  setControlTrueDelay: 1
+  setControlTrueDelay: 0.5
 --- !u!1102 &-4468587393357494409
 AnimatorState:
   serializedVersion: 6
@@ -1122,13 +1122,13 @@ AnimatorStateMachine:
     m_Position: {x: 450, y: 240, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -4468587393357494409}
-    m_Position: {x: 550, y: 130, z: 0}
+    m_Position: {x: 560, y: 100, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7198141261817118456}
-    m_Position: {x: 200, y: 180, z: 0}
+    m_Position: {x: 450, y: 180, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7769006247428987972}
-    m_Position: {x: 320, y: 70, z: 0}
+    m_Position: {x: 450, y: 320, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 295241676851928376}
     m_Position: {x: 740, y: 220, z: 0}

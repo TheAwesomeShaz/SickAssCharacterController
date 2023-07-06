@@ -78,9 +78,7 @@ public class PlayerLocomotion : MonoBehaviour
         if (isInteracting) return;
         if (IsHanging) return;
 
-
-
-        if (IsOnLadder)
+        if (IsOnLadder && !isInteracting)
         {
             HandleLadderMovement(inputVector);
             return;
@@ -213,17 +211,24 @@ public class PlayerLocomotion : MonoBehaviour
     // TODO: change the movement to be independent of root motion, make it totally script based Y directino movement
     private void HandleLadderMovement(Vector2 inputVector)
     {
+        Debug.Log("Ladder Movement is being called");
         ladderhitData = envScanner.LadderCheck();
 
-        if (!ladderhitData.ladderHitFound) return;
+        if (!ladderhitData.ladderHitFound) { SetControl(true); return; }
 
         if(isGrounded && ladderhitData.ladderHitFound)
         {
-            Debug.Log(" Up: " + isClimbingLadderUp + " Down: " + isClimbingLadderDown + " Idle: " + isClimbingLadderIdle);
+            //Debug.Log(" Up: " + isClimbingLadderUp + " Down: " + isClimbingLadderDown + " Idle: " + isClimbingLadderIdle);
 
+            //SetControl(false);
             // Set player's position in centre of the ladder pos
-            Vector3 playerOnLadderPosition = new(ladderhitData.ladderHit.transform.position.x,transform.position.y, transform.position.z);
+            Vector3 playerOnLadderPosition = new(ladderhitData.ladderHit.transform.localPosition.x,transform.position.y, transform.position.z);
             transform.position = playerOnLadderPosition;
+
+            //SetControl(true);
+
+            Debug.Log("Setting player's position to ladder pos");
+            Debug.Log("Player's position is equal to ladder's position?: " + Equals(playerOnLadderPosition, transform.position));
 
             moveDirection = new Vector3(0f,inputVector.y,0f);
             movementVelocity = moveDirection * ladderClimbingSpeed;
@@ -292,7 +297,8 @@ public class PlayerLocomotion : MonoBehaviour
     
     void SetMovementSpeed(Vector2 inputVector)
     {
-        
+        Debug.Log("Set Movement Speed is being called");
+
         if (isSprinting)
         {
             //currentSpeed = sprintingSpeed;
