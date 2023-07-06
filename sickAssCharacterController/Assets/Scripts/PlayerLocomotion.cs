@@ -78,6 +78,8 @@ public class PlayerLocomotion : MonoBehaviour
         if (isInteracting) return;
         if (IsHanging) return;
 
+        HandleFallingAndLanding(isInteracting);
+
         if (IsOnLadder && !isInteracting)
         {
             HandleLadderMovement(inputVector);
@@ -89,7 +91,6 @@ public class PlayerLocomotion : MonoBehaviour
         SetMovementSpeed(inputVector);
 
 
-        HandleFallingAndLanding(isInteracting);
         HandleMovement(inputVector,highProfileInput);
         HandleRotation(inputVector);
     }
@@ -184,13 +185,13 @@ public class PlayerLocomotion : MonoBehaviour
 
     void HandleFallingAndLanding(bool isInteracting)
     {
-        isGrounded = Physics.CheckSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius, groundLayer);
 
-        //animatorManager.SetAnimatorBool(animatorManager.IsGroundedHash, isGrounded);
+        isGrounded = Physics.CheckSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius, groundLayer);
 
         if (IsOnLadder) return;
 
-        if (isGrounded)
+
+        if (isGrounded && !IsOnLadder)
         {
             currentGravity = -0.5f;
             IsOnLedge = envScanner.EdgeLedgeCheck(desiredMoveDirection,out LedgeHitData ledgeHitData);
@@ -214,15 +215,16 @@ public class PlayerLocomotion : MonoBehaviour
         Debug.Log("Ladder Movement is being called");
         ladderhitData = envScanner.LadderCheck();
 
-        if (!ladderhitData.ladderHitFound) { SetControl(true); return; }
+        if (!ladderhitData.ladderHitFound) {
+           return; 
+        }
 
-        if(isGrounded && ladderhitData.ladderHitFound)
+        //if(isGrounded && ladderhitData.ladderHitFound)
+        if (ladderhitData.ladderHitFound)
         {
-            //Debug.Log(" Up: " + isClimbingLadderUp + " Down: " + isClimbingLadderDown + " Idle: " + isClimbingLadderIdle);
 
-            //SetControl(false);
             // Set player's position in centre of the ladder pos
-            Vector3 playerOnLadderPosition = new(ladderhitData.ladderHit.transform.localPosition.x,transform.position.y, transform.position.z);
+            Vector3 playerOnLadderPosition = new Vector3(ladderhitData.ladderHit.transform.localPosition.x,transform.position.y, transform.position.z);
             transform.position = playerOnLadderPosition;
 
             //SetControl(true);
@@ -233,7 +235,6 @@ public class PlayerLocomotion : MonoBehaviour
             moveDirection = new Vector3(0f,inputVector.y,0f);
             movementVelocity = moveDirection * ladderClimbingSpeed;
 
-            characterController.Move(movementVelocity*Time.deltaTime);
 
             if(inputVector.y > 0 && !isClimbingLadderUp)
             {
@@ -243,6 +244,8 @@ public class PlayerLocomotion : MonoBehaviour
             }
             if (inputVector.y < 0 && !isClimbingLadderDown)
             {
+                
+
                 SetAllLadderClimbingFalse();
                 animatorManager.PlayTargetAnimation("LadderClimbDownLoop");
                 isClimbingLadderDown = true;
@@ -251,6 +254,14 @@ public class PlayerLocomotion : MonoBehaviour
                 SetAllLadderClimbingFalse();
                 animatorManager.PlayTargetAnimation("LadderIdle");
             }
+            if(inputVector.y < 0 && isGrounded) 
+            { 
+                animatorManager.PlayTargetAnimation("LeaveLadder");
+                animatorManager.LeaveLadder();
+                IsOnLadder = false;
+            } 
+
+            characterController.Move(movementVelocity*Time.deltaTime);
 
         }
 
@@ -362,7 +373,7 @@ public class PlayerLocomotion : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = new Color(0, 1, 0, 0.5f);
+        Gizmos.color = isGrounded? new Color(0, 1, 0, 0.5f):Color.red;
         Gizmos.DrawSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius);
     }
 }

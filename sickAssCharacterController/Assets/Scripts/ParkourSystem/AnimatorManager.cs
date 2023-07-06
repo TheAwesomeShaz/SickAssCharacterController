@@ -22,7 +22,6 @@ public class AnimatorManager : MonoBehaviour
     // Readonly Stuff
     readonly int horizontal = Animator.StringToHash("Horizontal");
     readonly int vertical = Animator.StringToHash("Vertical");
-    public readonly int IsGroundedHash = Animator.StringToHash("IsGrounded");
 
     // Events
     public event Action<bool> OnSetInteracting;
@@ -137,9 +136,12 @@ public class AnimatorManager : MonoBehaviour
         obstacleHitData = environmentScanner.ObstacleCheck();
         ladderHitData = environmentScanner.LadderCheck();
 
-        HandleObstacleCheck(jumpInput);
-        HandleLedgeCheck(jumpInput,ledgeHitData,sprintingInput);
+        //if (isOnLadder) return;
         HandleLadderCheck(jumpInput);
+        HandleObstacleCheck(jumpInput);
+
+        
+        HandleLedgeCheck(jumpInput,ledgeHitData,sprintingInput);
     }
 
     private void HandleLadderCheck(bool jumpInput)
@@ -154,7 +156,7 @@ public class AnimatorManager : MonoBehaviour
                 var targetRot = Quaternion.LookRotation(-ladderHitData.ladderHit.transform.forward);
 
                 //DoAction Coroutine only used for rotating the player towards the ladder
-                //StartCoroutine(DoParkourAction("LadderClimbUpStart", null, targetRot, true, true));
+                StartCoroutine(DoAction("LadderClimbUpStart", null, targetRot, true, true));
             }
 
         }
@@ -192,6 +194,11 @@ public class AnimatorManager : MonoBehaviour
                 //StartCoroutine(DoParkourAction(climbUpLadderAction));
             }
         }
+    }
+
+    public void LeaveLadder()
+    {
+        isOnLadder = false;
     }
 
     void HandleLedgeCheck(bool jumpInput,LedgeHitData ledgeHitData,bool sprintingInput)
