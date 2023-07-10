@@ -41,7 +41,7 @@ public class AnimatorManager : MonoBehaviour
     ClimbPoint currentClimbPoint;
     ObstacleHitData obstacleHitData;
     LadderHitData ladderHitData;
-
+    bool isClimbingLadderUp;
 
     private void Awake()
     {
@@ -136,7 +136,6 @@ public class AnimatorManager : MonoBehaviour
         obstacleHitData = environmentScanner.ObstacleCheck();
         ladderHitData = environmentScanner.LadderCheck();
 
-        //if (isOnLadder) return;
         HandleLadderCheck(jumpInput);
         HandleObstacleCheck(jumpInput);
 
@@ -146,31 +145,43 @@ public class AnimatorManager : MonoBehaviour
 
     private void HandleLadderCheck(bool jumpInput)
     {
-        if(jumpInput && ladderHitData.ladderHitFound)
+        if(jumpInput && ladderHitData.ladderHitFound && !isOnLadder)
         {
-            if(!isOnLadder)
-            {
-                isOnLadder = true;
-                OnSetIsOnLadder?.Invoke(isOnLadder);
+            isOnLadder = true;
+            OnSetIsOnLadder?.Invoke(isOnLadder);
                 
+            if(isClimbingLadderUp)
+            {
+                // Snap ladder X
+                //transform.localPosition = new Vector3(ladderHitData.ladderHit.transform.localPosition.x, transform.localPosition.y, transform.localPosition.z);
+
+
                 var targetRot = Quaternion.LookRotation(-ladderHitData.ladderHit.transform.forward);
 
-                //DoAction Coroutine only used for rotating the player towards the ladder
-                StartCoroutine(DoAction("LadderClimbUpStart", null, targetRot, true, true));
-            }
+                transform.rotation = Quaternion.RotateTowards(transform.rotation,
+                    targetRot, rotateTowardsObstacleSpeed * Time.deltaTime);
 
+                // Not using Do ACtion coRoutine just rotating the player directly towards the ladder
+                // So below stuff not needed
+
+                //DoAction Coroutine only used for rotating the player towards the ladder
+                //StartCoroutine(DoAction("LadderClimbUpStart", null, targetRot, true, true));
+            }
         }
 
         if (isOnLadder)
         {
             SetRootMotion(false);
 
-            if (!ladderHitData.ladderHitFound)
+            if (!ladderHitData.ladderHitFound && isClimbingLadderUp)
             {
                 isOnLadder = false;
                 OnSetIsOnLadder?.Invoke(isOnLadder);
 
                 Debug.Log(obstacleHitData.heightHit.transform.name);
+
+                // Experimental stuff rn
+                if (!obstacleHitData.heightHitFound) return;
 
                 //Old Do Action Approach
                 var matchParams = new MatchTargetParams
@@ -182,18 +193,24 @@ public class AnimatorManager : MonoBehaviour
                     targetTime = 0.57f,
                 };
                 SetRootMotion(true);
+                
                 isInteracting = true;
                 OnSetInteracting?.Invoke(isInteracting);
+
                 StartCoroutine(DoAction("ClimbUpToStand", matchParams, default, true, true));
 
                 isInteracting = false;
                 OnSetInteracting?.Invoke(isInteracting);
 
                 // Do a parkour Action instead of a normal action
-
                 //StartCoroutine(DoParkourAction(climbUpLadderAction));
             }
         }
+    }
+
+    public void SetIsClimbingLadder(bool value)
+    {
+        isClimbingLadderUp = value;
     }
 
     public void LeaveLadder()

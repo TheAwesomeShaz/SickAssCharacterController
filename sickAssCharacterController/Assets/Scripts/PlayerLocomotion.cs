@@ -26,7 +26,7 @@ public class PlayerLocomotion : MonoBehaviour
     [SerializeField] bool isClimbingLadderDown = false;
     [SerializeField] bool isClimbingLadderIdle = false;
 
-    private LadderHitData ladderhitData;
+    private LadderHitData ladderHitData;
 
     [field: SerializeField] public bool IsOnLadder { get; set; }
     [field: SerializeField] public bool IsHanging { get; set; }
@@ -193,6 +193,7 @@ public class PlayerLocomotion : MonoBehaviour
 
         if (isGrounded && !IsOnLadder)
         {
+
             currentGravity = -0.5f;
             IsOnLedge = envScanner.EdgeLedgeCheck(desiredMoveDirection,out LedgeHitData ledgeHitData);
             
@@ -213,18 +214,40 @@ public class PlayerLocomotion : MonoBehaviour
     private void HandleLadderMovement(Vector2 inputVector)
     {
         Debug.Log("Ladder Movement is being called");
-        ladderhitData = envScanner.LadderCheck();
-
-        if (!ladderhitData.ladderHitFound) {
+        ladderHitData = envScanner.LadderCheck();
+               
+        if (!ladderHitData.ladderHitFound) {
+            if(isGrounded)
+            {
+                IsOnLadder = false;
+                animatorManager.LeaveLadder();
+                return;
+            }
            return; 
         }
 
         //if(isGrounded && ladderhitData.ladderHitFound)
-        if (ladderhitData.ladderHitFound)
+        if (ladderHitData.ladderHitFound)
         {
+            // If trynna climb the ladder cross then you cannot no boss
+            if (Vector3.Dot(-ladderHitData.ladderHit.transform.forward, transform.forward) < 0.88f)
+            {
+                Debug.Log(Vector3.Dot(-ladderHitData.ladderHit.transform.forward, transform.forward));
+                IsOnLadder = false;
+                animatorManager.LeaveLadder();
+                animatorManager.SetIsClimbingLadder(false);
+                return;
+            }
+
+            var targetRot = Quaternion.LookRotation(-ladderHitData.ladderHit.transform.forward);
+
+            transform.rotation = Quaternion.RotateTowards(transform.rotation,
+                targetRot, 200f * Time.deltaTime);
+
+            animatorManager.SetIsClimbingLadder(true);
 
             // Set player's position in centre of the ladder pos
-            Vector3 playerOnLadderPosition = new Vector3(ladderhitData.ladderHit.transform.localPosition.x,transform.position.y, transform.position.z);
+            Vector3 playerOnLadderPosition = new Vector3(ladderHitData.ladderHit.transform.position.x,transform.position.y, transform.position.z);
             transform.position = playerOnLadderPosition;
 
             //SetControl(true);
@@ -240,12 +263,11 @@ public class PlayerLocomotion : MonoBehaviour
             {
                 SetAllLadderClimbingFalse();
                 animatorManager.PlayTargetAnimation("LadderClimbUpLoop");
+                animatorManager.SetIsClimbingLadder(isClimbingLadderUp);
                 isClimbingLadderUp = true;
             }
             if (inputVector.y < 0 && !isClimbingLadderDown)
             {
-                
-
                 SetAllLadderClimbingFalse();
                 animatorManager.PlayTargetAnimation("LadderClimbDownLoop");
                 isClimbingLadderDown = true;
@@ -308,8 +330,6 @@ public class PlayerLocomotion : MonoBehaviour
     
     void SetMovementSpeed(Vector2 inputVector)
     {
-        Debug.Log("Set Movement Speed is being called");
-
         if (isSprinting)
         {
             //currentSpeed = sprintingSpeed;
