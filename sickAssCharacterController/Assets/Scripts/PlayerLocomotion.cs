@@ -164,23 +164,23 @@ public class PlayerLocomotion : MonoBehaviour
 
     void HandleRotation(Vector2 inputVector)
     {
+            Vector3 targetDirection = moveDirection;
 
-        Vector3 targetDirection = moveDirection;
+            //targetDirection = cameraObject.forward*inputVector.y;
+            //targetDirection = targetDirection + cameraObject.right * inputVector.x;
+            //targetDirection.Normalize();
+            targetDirection.y = 0;
 
-        //targetDirection = cameraObject.forward*inputVector.y;
-        //targetDirection = targetDirection + cameraObject.right * inputVector.x;
-        //targetDirection.Normalize();
-        targetDirection.y = 0;
+            if (targetDirection == Vector3.zero)
+            {
+                targetDirection =  transform.forward;
+            }
 
-        if (targetDirection == Vector3.zero)
-        {
-            targetDirection =  transform.forward;
-        }
+            targetRotation = Quaternion.LookRotation(targetDirection);
+            Quaternion playerRotation = Quaternion.Slerp(transform.rotation, targetRotation, RotationSpeed *Time.deltaTime);
 
-        targetRotation = Quaternion.LookRotation(targetDirection);
-        Quaternion playerRotation = Quaternion.Slerp(transform.rotation, targetRotation, RotationSpeed *Time.deltaTime);
-
-        transform.rotation = playerRotation;
+            transform.rotation = playerRotation;
+        
     }
 
     void HandleFallingAndLanding(bool isInteracting)
@@ -281,8 +281,8 @@ public class PlayerLocomotion : MonoBehaviour
                 animatorManager.PlayTargetAnimation("LeaveLadder");
                 animatorManager.LeaveLadder();
                 IsOnLadder = false;
-            } 
-
+            }
+           
             characterController.Move(movementVelocity*Time.deltaTime);
 
         }

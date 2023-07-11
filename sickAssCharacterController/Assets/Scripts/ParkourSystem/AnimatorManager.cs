@@ -155,11 +155,11 @@ public class AnimatorManager : MonoBehaviour
                 // Snap ladder X
                 //transform.localPosition = new Vector3(ladderHitData.ladderHit.transform.localPosition.x, transform.localPosition.y, transform.localPosition.z);
 
-
                 var targetRot = Quaternion.LookRotation(-ladderHitData.ladderHit.transform.forward);
 
                 transform.rotation = Quaternion.RotateTowards(transform.rotation,
                     targetRot, rotateTowardsObstacleSpeed * Time.deltaTime);
+
 
                 // Not using Do ACtion coRoutine just rotating the player directly towards the ladder
                 // So below stuff not needed
@@ -245,7 +245,7 @@ public class AnimatorManager : MonoBehaviour
 
     void HandleObstacleCheck(bool jumpInput)
     {
-        if (jumpInput && !isInteracting && obstacleHitData.forwardHitFound)
+        if (jumpInput && !isInteracting && obstacleHitData.forwardHitFound && (!ladderHitData.ladderHitFound && isOnLadder))
         {
             foreach (var action in parkourActions)
             {
