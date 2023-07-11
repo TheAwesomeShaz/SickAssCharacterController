@@ -2863,6 +2863,10 @@ PrefabInstance:
       propertyPath: ladderRayLength
       value: 0.4
       objectReference: {fileID: 0}
+    - target: {fileID: 4535405649727302596, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
+      propertyPath: ladderRayOriginOffset.y
+      value: 1.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
 --- !u!4 &757230512408928224 stripped

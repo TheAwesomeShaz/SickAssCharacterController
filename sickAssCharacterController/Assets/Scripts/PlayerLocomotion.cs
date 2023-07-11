@@ -279,6 +279,7 @@ public class PlayerLocomotion : MonoBehaviour
             if(inputVector.y < 0 && isGrounded) 
             { 
                 animatorManager.PlayTargetAnimation("LeaveLadder");
+                isClimbingLadderDown = false;
                 animatorManager.LeaveLadder();
                 IsOnLadder = false;
             }

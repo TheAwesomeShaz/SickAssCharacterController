@@ -197,8 +197,8 @@ public class AnimatorManager : MonoBehaviour
                 isInteracting = true;
                 OnSetInteracting?.Invoke(isInteracting);
 
-                StartCoroutine(DoAction("ClimbUpToStand", matchParams, default, true, true));
-
+                var coroutine = StartCoroutine(DoAction("ClimbUpToStand", matchParams, default, true, true));
+                
                 isInteracting = false;
                 OnSetInteracting?.Invoke(isInteracting);
 
@@ -325,6 +325,7 @@ public class AnimatorManager : MonoBehaviour
 
             // return null makes it do nothing i.e it makes it wait till end of while loop?
             yield return null;
+
         }
 
         yield return new WaitForSeconds(postActionDelay);
