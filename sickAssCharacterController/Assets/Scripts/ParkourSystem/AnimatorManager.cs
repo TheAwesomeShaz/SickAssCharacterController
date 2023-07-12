@@ -145,18 +145,22 @@ public class AnimatorManager : MonoBehaviour
 
     private void HandleLadderCheck(bool jumpInput)
     {
+        Vector3 ladderDirection = new();
+
         if(jumpInput && ladderHitData.ladderHitFound && !isOnLadder)
         {
+            ladderDirection = -ladderHitData.ladderHit.transform.forward;
             isOnLadder = true;
             OnSetIsOnLadder?.Invoke(isOnLadder);
                 
             if(isClimbingLadderUp)
             {
-                // Snap ladder X
-                //transform.localPosition = new Vector3(ladderHitData.ladderHit.transform.localPosition.x, transform.localPosition.y, transform.localPosition.z);
-
                 isInteracting = true;
                 OnSetInteracting?.Invoke(isInteracting);
+
+                // Snap ladder X
+                transform.position= new Vector3(ladderHitData.ladderHit.transform.position.x, transform.position.y, transform.position.z);
+
 
                 var targetRot = Quaternion.LookRotation(-ladderHitData.ladderHit.transform.forward);
 
@@ -166,6 +170,8 @@ public class AnimatorManager : MonoBehaviour
 
                 isInteracting = false;
                 OnSetInteracting?.Invoke(isInteracting);
+
+
 
 
                 // Not using Do ACtion coRoutine just rotating the player directly towards the ladder
@@ -182,8 +188,7 @@ public class AnimatorManager : MonoBehaviour
 
             if (!ladderHitData.ladderHitFound && isClimbingLadderUp)
             {
-                isOnLadder = false;
-                OnSetIsOnLadder?.Invoke(isOnLadder);
+               
 
                 Debug.Log(obstacleHitData.heightHit.transform.name);
 
@@ -204,9 +209,23 @@ public class AnimatorManager : MonoBehaviour
                 OnSetInteracting?.Invoke(isInteracting);
 
                 // This should not be called when diagonally approaching the ladder
-                StartCoroutine(DoAction("ClimbUpToStand", matchParams, default, true, true));
+                if (Vector3.Dot(ladderDirection, transform.forward) == 0f)
+                {
+                    //Debug.Log(Vector3.Dot(-ladderHitData.ladderHit.transform.forward, transform.forward));
+                    //IsOnLadder = false;
+                    //animatorManager.LeaveLadder();
+                    //animatorManager.SetIsClimbingLadder(false);
+                    //return;
+                    StartCoroutine(DoAction("ClimbUpToStand", matchParams, default, true, true));
+                    isOnLadder = false;
+                    OnSetIsOnLadder?.Invoke(isOnLadder);
+                }
+                else
+                {
+                    LeaveLadder();
+                }
 
-                
+
 
                 // Do a parkour Action instead of a normal action
                 //StartCoroutine(DoParkourAction(climbUpLadderAction));
