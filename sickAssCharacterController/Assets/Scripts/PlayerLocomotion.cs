@@ -230,7 +230,7 @@ public class PlayerLocomotion : MonoBehaviour
         if (ladderHitData.ladderHitFound)
         {
             // If trynna climb the ladder cross then you cannot no boss
-            if (Vector3.Dot(-ladderHitData.ladderHit.transform.forward, transform.forward) < 0.88f)
+            if (Vector3.Dot(-ladderHitData.ladderHit.transform.forward, transform.forward) < 0.5f)
             {
                 Debug.Log(Vector3.Dot(-ladderHitData.ladderHit.transform.forward, transform.forward));
                 IsOnLadder = false;

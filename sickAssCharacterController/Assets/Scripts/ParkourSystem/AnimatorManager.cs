@@ -155,10 +155,17 @@ public class AnimatorManager : MonoBehaviour
                 // Snap ladder X
                 //transform.localPosition = new Vector3(ladderHitData.ladderHit.transform.localPosition.x, transform.localPosition.y, transform.localPosition.z);
 
+                isInteracting = true;
+                OnSetInteracting?.Invoke(isInteracting);
+
                 var targetRot = Quaternion.LookRotation(-ladderHitData.ladderHit.transform.forward);
 
                 transform.rotation = Quaternion.RotateTowards(transform.rotation,
                     targetRot, rotateTowardsObstacleSpeed * Time.deltaTime);
+
+
+                isInteracting = false;
+                OnSetInteracting?.Invoke(isInteracting);
 
 
                 // Not using Do ACtion coRoutine just rotating the player directly towards the ladder
@@ -180,7 +187,6 @@ public class AnimatorManager : MonoBehaviour
 
                 Debug.Log(obstacleHitData.heightHit.transform.name);
 
-                // Experimental stuff rn
                 if (!obstacleHitData.heightHitFound) return;
 
                 //Old Do Action Approach
@@ -197,10 +203,10 @@ public class AnimatorManager : MonoBehaviour
                 isInteracting = true;
                 OnSetInteracting?.Invoke(isInteracting);
 
-                var coroutine = StartCoroutine(DoAction("ClimbUpToStand", matchParams, default, true, true));
+                // This should not be called when diagonal
+                StartCoroutine(DoAction("ClimbUpToStand", matchParams, default, true, true));
+
                 
-                isInteracting = false;
-                OnSetInteracting?.Invoke(isInteracting);
 
                 // Do a parkour Action instead of a normal action
                 //StartCoroutine(DoParkourAction(climbUpLadderAction));
@@ -245,7 +251,8 @@ public class AnimatorManager : MonoBehaviour
 
     void HandleObstacleCheck(bool jumpInput)
     {
-        if (jumpInput && !isInteracting && obstacleHitData.forwardHitFound && (!ladderHitData.ladderHitFound && isOnLadder))
+        // This causes ladder and parkour anims to work
+        if (jumpInput && !isInteracting && obstacleHitData.forwardHitFound && ((!ladderHitData.ladderHitFound && isOnLadder) || !isOnLadder))
         {
             foreach (var action in parkourActions)
             {
@@ -329,6 +336,9 @@ public class AnimatorManager : MonoBehaviour
         }
 
         yield return new WaitForSeconds(postActionDelay);
+
+        isInteracting = false;
+        OnSetInteracting?.Invoke(isInteracting);
     }
 
     // TODO: fix climbing later rn these functions are not being called

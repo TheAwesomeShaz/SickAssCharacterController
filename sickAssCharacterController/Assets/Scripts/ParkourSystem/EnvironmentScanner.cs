@@ -36,10 +36,10 @@ public class EnvironmentScanner : MonoBehaviour
         hitData.forwardHitFound = Physics.Raycast(forwardRayOrigin, transform.forward,
             out hitData.forwardHit, forwardRayLength, obstacleLayer);
 
-        //Debug.DrawRay(forwardRayOrigin, transform.forward * forwardRayLength,
-        //    hitData.forwardHitFound?Color.red:Color.white);
+        Debug.DrawRay(forwardRayOrigin, transform.forward * forwardRayLength,
+            hitData.forwardHitFound ? Color.red : Color.white);
 
-        if(hitData.forwardHitFound)
+        if (hitData.forwardHitFound)
         {
             // The Height ray will be from "a point above the forwardHitPoint" to the "forwardhitPoint"
             var heightRayOrigin = hitData.forwardHit.point + Vector3.up * heightRayLength;
