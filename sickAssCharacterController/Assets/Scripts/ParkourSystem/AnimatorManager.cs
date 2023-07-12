@@ -203,7 +203,7 @@ public class AnimatorManager : MonoBehaviour
                 isInteracting = true;
                 OnSetInteracting?.Invoke(isInteracting);
 
-                // This should not be called when diagonal
+                // This should not be called when diagonally approaching the ladder
                 StartCoroutine(DoAction("ClimbUpToStand", matchParams, default, true, true));
 
                 
