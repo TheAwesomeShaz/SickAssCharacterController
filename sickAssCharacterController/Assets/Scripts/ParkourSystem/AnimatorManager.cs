@@ -159,7 +159,7 @@ public class AnimatorManager : MonoBehaviour
                 OnSetInteracting?.Invoke(isInteracting);
 
                 // Snap ladder X
-                transform.position= new Vector3(ladderHitData.ladderHit.transform.position.x, transform.position.y, transform.position.z);
+                transform.position = new Vector3(ladderHitData.ladderHit.transform.parent.position.x, transform.position.y, transform.position.z);
 
 
                 var targetRot = Quaternion.LookRotation(-ladderHitData.ladderHit.transform.forward);
@@ -171,14 +171,6 @@ public class AnimatorManager : MonoBehaviour
                 isInteracting = false;
                 OnSetInteracting?.Invoke(isInteracting);
 
-
-
-
-                // Not using Do ACtion coRoutine just rotating the player directly towards the ladder
-                // So below stuff not needed
-
-                //DoAction Coroutine only used for rotating the player towards the ladder
-                //StartCoroutine(DoAction("LadderClimbUpStart", null, targetRot, true, true));
             }
         }
 
@@ -211,11 +203,7 @@ public class AnimatorManager : MonoBehaviour
                 // This should not be called when diagonally approaching the ladder
                 if (Vector3.Dot(ladderDirection, transform.forward) == 0f)
                 {
-                    //Debug.Log(Vector3.Dot(-ladderHitData.ladderHit.transform.forward, transform.forward));
-                    //IsOnLadder = false;
-                    //animatorManager.LeaveLadder();
-                    //animatorManager.SetIsClimbingLadder(false);
-                    //return;
+
                     StartCoroutine(DoAction("ClimbUpToStand", matchParams, default, true, true));
                     isOnLadder = false;
                     OnSetIsOnLadder?.Invoke(isOnLadder);
@@ -225,10 +213,6 @@ public class AnimatorManager : MonoBehaviour
                     LeaveLadder();
                 }
 
-
-
-                // Do a parkour Action instead of a normal action
-                //StartCoroutine(DoParkourAction(climbUpLadderAction));
             }
         }
     }

@@ -78,7 +78,9 @@ public class PlayerLocomotion : MonoBehaviour
         if (isInteracting) return;
         if (IsHanging) return;
 
-        HandleFallingAndLanding(isInteracting);
+        SetMovementDirection(inputVector,highProfileInput);
+
+        HandleFallingAndLanding();
 
         if (IsOnLadder && !isInteracting)
         {
@@ -87,7 +89,6 @@ public class PlayerLocomotion : MonoBehaviour
         }
 
 
-        SetMovementDirection(inputVector,highProfileInput);
         SetMovementSpeed(inputVector);
 
 
@@ -103,10 +104,6 @@ public class PlayerLocomotion : MonoBehaviour
             animatorManager.UpdateAnimatorValues(0, 0, isSprinting);
             targetRotation = transform.rotation;
         }
-
-        // speed should go down to zero when player doesnt have control
-        // but it should only happen when not climbing so not the thing below
-        // currentSpeed = hasControl ? currentSpeed : 0f;
 
         characterController.enabled = hasControl;
     }
@@ -183,19 +180,21 @@ public class PlayerLocomotion : MonoBehaviour
         
     }
 
-    void HandleFallingAndLanding(bool isInteracting)
+    
+
+    void HandleFallingAndLanding()
     {
 
         isGrounded = Physics.CheckSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius, groundLayer);
 
+
         if (IsOnLadder) return;
 
-
-        if (isGrounded && !IsOnLadder)
+        if (isGrounded)
         {
+            IsOnLedge = envScanner.EdgeLedgeCheck(desiredMoveDirection,out LedgeHitData ledgeHitData);
 
             currentGravity = -0.5f;
-            IsOnLedge = envScanner.EdgeLedgeCheck(desiredMoveDirection,out LedgeHitData ledgeHitData);
             
             // limit LedgeMovement
             if(IsOnLedge) 
@@ -210,7 +209,6 @@ public class PlayerLocomotion : MonoBehaviour
         }
     }
 
-    // TODO: change the movement to be independent of root motion, make it totally script based Y directino movement
     private void HandleLadderMovement(Vector2 inputVector)
     {
         Debug.Log("Ladder Movement is being called");
@@ -298,7 +296,7 @@ public class PlayerLocomotion : MonoBehaviour
     }
 
     // limits ledge movement, prevents player from falling down from ledge
-    // TODO: add a looking down animation state to fix the falling off ledge error
+    // TODO: add a looking down animation state to fix the falling off ledge error when brute force input and shee
     void HandleLedgeMovement()
     {
         float signedLedgeNormalMoveAngle = Vector3.SignedAngle(LedgeHitData.ledgeFaceHit.normal, desiredMoveDirection,Vector3.up);

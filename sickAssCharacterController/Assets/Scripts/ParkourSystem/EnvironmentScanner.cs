@@ -109,7 +109,7 @@ public class EnvironmentScanner : MonoBehaviour
                     edgeLedgeHitData.height = obstacleHeight;
                     edgeLedgeHitData.ledgeFaceHit = ledgeFaceHit;
 
-                        return true;
+                    return true;
                 }
         }
         }
