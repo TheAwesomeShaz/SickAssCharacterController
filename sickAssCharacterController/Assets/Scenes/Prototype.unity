@@ -751,7 +751,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.6203912, y: 3.5800843, z: 0.11992526}
+  m_Size: {x: 0.81635773, y: 3.5800843, z: 0.11992526}
   m_Center: {x: 0.01727271, y: -0.12950397, z: 0.0058716536}
 --- !u!23 &189258038
 MeshRenderer:
@@ -1042,8 +1042,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.6203912, y: 3.5800843, z: 0.11992526}
-  m_Center: {x: 0.01727271, y: -0.12950397, z: 0.0058716536}
+  m_Size: {x: 0.8285455, y: 3.5800843, z: 0.11992526}
+  m_Center: {x: 0.01727271, y: -0.12950397, z: 0.005871653}
 --- !u!23 &411091408
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2579,8 +2579,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.6203912, y: 3.5800843, z: 0.11992526}
-  m_Center: {x: 0.01727271, y: -0.12950397, z: 0.0058716536}
+  m_Size: {x: 0.8646832, y: 3.5800843, z: 0.11992525}
+  m_Center: {x: 0.017435044, y: -0.12950397, z: 0.005871654}
 --- !u!23 &1044231855
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4209,7 +4209,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 264504559928137590, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.59000003
+      value: 5.45
       objectReference: {fileID: 0}
     - target: {fileID: 264504559928137590, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4245,7 +4245,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4535405649727302596, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
       propertyPath: ladderRayLength
-      value: 0.4
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4535405649727302596, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
       propertyPath: ledgeCheckOriginOffset

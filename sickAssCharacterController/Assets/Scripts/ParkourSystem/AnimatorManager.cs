@@ -220,6 +220,8 @@ public class AnimatorManager : MonoBehaviour
     public void SetIsClimbingLadder(bool value)
     {
         isClimbingLadderUp = value;
+        // if climbing ladder then interacting?
+        //isInteracting = value;
     }
 
     public void LeaveLadder()

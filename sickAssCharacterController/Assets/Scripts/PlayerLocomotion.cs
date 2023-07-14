@@ -228,25 +228,26 @@ public class PlayerLocomotion : MonoBehaviour
         if (ladderHitData.ladderHitFound)
         {
             // If trynna climb the ladder cross then you cannot no boss
-            if (Vector3.Dot(-ladderHitData.ladderHit.transform.forward, transform.forward) < 0.5f)
-            {
-                Debug.Log(Vector3.Dot(-ladderHitData.ladderHit.transform.forward, transform.forward));
-                IsOnLadder = false;
-                animatorManager.LeaveLadder();
-                animatorManager.SetIsClimbingLadder(false);
-                return;
-            }
+            //if (Vector3.Dot(-ladderHitData.ladderHit.transform.forward, transform.forward) < 0.5f)
+            //{
+            //    Debug.Log(Vector3.Dot(-ladderHitData.ladderHit.transform.forward, transform.forward));
+            //    IsOnLadder = false;
+            //    animatorManager.LeaveLadder();
+            //    animatorManager.SetIsClimbingLadder(false);
+            //    return;
+            //}
+            
+            animatorManager.SetIsClimbingLadder(true);
 
             var targetRot = Quaternion.LookRotation(-ladderHitData.ladderHit.transform.forward);
 
-            transform.rotation = Quaternion.RotateTowards(transform.rotation,
+            transform.rotation = Quaternion.Slerp(transform.rotation,
                 targetRot, 200f * Time.deltaTime);
 
-            animatorManager.SetIsClimbingLadder(true);
 
             // Set player's position in centre of the ladder pos
             Vector3 playerOnLadderPosition = new Vector3(ladderHitData.ladderHit.transform.position.x,transform.position.y, transform.position.z);
-            transform.position = playerOnLadderPosition;
+            transform.position = Vector3.Lerp( transform.position,playerOnLadderPosition,0.6f);
 
             //SetControl(true);
 
