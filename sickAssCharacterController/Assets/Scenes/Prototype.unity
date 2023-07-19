@@ -4244,7 +4244,15 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4535405649727302596, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
+      propertyPath: ledgeRayLength
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 4535405649727302596, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
       propertyPath: ladderRayLength
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4535405649727302596, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
+      propertyPath: forwardRayLength
       value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4535405649727302596, guid: aabacb4f55a7553429882ce6968c875a, type: 3}

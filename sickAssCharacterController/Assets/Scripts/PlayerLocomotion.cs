@@ -89,10 +89,10 @@ public class PlayerLocomotion : MonoBehaviour
         }
 
 
+        HandleMovement(inputVector,highProfileInput);
         SetMovementSpeed(inputVector);
 
 
-        HandleMovement(inputVector,highProfileInput);
         HandleRotation(inputVector);
     }
 
@@ -142,10 +142,18 @@ public class PlayerLocomotion : MonoBehaviour
 
             movementVelocity = forwardJumpForce + downwardGravityForce;
         }
-
-        characterController.Move(movementVelocity * Time.deltaTime);
-
         Vector3 moveAmountVelocity = movementVelocity;
+
+        if (!envScanner.ObstacleCheck().forwardHitFound)
+        {
+            characterController.Move(movementVelocity * Time.deltaTime);
+        }
+        else
+        {
+            moveAmountVelocity.x = 0;
+            moveAmountVelocity.z = 0;
+        }
+
         if (!IsOnLadder)
         {
             moveAmountVelocity.y = 0;
@@ -153,7 +161,7 @@ public class PlayerLocomotion : MonoBehaviour
 
 
         var moveAmount = Mathf.Clamp(moveAmountVelocity.magnitude / currentSpeed, 0, 2);
-        this.isSprinting = movementVelocity.x != 0 && highProfileinput;
+        this.isSprinting = movementVelocity.x != 0 && highProfileinput && !envScanner.ObstacleCheck().forwardHitFound;
 
         animatorManager.UpdateAnimatorValues(0, moveAmount, isSprinting);
 
@@ -245,14 +253,13 @@ public class PlayerLocomotion : MonoBehaviour
                 targetRot, 200f * Time.deltaTime);
 
 
-            // Set player's position in centre of the ladder pos
-            Vector3 playerOnLadderPosition = new Vector3(ladderHitData.ladderHit.transform.position.x,transform.position.y, transform.position.z);
-            transform.position = Vector3.Lerp( transform.position,playerOnLadderPosition,0.6f);
+            //// Set player's position in centre of the ladder pos
+            //Vector3 playerOnLadderPosition = new Vector3(ladderHitData.ladderHit.transform.position.x,transform.position.y, ladderHitData.ladderHit.transform.position.z);
+            //transform.position = Vector3.Lerp( transform.position,playerOnLadderPosition,0.6f);
 
             //SetControl(true);
 
             Debug.Log("Setting player's position to ladder pos");
-            Debug.Log("Player's position is equal to ladder's position?: " + Equals(playerOnLadderPosition, transform.position));
 
             moveDirection = new Vector3(0f,inputVector.y,0f);
             movementVelocity = moveDirection * ladderClimbingSpeed;
@@ -271,12 +278,13 @@ public class PlayerLocomotion : MonoBehaviour
                 animatorManager.PlayTargetAnimation("LadderClimbDownLoop");
                 isClimbingLadderDown = true;
             }
+            // if no input given and ladderIdle
             if (inputVector.y == 0){
                 SetAllLadderClimbingFalse();
                 animatorManager.PlayTargetAnimation("LadderIdle");
             }
             if(inputVector.y < 0 && isGrounded) 
-            { 
+            {
                 animatorManager.PlayTargetAnimation("LeaveLadder");
                 isClimbingLadderDown = false;
                 animatorManager.LeaveLadder();

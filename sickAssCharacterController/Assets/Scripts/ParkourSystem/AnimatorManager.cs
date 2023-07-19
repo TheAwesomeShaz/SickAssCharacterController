@@ -60,6 +60,8 @@ public class AnimatorManager : MonoBehaviour
         animator.CrossFade(targetAnimationName, 0.2f);
     }
 
+
+
     public void SetRootMotion(bool value)
     {
         animator.applyRootMotion = value;
@@ -159,7 +161,10 @@ public class AnimatorManager : MonoBehaviour
                 OnSetInteracting?.Invoke(isInteracting);
 
                 // Snap ladder X
-                transform.position = new Vector3(ladderHitData.ladderHit.transform.parent.position.x, transform.position.y, transform.position.z);
+                var playerOnLadderPosition = new Vector3(ladderHitData.ladderHit.transform.parent.position.x, transform.position.y, ladderHitData.ladderHit.transform.parent.position.z);
+
+                transform.position = Vector3.Lerp(transform.position, playerOnLadderPosition, 0.1f);
+
 
 
                 var targetRot = Quaternion.LookRotation(-ladderHitData.ladderHit.transform.forward);
@@ -180,9 +185,7 @@ public class AnimatorManager : MonoBehaviour
 
             if (!ladderHitData.ladderHitFound && isClimbingLadderUp)
             {
-               
-
-                Debug.Log(obstacleHitData.heightHit.transform.name);
+                //Debug.Log(obstacleHitData.heightHit.transform.name);
 
                 if (!obstacleHitData.heightHitFound) return;
 
@@ -199,6 +202,8 @@ public class AnimatorManager : MonoBehaviour
                 
                 isInteracting = true;
                 OnSetInteracting?.Invoke(isInteracting);
+
+                Debug.Log("Player is Perpendicular to the ladder : "+(Vector3.Dot(ladderDirection, transform.forward) == 0f));
 
                 // This should not be called when diagonally approaching the ladder
                 if (Vector3.Dot(ladderDirection, transform.forward) == 0f)

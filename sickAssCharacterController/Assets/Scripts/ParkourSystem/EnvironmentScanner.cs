@@ -26,6 +26,7 @@ public class EnvironmentScanner : MonoBehaviour
     [SerializeField] float ladderRayLength = 1.5f;
     [SerializeField] Vector3 ladderRayOriginOffset = new Vector3(0f, 1f, 0f);
     [SerializeField] LayerMask ladderLayer;
+   
 
 
     public ObstacleHitData ObstacleCheck()

@@ -729,7 +729,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   setControlFalseDelay: 0.2
-  setControlTrueDelay: 0.7
+  setControlTrueDelay: 1
 --- !u!1102 &-1455365637674765141
 AnimatorState:
   serializedVersion: 6
