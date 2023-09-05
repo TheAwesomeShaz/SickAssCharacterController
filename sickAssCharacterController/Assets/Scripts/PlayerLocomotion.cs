@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using Unity.PlasticSCM.Editor.WebApi;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class PlayerLocomotion : MonoBehaviour
@@ -399,9 +397,9 @@ public class PlayerLocomotion : MonoBehaviour
 
     // To Show Ground Check Sphere
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = isGrounded? new Color(0, 1, 0, 0.5f):Color.red;
-        Gizmos.DrawSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius);
-    }
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.color = isGrounded? new Color(0, 1, 0, 0.5f):Color.red;
+    //    Gizmos.DrawSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius);
+    //}
 }

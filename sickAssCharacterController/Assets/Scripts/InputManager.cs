@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.ShaderGraph;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class InputManager : MonoBehaviour,PlayerControls.IPlayerMovementActions,PlayerControls.IPlayerActionsActions
 {
@@ -106,5 +106,10 @@ public class InputManager : MonoBehaviour,PlayerControls.IPlayerMovementActions,
     {
         if(context.performed) highProfileInput = true;
         if (context.canceled) highProfileInput = false;
+    }
+
+    public void OnReloadScene(InputAction.CallbackContext context)
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

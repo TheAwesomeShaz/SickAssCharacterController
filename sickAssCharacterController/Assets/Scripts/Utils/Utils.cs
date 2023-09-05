@@ -15,13 +15,14 @@ public class Utils
         
         bool hitFound = centreHitFound || leftHitFound || rightHitFound;
 
-
-        if(hitFound && debugDraw)
-        {
-            Debug.DrawLine(origin, centreHit.point, Color.red);
-            Debug.DrawLine(origin - transform.right * spacing, leftHit.point, Color.red);
-            Debug.DrawLine(origin + transform.right * spacing, rightHit.point, Color.red);
-        }
+        
+        // Gizmos
+        //if(hitFound && debugDraw)
+        //{
+        //    Debug.DrawLine(origin, centreHit.point, Color.red);
+        //    Debug.DrawLine(origin - transform.right * spacing, leftHit.point, Color.red);
+        //    Debug.DrawLine(origin + transform.right * spacing, rightHit.point, Color.red);
+        //}
 
         return hitFound;
 

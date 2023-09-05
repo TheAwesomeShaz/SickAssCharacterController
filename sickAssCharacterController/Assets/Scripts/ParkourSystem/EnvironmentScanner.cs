@@ -68,7 +68,7 @@ public class EnvironmentScanner : MonoBehaviour
 
         for (int i = 0; i < 10; i++)
         {
-            Debug.DrawRay(origin + offset * i, dir);
+            //Debug.DrawRay(origin + offset * i, dir);
 
             if(Physics.Raycast(origin + offset * i, dir, out RaycastHit hit, climbLedgeRayLength, climbLedgeLayer))
             {
@@ -102,7 +102,7 @@ public class EnvironmentScanner : MonoBehaviour
 
                 if(Physics.Raycast(ledgeFaceRayOrigin,transform.position-ledgeFaceRayOrigin,out RaycastHit ledgeFaceHit, 2f, obstacleLayer))
                 {
-                    Debug.DrawLine(ledgeFaceRayOrigin, transform.position, Color.cyan);
+                    //Debug.DrawLine(ledgeFaceRayOrigin, transform.position, Color.cyan);
 
 
                     float obstacleHeight = transform.position.y - validHits[0].point.y;
@@ -125,8 +125,8 @@ public class EnvironmentScanner : MonoBehaviour
         hitData.ladderHitFound= Physics.Raycast(ladderRayOrigin, transform.forward,
             out hitData.ladderHit, ladderRayLength, ladderLayer);
 
-        Debug.DrawRay(ladderRayOrigin, transform.forward * ladderRayLength,
-           hitData.ladderHitFound ? Color.red : Color.white);
+        //Debug.DrawRay(ladderRayOrigin, transform.forward * ladderRayLength,
+        //   hitData.ladderHitFound ? Color.red : Color.white);
 
         //Debug.Log(hitData.ladderHitFound);
 
