@@ -2,24 +2,22 @@
 Trying to make some mechanics like climbing system, slow down time archery etc. 
 Using Unity's new Input System
 
-## Climbing Branch
+## State Machine Branch
 
-In this Branch we only focus on movement and parkour, it includes motion matching stuff too.
+In this Branch we only focus on refactoring the code and adding a  state machine pattern to it
 By the end of it might have a solid third person movement system atleast.
-
+This can be then merged into main to then continue on with other stuff and 
+the older implementations of parkour and Ledge Climbing can be deleted.
 
 ### Stuff in the Branch
-- Has all the stuff in Parkour branch plus:
-- Added Ledge Limiting
-- Added Ladder Climb
-- Added Stop Running into Walls (Which broke the ladder Climb)
-- Code is getting a lil FONKY like ![image](https://github.com/TheAwesomeShaz/SickAssCharacterController/assets/51862748/0c8186df-f390-4de5-82d8-c02949e8c0ab) 
-- Make the Code Not FONKY by using a **State Machine Pattern**
+- Currently the same stuff as Ledge and Climbing
 
 ### Todo
-- Complete the climbing system however it is (it has circular dependencies so probably dont make that mistake)
-- Maybe try adding the wallrun thing etc too? (Woah there fella u are too ambitious fix the structure first)
+- Transfer the whole system into a State Machine Pattern
+- Make the Animations for Movement Work Fluidly
+- Make the Parkour actions into Different states
+- Add a FALLING state that is currently missing here
+- Remove ALL BOOLS if possible
 
 ### Note
-- This is an Experimental branch so stuff wont work well ofc
-- Creating a Separate Branch for the State Machine Controller now
+- Do not STOP
