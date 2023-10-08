@@ -9,7 +9,14 @@ public class PlayerWalkState : PlayerBaseState
 
     public override void CheckSwitchStates()
     {
-        throw new System.NotImplementedException();
+        if (_ctx.NormalizedMoveAmount <= 0.1f)
+        {
+            SetSubState(_stateFactory.Idle());
+        }
+        else if (_ctx.IsSprinting && _ctx.NormalizedMoveAmount > 0.5f)
+        {
+            SetSubState(_stateFactory.Run());
+        }
     }
 
     public override void EnterState()

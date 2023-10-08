@@ -4,34 +4,35 @@ using UnityEngine;
 
 public class PlayerIdleState : PlayerBaseState
 {
-    public PlayerIdleState(PlayerStateMachine context, PlayerStateFactory playerStateFactory)
-    {
-
-    }
+    public PlayerIdleState(PlayerStateMachine context, PlayerStateFactory playerStateFactory) : base(context, playerStateFactory) { }
 
     public override void CheckSwitchStates()
     {
-        throw new System.NotImplementedException();
+        if(_ctx.IsSprinting && _ctx.NormalizedMoveAmount > 0.5f)
+        {
+            SwitchState(_stateFactory.Run());
+        }
+        else if(_ctx.NormalizedMoveAmount > 0.1f)
+        {
+            SwitchState(_stateFactory.Walk());
+        }
     }
 
     public override void EnterState()
     {
-        throw new System.NotImplementedException();
     }
 
     public override void ExitState()
     {
-        throw new System.NotImplementedException();
     }
 
     public override void InitializeSubState()
     {
-        throw new System.NotImplementedException();
     }
 
     public override void UpdateState()
     {
-        throw new System.NotImplementedException();
+        CheckSwitchStates();
     }
 
 }

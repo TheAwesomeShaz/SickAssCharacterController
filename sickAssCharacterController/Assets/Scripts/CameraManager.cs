@@ -33,7 +33,7 @@ public class CameraManager : MonoBehaviour
 
     private void Awake()
     {
-        targetTransform = FindObjectOfType<PlayerManager>().transform;
+        targetTransform = FindObjectOfType<PlayerStateMachine>().transform;
         inputManager = FindObjectOfType<InputManager>();
         cameraTransform = Camera.main.transform;
         defaultPosition = cameraTransform.localPosition.z;
@@ -61,8 +61,8 @@ public class CameraManager : MonoBehaviour
         Vector3 rotation;
         Quaternion targetRotation;
 
-        lookAngle += (inputManager.cameraInputX * cameraLookSpeed);
-        pivotAngle += (-inputManager.cameraInputY * cameraPivotSpeed);
+        lookAngle += (inputManager.CameraInputX * cameraLookSpeed);
+        pivotAngle += (-inputManager.CameraInputY * cameraPivotSpeed);
         //Limit the rotation so that cam cant rotate 360 in vertical direction
         pivotAngle = Mathf.Clamp(pivotAngle, minPivotAngle, maxPivotAngle);
 

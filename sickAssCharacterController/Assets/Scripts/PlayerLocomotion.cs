@@ -134,6 +134,7 @@ public class PlayerLocomotion : MonoBehaviour
             movementVelocity = moveDirection * currentSpeed;
         }
 
+        //TODO: Move this into else block into free fall state
         else
         {
             // move forward while jumping, forward jumping speed is currentSpeed/2
@@ -163,6 +164,7 @@ public class PlayerLocomotion : MonoBehaviour
         var moveAmount = Mathf.Clamp(moveAmountVelocity.magnitude / currentSpeed, 0, 2);
         this.isSprinting = movementVelocity.x != 0 && highProfileinput && !envScanner.ObstacleCheck().forwardHitFound;
 
+        //TODO: Add this in the States wherever Movement Takes Place? or just straight up in the Grounded State?
         animatorManager.UpdateAnimatorValues(0, moveAmount, isSprinting);
 
     }

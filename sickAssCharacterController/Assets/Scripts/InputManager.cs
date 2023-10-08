@@ -7,27 +7,27 @@ using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour,PlayerControls.IPlayerMovementActions,PlayerControls.IPlayerActionsActions
 {
-    PlayerLocomotion playerLocomotion;
+    [SerializeField] private PlayerStateMachine playerStateMachine;
     //AnimatorManager animatorManager;
 
-    public Vector2 movementInput;
-    public Vector2 cameraInput;
-        
-    public float verticalInput;
-    public float horizontalInput;
-    public float cameraInputX;
-    public float cameraInputY;
+    public Vector2 MovementInput { get; set; }
+    public Vector2 CameraInput { get; set; }
 
-    public float moveAmount; // the amount the left analog joystick has moved btwn 0 to 1
-    public bool highProfileInput;
-    public bool jumpInput;
+    public float VerticalInput{ get; set; }
+    public float HorizontalInput{ get; set; }
+    public float CameraInputX{ get; set;}
+    public float CameraInputY{ get; set;}
+
+    public float MoveAmount { get; private set; } // the amount the left analog joystick has moved btwn 0 to 1
+    public bool HighProfileInput { get; private set; }
+    public bool JumpInput { get; private set; }
 
     PlayerControls playerControls;
 
     private void Awake()
     {
         //animatorManager = GetComponent<AnimatorManager>();
-        playerLocomotion = GetComponent<PlayerLocomotion>();
+        playerStateMachine = GetComponent<PlayerStateMachine>();
     }
 
     void Start()
@@ -59,11 +59,11 @@ public class InputManager : MonoBehaviour,PlayerControls.IPlayerMovementActions,
     void HandleMovementInput()
     {
         // Left Joystick Input (or WASD)
-        verticalInput = movementInput.y;
-        horizontalInput = movementInput.x;
+        VerticalInput = MovementInput.y;
+        HorizontalInput = MovementInput.x;
         // Right Joystick Input (or Mouse Delta)
-        cameraInputX = cameraInput.x;
-        cameraInputY = cameraInput.y;
+        CameraInputX = CameraInput.x;
+        CameraInputY = CameraInput.y;
 
         // DOUBT: we are clamping the move amount between zero and 1 due to the blend tree stuff
         // EXPLAINATION: blend tree only takes values from 0 to 1 so we normalize in a way
@@ -74,37 +74,38 @@ public class InputManager : MonoBehaviour,PlayerControls.IPlayerMovementActions,
         // from the playerLocomotion script
     }
 
+    // TODO: this thing also should go in a State?
     void HandleSprintingInput()
     {
-        if (highProfileInput && moveAmount > 0.5f)
+        if (HighProfileInput && MoveAmount > 0.5f)
         {
-            playerLocomotion.isSprinting = true;
+            playerStateMachine.IsSprinting = true;
         }
         else
         {
-            playerLocomotion.isSprinting = false;
+            playerStateMachine.IsSprinting = false;
         }
     }
 
     public void OnMovement(InputAction.CallbackContext context)
     {
-        movementInput = context.ReadValue<Vector2>();
+        MovementInput = context.ReadValue<Vector2>();
     }
 
     public void OnCamera(InputAction.CallbackContext context)
     {
-        cameraInput = context.ReadValue<Vector2>();
+        CameraInput = context.ReadValue<Vector2>();
     }
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if (context.performed) { jumpInput = true; }
-        if (context.canceled) { jumpInput = false; }
+        if (context.performed) { JumpInput = true; }
+        if (context.canceled) { JumpInput = false; }
     }
 
     public void OnHighProfileModifier(InputAction.CallbackContext context)
     {
-        if(context.performed) highProfileInput = true;
-        if (context.canceled) highProfileInput = false;
+        if(context.performed) HighProfileInput = true;
+        if (context.canceled) HighProfileInput = false;
     }
 }

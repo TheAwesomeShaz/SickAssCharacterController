@@ -1215,8 +1215,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 444639947}
-  m_LocalRotation: {x: -0.0012851208, y: -0.99839807, z: 0.028466135, w: -0.048881933}
-  m_LocalPosition: {x: 22.295502, y: -0.07487512, z: -3.58939}
+  m_LocalRotation: {x: -0.18861786, y: 0.6494251, z: -0.17142057, w: -0.7164394}
+  m_LocalPosition: {x: 26.329306, y: 4.9660473, z: -1.9130479}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4400,6 +4400,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01ab2f1495d549e4aac2d6fe3057c646, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerStateMachine: {fileID: 8032149893935402005}
   movementInput: {x: 0, y: 0}
   cameraInput: {x: 0, y: 0}
   verticalInput: 0
@@ -4409,53 +4410,6 @@ MonoBehaviour:
   moveAmount: 0
   highProfileInput: 0
   jumpInput: 0
---- !u!114 &6864552009703787356
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8032149893935155708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa3849f88a9886242b6c92c03a3ed138, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isSprinting: 0
-  isGrounded: 1
-  isJumping: 0
-  <IsOnLedge>k__BackingField: 0
-  isClimbingLadderUp: 0
-  isClimbingLadderDown: 0
-  isClimbingLadderIdle: 0
-  <IsOnLadder>k__BackingField: 0
-  <IsHanging>k__BackingField: 0
-  groundCheckRadius: 0.2
-  groundCheckOffset: {x: 0, y: 0.15, z: 0.07}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 1
-  gravityForce: -35
-  walkingSpeed: 3
-  runningSpeed: 5
-  sprintingSpeed: 15
-  ladderClimbingSpeed: 1
-  movementSpeedDampingValue: 0.1
-  <RotationSpeed>k__BackingField: 15
-  movementVelocity: {x: 0, y: 0, z: 0}
-  currentSpeed: 0
---- !u!114 &6864552009703787357
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8032149893935155708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb90cf5a93f5c9444896b949f7f93f2f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &6864552009703787358
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5733,8 +5687,7 @@ GameObject:
   - component: {fileID: 8032149893925681648}
   - component: {fileID: 6864552009703787359}
   - component: {fileID: 6864552009703787347}
-  - component: {fileID: 6864552009703787356}
-  - component: {fileID: 6864552009703787357}
+  - component: {fileID: 8032149893935402005}
   - component: {fileID: 6864552009703787358}
   - component: {fileID: 5921292139010027686}
   - component: {fileID: 6226866347562943439}
@@ -6223,8 +6176,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8032149893935155708}
-  m_LocalRotation: {x: -0, y: 0.92387956, z: -0, w: 0.38268334}
-  m_LocalPosition: {x: 20.57, y: 5.45, z: -0.75}
+  m_LocalRotation: {x: -0, y: 0.7071067, z: -0, w: -0.7071069}
+  m_LocalPosition: {x: 18.65, y: 0.7, z: -0.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6233,7 +6186,45 @@ Transform:
   - {fileID: 7347012452797086780}
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 135, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
+--- !u!114 &8032149893935402005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8032149893935155708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebcfc8cf74256ee41987d3aac5243db0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <AnimatorManager>k__BackingField: {fileID: 6864552009703787358}
+  <EnvScanner>k__BackingField: {fileID: 5921292139010027686}
+  <CharacterController>k__BackingField: {fileID: 6864552009703787359}
+  <InputManager>k__BackingField: {fileID: 6864552009703787347}
+  <CameraObject>k__BackingField: {fileID: 0}
+  <IsSprinting>k__BackingField: 0
+  _isGrounded: 0
+  _isJumping: 0
+  <IsOnLedge>k__BackingField: 0
+  <IsOnLadder>k__BackingField: 0
+  <IsHanging>k__BackingField: 0
+  _groundCheckRadius: 0.2
+  _groundCheckOffset: {x: 0, y: 0.15, z: 0.07}
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 1
+  _walkingSpeed: 1.5
+  _runningSpeed: 5
+  _sprintingSpeed: 7
+  _ladderClimbingSpeed: 0.5
+  <CurrentGravity>k__BackingField: 0
+  <RotationSpeed>k__BackingField: 15
+  <IsGrounded>k__BackingField: 0
+  _currentSpeed: 0
+  _movementSpeedDampingValue: 0.5
+  <MoveDirection>k__BackingField: {x: 0, y: 0, z: 0}
 --- !u!4 &8032149893935405790
 Transform:
   m_ObjectHideFlags: 0

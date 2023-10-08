@@ -33,10 +33,10 @@ public class PlayerManager : MonoBehaviour
 
         // TODO: Change jump input to high profile modifier later
         // when the controls starts making a bit more sense
-        playerLocomotion.HandleAllMovement(inputManager.movementInput,IsInteracting,inputManager.highProfileInput);
+        playerLocomotion.HandleAllMovement(inputManager.MovementInput,IsInteracting,inputManager.HighProfileInput);
 
-        animatorManager.HandleAllParkour(inputManager.jumpInput,IsInteracting, 
-            playerLocomotion.IsOnLedge, playerLocomotion.LedgeHitData,inputManager.highProfileInput);       
+        animatorManager.HandleAllParkour(inputManager.JumpInput,IsInteracting, 
+            playerLocomotion.IsOnLedge, playerLocomotion.LedgeHitData,inputManager.HighProfileInput);       
 
         // Not Doing Climbing right now, will continue later if required currently shifted to making ladder system
         //animatorManager.HandleAllClimbing(inputManager.movementInput,inputManager.jumpInput,playerLocomotion.IsHanging,IsInteracting);
