@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerIdleState : PlayerBaseState
 {
@@ -20,6 +21,7 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void EnterState()
     {
+        _ctx.CurrentSpeed = 0f;
     }
 
     public override void ExitState()
@@ -34,5 +36,4 @@ public class PlayerIdleState : PlayerBaseState
     {
         CheckSwitchStates();
     }
-
 }

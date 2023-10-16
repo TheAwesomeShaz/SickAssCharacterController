@@ -1,5 +1,6 @@
 using UnityEngine.EventSystems;
 using UnityEngine;
+using System;
 
 public class PlayerGroundedState : PlayerBaseState
 {
@@ -10,6 +11,7 @@ public class PlayerGroundedState : PlayerBaseState
     public PlayerGroundedState(PlayerStateMachine context, PlayerStateFactory playerStateFactory)
     : base (context,playerStateFactory) 
     {
+        _isRootState = true;
         InitializeSubState();    
     }
 
@@ -30,12 +32,10 @@ public class PlayerGroundedState : PlayerBaseState
 
     public override void EnterState()
     {
-
     }
 
     public override void ExitState()
     {
-        //throw new System.NotImplementedException();
     }
 
     public override void InitializeSubState()
@@ -47,7 +47,7 @@ public class PlayerGroundedState : PlayerBaseState
 
         else if (_ctx.NormalizedMoveAmount > 0.15f)
         {
-            SetSubState (_stateFactory.Walk());
+            SetSubState(_stateFactory.Walk());
         }
 
         else if(_ctx.IsSprinting && _ctx.NormalizedMoveAmount > 0.5f)
@@ -59,10 +59,25 @@ public class PlayerGroundedState : PlayerBaseState
     public override void UpdateState()
     {
         CheckSwitchStates();
-        SetMovementDirection(_ctx.InputManager.MovementInput, _ctx.InputManager.HighProfileInput);
-        _ctx.AnimatorManager.UpdateAnimatorValues(0, _ctx.NormalizedMoveAmount, _ctx.InputManager.HighProfileInput);
         LimitEdgeLedgeMovement();
+        HandleGroundedMovement();
+    }
 
+    private void HandleGroundedMovement()
+    {
+        Debug.Log("My substate is" + _currentSubState);
+
+        _ctx.MovementVelocity = _ctx.MoveDirection * _ctx.CurrentSpeed;
+        _ctx.IsSprinting = _ctx.MovementVelocity.x != 0 && _ctx.InputManager.HighProfileInput && !_ctx.EnvScanner.ObstacleCheck().forwardHitFound;
+
+        //_ctx.NormalizedMoveAmount = Mathf.Clamp(_ctx.MovementVelocity.magnitude / _ctx.CurrentSpeed, 0, 2);
+
+        _ctx.AnimatorManager.UpdateAnimatorValues(0, _ctx.NormalizedMoveAmount, _ctx.IsSprinting);
+
+        if (!_ctx.EnvScanner.ObstacleCheck().forwardHitFound)
+        {
+            _ctx.CharacterController.Move(_ctx.MovementVelocity * Time.deltaTime);
+        }
     }
 
     //TODO: The below stuff should go in a SubState?
@@ -74,23 +89,6 @@ public class PlayerGroundedState : PlayerBaseState
             HandleEdgeLedgeMovement();
         }
     }
-
-    //private void SetMovementDirection(Vector2 inputVector, bool highProfileInput)
-    //{
-    //    MoveAmount = Mathf.Clamp01(Mathf.Abs(inputVector.x) + Mathf.Abs(inputVector.y));
-
-    //    _ctx.IsSprinting = highProfileInput && _ctx.NormalizedMoveAmount > 0.5f;
-    //    //movement direction in front back direction
-    //    _desiredMoveDirection = _ctx.CameraObject.forward * inputVector.y;
-    //    //movement direction in right left direction
-    //    _desiredMoveDirection = _desiredMoveDirection + _ctx.CameraObject.right * inputVector.x;
-    //    //Keep the direction but reduce magnitude btwn 0 and 1
-    //    _desiredMoveDirection.Normalize();
-    //    // Dont want the player moving vertically upwards lmao
-    //    _desiredMoveDirection.y = _ctx.CurrentGravity;
-
-    //    _ctx.MoveDirection = _desiredMoveDirection;
-    //}
 
     // limits ledge movement, prevents player from falling down from ledge
     // TODO: add a looking down animation state to fix the falling off ledge error when brute force input and shee

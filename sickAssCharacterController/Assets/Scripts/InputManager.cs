@@ -8,25 +8,20 @@ using UnityEngine.InputSystem;
 public class InputManager : MonoBehaviour,PlayerControls.IPlayerMovementActions,PlayerControls.IPlayerActionsActions
 {
     [SerializeField] private PlayerStateMachine playerStateMachine;
-    //AnimatorManager animatorManager;
-
-    public Vector2 MovementInput { get; set; }
+    [field:SerializeField] public Vector2 MovementInput { get; set; }
     public Vector2 CameraInput { get; set; }
-
     public float VerticalInput{ get; set; }
     public float HorizontalInput{ get; set; }
     public float CameraInputX{ get; set;}
     public float CameraInputY{ get; set;}
-
     public float MoveAmount { get; private set; } // the amount the left analog joystick has moved btwn 0 to 1
-    public bool HighProfileInput { get; private set; }
+    public bool HighProfileInput { get;  private set; }
     public bool JumpInput { get; private set; }
 
     PlayerControls playerControls;
 
     private void Awake()
     {
-        //animatorManager = GetComponent<AnimatorManager>();
         playerStateMachine = GetComponent<PlayerStateMachine>();
     }
 
@@ -67,8 +62,8 @@ public class InputManager : MonoBehaviour,PlayerControls.IPlayerMovementActions,
 
         // DOUBT: we are clamping the move amount between zero and 1 due to the blend tree stuff
         // EXPLAINATION: blend tree only takes values from 0 to 1 so we normalize in a way
-        //moveAmount = Mathf.Clamp01(Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput));
-        //animatorManager.UpdateAnimatorValues(0, moveAmount, playerLocomotion.isSprinting);
+        // moveAmount = Mathf.Clamp01(Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput));
+        // animatorManager.UpdateAnimatorValues(0, moveAmount, playerLocomotion.isSprinting);
 
         // We are not using the above code, we are just setting the moveamount according to the velocity of the player
         // from the playerLocomotion script

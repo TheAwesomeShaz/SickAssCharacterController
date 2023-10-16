@@ -1,42 +1,55 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
+/// <summary>
+/// This is Actually supposed to be Jogging but oh well lmao x3
+/// </summary>
 public class PlayerWalkState : PlayerBaseState
 {
+
+    private readonly float _movementSpeedDampingValue = 0.7f;
 
     public PlayerWalkState(PlayerStateMachine context, PlayerStateFactory playerStateFactory) : base(context, playerStateFactory) { }
 
     public override void CheckSwitchStates()
     {
-        if (_ctx.NormalizedMoveAmount <= 0.1f)
+        if (_ctx.NormalizedMoveAmount <= 0.01f)
         {
-            SetSubState(_stateFactory.Idle());
+            SwitchState(_stateFactory.Idle());
         }
         else if (_ctx.IsSprinting && _ctx.NormalizedMoveAmount > 0.5f)
         {
-            SetSubState(_stateFactory.Run());
+            SwitchState(_stateFactory.Run());
         }
     }
 
     public override void EnterState()
     {
-        throw new System.NotImplementedException();
     }
 
     public override void ExitState()
     {
-        throw new System.NotImplementedException();
+
     }
 
     public override void InitializeSubState()
     {
-        throw new System.NotImplementedException();
     }
 
     public override void UpdateState()
     {
-        throw new System.NotImplementedException();
+        CheckSwitchStates();
+        SetMovementSpeed();
+    }
+
+    
+    private void SetMovementSpeed()
+    {
+        _ctx.CurrentSpeed = Mathf.Lerp(_ctx.CurrentSpeed,_ctx.RunningSpeed,_movementSpeedDampingValue);
+        //_ctx.NormalizedMoveAmount = Mathf.Clamp(_ctx.MovementVelocity.magnitude / _ctx.CurrentSpeed, 0, 2);
+
     }
 
 }

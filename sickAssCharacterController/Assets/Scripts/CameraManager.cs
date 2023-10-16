@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
-    InputManager inputManager;
+    [field: SerializeField] private InputManager inputManager { get; set; }
 
     public Transform targetTransform; // The object the camera will follow
     public Transform cameraPivotTransform; // The object the camera uses to pivot (move up and down)
@@ -34,7 +34,6 @@ public class CameraManager : MonoBehaviour
     private void Awake()
     {
         targetTransform = FindObjectOfType<PlayerStateMachine>().transform;
-        inputManager = FindObjectOfType<InputManager>();
         cameraTransform = Camera.main.transform;
         defaultPosition = cameraTransform.localPosition.z;
     }
@@ -80,13 +79,12 @@ public class CameraManager : MonoBehaviour
     void HandleCameraCollisions()
     {
         float targetPosition = defaultPosition;
-        RaycastHit hit;
         // directing the raycast from the pivot(basically the player position) to the camera
-        Vector3 direction = cameraTransform.position - cameraPivotTransform.position; 
+        Vector3 direction = cameraTransform.position - cameraPivotTransform.position;
         direction.Normalize();
 
         if (Physics.SphereCast(cameraPivotTransform.position, cameraCollisionRadius, direction,
-            out hit, Mathf.Abs(targetPosition), collisionLayers))
+            out RaycastHit hit, Mathf.Abs(targetPosition), collisionLayers))
         {
             float distance = Vector3.Distance(cameraPivotTransform.position, hit.point);   
             targetPosition =-(distance-cameraCollisionOffset);
