@@ -898,7 +898,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1 &293390146
 GameObject:
@@ -1833,7 +1833,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &681363374
 GameObject:
@@ -2286,6 +2286,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2029838671}
   m_RootOrder: 14
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &849120044
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 849120045}
+  m_Layer: 3
+  m_Name: OnLedgePosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &849120045
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 849120044}
+  m_LocalRotation: {x: -0, y: -0.68450564, z: -0, w: -0.7290076}
+  m_LocalPosition: {x: 17.517496, y: 2.545, z: -0.76572603}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &921016833
 GameObject:
@@ -3130,7 +3161,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1594319037
 GameObject:
@@ -3804,7 +3835,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2024777323
 GameObject:
@@ -3960,7 +3991,7 @@ Transform:
   - {fileID: 136027537}
   - {fileID: 1165270992}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2075061247
 GameObject:
@@ -4089,7 +4120,7 @@ Transform:
   m_Children:
   - {fileID: 577284072}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2106560389
 GameObject:
@@ -4205,7 +4236,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 264504559928137590, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 264504559928137590, guid: aabacb4f55a7553429882ce6968c875a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4352,9 +4383,9 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 1
-  ledgeCheckOriginOffset: 0.8
-  ledgeRayLength: 20
-  minLedgeHeight: 0.75
+  EdgeCheckOriginOffset: 0.8
+  EdgeRayLength: 20
+  minEdgeHeight: 0.75
   climbLedgeRayLength: 1.5
   climbLedgeLayer:
     serializedVersion: 2
@@ -4376,18 +4407,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de5214d4dd5b66b44be2bd5721dce16d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 8032149893925681648}
-  parkourActions:
-  - {fileID: 11400000, guid: 4864d457144dc1847aa765e13b86882c, type: 2}
+  <ParkourActions>k__BackingField:
   - {fileID: 11400000, guid: 86974ff2d494e8d4ea4300c330ced902, type: 2}
-  - {fileID: 11400000, guid: 410d20a904b06f547be86ce1f51b87e1, type: 2}
-  - {fileID: 11400000, guid: 8a840a55f7552aa43bf2e908c58a77b8, type: 2}
   - {fileID: 11400000, guid: 7c5ad5e10dfdd8b47bfdafb497181743, type: 2}
-  jumpDownAction: {fileID: 11400000, guid: 8eff2017d58122a498bef7712049127d, type: 2}
-  jumpOffAction: {fileID: 11400000, guid: e0b89d92d63badd4f9095bdf74ddb152, type: 2}
-  climbUpLadderAction: {fileID: 0}
-  autoJumpHeightLimit: 1.25
-  rotateTowardsObstacleSpeed: 500
+  - {fileID: 11400000, guid: 8a840a55f7552aa43bf2e908c58a77b8, type: 2}
+  - {fileID: 11400000, guid: 4864d457144dc1847aa765e13b86882c, type: 2}
+  - {fileID: 11400000, guid: 410d20a904b06f547be86ce1f51b87e1, type: 2}
+  - {fileID: 11400000, guid: 4864d457144dc1847aa765e13b86882c, type: 2}
+  <JumpDownAction>k__BackingField: {fileID: 11400000, guid: 8eff2017d58122a498bef7712049127d, type: 2}
+  <JumpOffAction>k__BackingField: {fileID: 11400000, guid: e0b89d92d63badd4f9095bdf74ddb152, type: 2}
 --- !u!114 &6864552009703787347
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4402,30 +4430,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerStateMachine: {fileID: 8032149893935402005}
   <MovementInput>k__BackingField: {x: 0, y: 0}
---- !u!114 &6864552009703787358
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8032149893935155708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de5214d4dd5b66b44be2bd5721dce16d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 8032149893925681648}
-  parkourActions:
-  - {fileID: 11400000, guid: 8a840a55f7552aa43bf2e908c58a77b8, type: 2}
-  - {fileID: 11400000, guid: 4864d457144dc1847aa765e13b86882c, type: 2}
-  - {fileID: 11400000, guid: 86974ff2d494e8d4ea4300c330ced902, type: 2}
-  - {fileID: 11400000, guid: 410d20a904b06f547be86ce1f51b87e1, type: 2}
-  - {fileID: 11400000, guid: 7c5ad5e10dfdd8b47bfdafb497181743, type: 2}
-  jumpDownAction: {fileID: 11400000, guid: 8eff2017d58122a498bef7712049127d, type: 2}
-  jumpOffAction: {fileID: 11400000, guid: e0b89d92d63badd4f9095bdf74ddb152, type: 2}
-  climbUpLadderAction: {fileID: 11400000, guid: e9e04c68e2ac6484dbd9787472da602d, type: 2}
-  autoJumpHeightLimit: 2
-  rotateTowardsObstacleSpeed: 500
 --- !u!143 &6864552009703787359
 CharacterController:
   m_ObjectHideFlags: 0
@@ -5680,7 +5684,6 @@ GameObject:
   - component: {fileID: 6864552009703787359}
   - component: {fileID: 6864552009703787347}
   - component: {fileID: 8032149893935402005}
-  - component: {fileID: 6864552009703787358}
   - component: {fileID: 5921292139010027686}
   - component: {fileID: 6226866347562943439}
   m_Layer: 3
@@ -6168,8 +6171,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8032149893935155708}
-  m_LocalRotation: {x: -0, y: 0.7071067, z: -0, w: -0.7071069}
-  m_LocalPosition: {x: 18.65, y: 0.543, z: -0.75}
+  m_LocalRotation: {x: -0, y: -0.68450564, z: -0, w: -0.7290076}
+  m_LocalPosition: {x: 19.76304, y: 0.5450001, z: -0.6241919}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6177,8 +6180,8 @@ Transform:
   - {fileID: 8032149893935490806}
   - {fileID: 7347012452797086780}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 446.393, z: 0}
 --- !u!114 &8032149893935402005
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6191,7 +6194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebcfc8cf74256ee41987d3aac5243db0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <AnimatorManager>k__BackingField: {fileID: 6864552009703787358}
+  <AnimatorManager>k__BackingField: {fileID: 6226866347562943439}
   <CameraManager>k__BackingField: {fileID: 444639949}
   <EnvScanner>k__BackingField: {fileID: 5921292139010027686}
   <CharacterController>k__BackingField: {fileID: 6864552009703787359}
@@ -6200,24 +6203,26 @@ MonoBehaviour:
   <IsSprinting>k__BackingField: 0
   _isGrounded: 0
   _isJumping: 0
-  <IsOnLedge>k__BackingField: 0
+  <IsOnEdge>k__BackingField: 0
+  <IsInteracting>k__BackingField: 0
   <IsOnLadder>k__BackingField: 0
   <IsHanging>k__BackingField: 0
+  <IsGrounded>k__BackingField: 0
   <GroundCheckRadius>k__BackingField: 0.2
   <GroundCheckOffset>k__BackingField: {x: 0, y: 0, z: 0}
   <GroundLayer>k__BackingField:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   <GravityForce>k__BackingField: -35
+  <AutoJumpHeightLimit>k__BackingField: 2
   <WalkingSpeed>k__BackingField: 3
   <RunningSpeed>k__BackingField: 5
   <SprintingSpeed>k__BackingField: 15
   _ladderClimbingSpeed: 0.5
   <CurrentGravity>k__BackingField: 0
   <RotationSpeed>k__BackingField: 15
-  <IsGrounded>k__BackingField: 0
   <NormalizedMoveAmount>k__BackingField: 0
-  CurrentSpeed: 0
+  <CurrentSpeed>k__BackingField: 0
   _movementSpeedDampingValue: 0.5
   <MoveDirection>k__BackingField: {x: 0, y: 0, z: 0}
 --- !u!4 &8032149893935405790

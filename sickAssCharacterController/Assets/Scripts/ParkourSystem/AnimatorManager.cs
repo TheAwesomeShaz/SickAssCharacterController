@@ -7,22 +7,23 @@ using UnityEngine;
 public class AnimatorManager : MonoBehaviour
 {
     // Component References
-    public Animator animator;
+    public Animator Animator { get; private set; }
     EnvironmentScanner environmentScanner;
 
-    [Header("Parkour Stuff")]
-    [SerializeField] List<ParkourAction> parkourActions;
-    [SerializeField] ParkourAction jumpDownAction;
-    [SerializeField] ParkourAction jumpOffAction;
-    [SerializeField] ParkourAction climbUpLadderAction;
+    [field: Header("Parkour Stuff")]
+    [field: SerializeField] public List<ParkourAction> ParkourActions { get; private set; }
+    [field: SerializeField] public ParkourAction JumpDownAction { get; private set; }
+    [field: SerializeField] public ParkourAction JumpOffAction { get; private set; }
+    //[SerializeField] ParkourAction climbUpLadderAction;
 
-    [SerializeField] float autoJumpHeightLimit = 2f;
-    [SerializeField] float rotateTowardsObstacleSpeed = 500f;
+    //[SerializeField] float autoJumpHeightLimit = 2f;
+    [SerializeField] public float RotateTowardsObstacleSpeed { get; private set; } = 500f;
 
     // Readonly Stuff
     readonly int horizontal = Animator.StringToHash("Horizontal");
     readonly int vertical = Animator.StringToHash("Vertical");
 
+    // TODO: we might not actually need any events now lmao since State Machine
     // Events
     public event Action<bool> OnSetInteracting;
     public event Action<bool> OnSetIsOnLedge;
@@ -39,32 +40,35 @@ public class AnimatorManager : MonoBehaviour
 
     // Other Stuff
     ClimbPoint currentClimbPoint;
-    ObstacleHitData obstacleHitData;
+    //ObstacleHitData obstacleHitData;
     LadderHitData ladderHitData;
     bool isClimbingLadderUp;
+
+
+
 
     private void Awake()
     {
         environmentScanner = GetComponent<EnvironmentScanner>();
-        animator = GetComponent<Animator>();
+        Animator = GetComponent<Animator>();
     }
 
     #region Animator Stuff
     public void SetAnimatorBool(int hash, bool value)
     {
-        animator.SetBool(hash, value);
+        Animator.SetBool(hash, value);
     }
 
     public void PlayTargetAnimation(string targetAnimationName)
     {
-        animator.CrossFade(targetAnimationName, 0.2f);
+        Animator.CrossFade(targetAnimationName, 0.2f);
     }
 
 
 
     public void SetRootMotion(bool value)
     {
-        animator.applyRootMotion = value;
+        Animator.applyRootMotion = value;
     }
 
     public void UpdateAnimatorValues(float horizontalMovement, float verticalMovement, bool isSprinting)
@@ -124,102 +128,105 @@ public class AnimatorManager : MonoBehaviour
             snappedVertical = 2f;
         }
 
-        animator.SetFloat(horizontal, snappedHorizontal, 0.1f, Time.deltaTime);
-        animator.SetFloat(vertical, snappedVertical, 0.1f, Time.deltaTime);
+        Animator.SetFloat(horizontal, snappedHorizontal, 0.1f, Time.deltaTime);
+        Animator.SetFloat(vertical, snappedVertical, 0.1f, Time.deltaTime);
     }
     #endregion
 
     #region Parkour Stuff
-    public void HandleAllParkour(bool jumpInput, bool isInteracting,bool isOnLedge,LedgeHitData ledgeHitData, bool sprintingInput)
+    public void HandleAllParkour(ObstacleHitData obstacleHitData)
     {
-        this.isOnLedge = isOnLedge;
-        this.isInteracting = isInteracting;
+        //this.isOnLedge = isOnLedge;
+        //this.isInteracting = isInteracting;
 
-        obstacleHitData = environmentScanner.ObstacleCheck();
-        ladderHitData = environmentScanner.LadderCheck();
+        //obstacleHitData = environmentScanner.ObstacleCheck();
+        //ladderHitData = environmentScanner.LadderCheck();
 
-        HandleLadderCheck(jumpInput);
-        HandleObstacleCheck(jumpInput);
+        //HandleLadderCheck(jumpInput);
 
-        
-        HandleLedgeCheck(jumpInput,ledgeHitData,sprintingInput);
+        //Calling this function from parkour State
+        //HandleSimpleClimbParkour(obstacleHitData);
+
+        //HandleLedgeCheck(jumpInput,ledgeHitData,sprintingInput);
     }
 
     private void HandleLadderCheck(bool jumpInput)
     {
-        Vector3 ladderDirection = new();
+        // TODO: make a ladder state later lmao
 
-        if(jumpInput && ladderHitData.ladderHitFound && !isOnLadder)
-        {
-            ladderDirection = -ladderHitData.ladderHit.transform.forward;
-            isOnLadder = true;
-            OnSetIsOnLadder?.Invoke(isOnLadder);
+        //Vector3 ladderDirection = new();
+
+        //if(jumpInput && ladderHitData.ladderHitFound && !isOnLadder)
+        //{
+        //    ladderDirection = -ladderHitData.ladderHit.transform.forward;
+        //    isOnLadder = true;
+        //    OnSetIsOnLadder?.Invoke(isOnLadder);
                 
-            if(isClimbingLadderUp)
-            {
-                isInteracting = true;
-                OnSetInteracting?.Invoke(isInteracting);
+        //    if(isClimbingLadderUp)
+        //    {
+        //        isInteracting = true;
+        //        OnSetInteracting?.Invoke(isInteracting);
 
-                // Snap ladder X
-                var playerOnLadderPosition = new Vector3(ladderHitData.ladderHit.transform.parent.position.x, transform.position.y, ladderHitData.ladderHit.transform.parent.position.z);
+        //        // Snap ladder X
+        //        var playerOnLadderPosition = new Vector3(ladderHitData.ladderHit.transform.parent.position.x, transform.position.y, ladderHitData.ladderHit.transform.parent.position.z);
 
-                transform.position = Vector3.Lerp(transform.position, playerOnLadderPosition, 0.1f);
-
-
-
-                var targetRot = Quaternion.LookRotation(-ladderHitData.ladderHit.transform.forward);
-
-                transform.rotation = Quaternion.RotateTowards(transform.rotation,
-                    targetRot, rotateTowardsObstacleSpeed * Time.deltaTime);
+        //        transform.position = Vector3.Lerp(transform.position, playerOnLadderPosition, 0.1f);
 
 
-                isInteracting = false;
-                OnSetInteracting?.Invoke(isInteracting);
 
-            }
-        }
+        //        var targetRot = Quaternion.LookRotation(-ladderHitData.ladderHit.transform.forward);
 
-        if (isOnLadder)
-        {
-            SetRootMotion(false);
+        //        transform.rotation = Quaternion.RotateTowards(transform.rotation,
+        //            targetRot, rotateTowardsObstacleSpeed * Time.deltaTime);
 
-            if (!ladderHitData.ladderHitFound && isClimbingLadderUp)
-            {
-                //Debug.Log(obstacleHitData.heightHit.transform.name);
 
-                if (!obstacleHitData.heightHitFound) return;
+        //        isInteracting = false;
+        //        OnSetInteracting?.Invoke(isInteracting);
 
-                //Old Do Action Approach
-                var matchParams = new MatchTargetParams
-                {
-                    pos = obstacleHitData.heightHit.point,
-                    bodyPart = AvatarTarget.LeftFoot,
-                    posWeight = new Vector3(0, 1, 1),
-                    startTime = 0.20f,
-                    targetTime = 0.57f,
-                };
-                SetRootMotion(true);
+        //    }
+        //}
+
+        //if (isOnLadder)
+        //{
+        //    SetRootMotion(false);
+
+        //    if (!ladderHitData.ladderHitFound && isClimbingLadderUp)
+        //    {
+        //        //Debug.Log(obstacleHitData.heightHit.transform.name);
+
+        //        if (!obstacleHitData.heightHitFound) return;
+
+        //        //Old Do Action Approach
+        //        var matchParams = new MatchTargetParams
+        //        {
+        //            pos = obstacleHitData.heightHit.point,
+        //            bodyPart = AvatarTarget.LeftFoot,
+        //            posWeight = new Vector3(0, 1, 1),
+        //            startTime = 0.20f,
+        //            targetTime = 0.57f,
+        //        };
+        //        SetRootMotion(true);
                 
-                isInteracting = true;
-                OnSetInteracting?.Invoke(isInteracting);
+        //        isInteracting = true;
+        //        OnSetInteracting?.Invoke(isInteracting);
 
-                Debug.Log("Player is Perpendicular to the ladder : "+(Vector3.Dot(ladderDirection, transform.forward) == 0f));
+        //        Debug.Log("Player is Perpendicular to the ladder : "+(Vector3.Dot(ladderDirection, transform.forward) == 0f));
 
-                // This should not be called when diagonally approaching the ladder
-                if (Vector3.Dot(ladderDirection, transform.forward) == 0f)
-                {
+        //        // This should not be called when diagonally approaching the ladder
+        //        if (Vector3.Dot(ladderDirection, transform.forward) == 0f)
+        //        {
 
-                    StartCoroutine(DoAction("ClimbUpToStand", matchParams, default, true, true));
-                    isOnLadder = false;
-                    OnSetIsOnLadder?.Invoke(isOnLadder);
-                }
-                else
-                {
-                    LeaveLadder();
-                }
+        //            StartCoroutine(DoAction("ClimbUpToStand", matchParams, default, true, true));
+        //            isOnLadder = false;
+        //            OnSetIsOnLadder?.Invoke(isOnLadder);
+        //        }
+        //        else
+        //        {
+        //            LeaveLadder();
+        //        }
 
-            }
-        }
+        //    }
+        //}
     }
 
     public void SetIsClimbingLadder(bool value)
@@ -234,53 +241,63 @@ public class AnimatorManager : MonoBehaviour
         isOnLadder = false;
     }
 
-    void HandleLedgeCheck(bool jumpInput,LedgeHitData ledgeHitData,bool sprintingInput)
+    // TODO: Use this later in some State not here
+    // This will go in JumpOff State
+
+    //void HandleLedgeCheck(bool jumpInput, ObstacleHitData obstacleHitData, LedgeHitData ledgeHitData, bool sprintingInput)
+    //{
+
+    //    if (isOnLedge && !isInteracting && !obstacleHitData.forwardHitFound)
+    //    {
+    //        bool shouldJump = true;
+    //        if (ledgeHitData.height > autoJumpHeightLimit && !jumpInput)
+    //            shouldJump = false;
+
+    //        // if large angle then dont jump down
+    //        if (shouldJump && ledgeHitData.angle <= 50f)
+    //        {
+    //            //Debug.Log("JumpDOWN ANIMATION!!!!");
+
+    //            isOnLedge = false;
+    //            OnSetIsOnLedge?.Invoke(isOnLedge);
+
+    //            var jumptype = sprintingInput ? jumpOffAction : jumpDownAction;
+
+    //            StartCoroutine(DoParkourAction(jumptype));
+    //        }
+    //    }
+
+    //}
+
+    //TODO: This will be handled in a parkour state not here
+
+    //void HandleSimpleClimbParkour(ObstacleHitData obstacleHitData)
+    //{
+    //    // TODO: change the if Condition (Upgrades people Upgrades)
+
+    //    // This causes ladder and parkour anims to work
+    //    //if (jumpInput && !isInteracting && obstacleHitData.forwardHitFound && ((!ladderHitData.ladderHitFound && isOnLadder) || !isOnLadder))
+    //    //{
+
+    //    foreach (var action in ParkourActions)
+    //    {
+    //        if (action.CheckIfPossible(obstacleHitData,transform))
+    //        {
+    //            StartCoroutine(DoParkourAction(action));
+    //            break;
+    //        }
+    //    }
+
+    //    //}
+    //}
+
+    // For Parkour Specific Actions
+    public IEnumerator DoParkourAction(ParkourAction action, Action onCoroutineFinishedCallback)
     {
-
-        if (isOnLedge && !isInteracting && !obstacleHitData.forwardHitFound)
-        {
-            bool shouldJump = true;
-            if (ledgeHitData.height > autoJumpHeightLimit && !jumpInput) 
-                shouldJump = false;
-
-            // if large angle then dont jump down
-            if (shouldJump && ledgeHitData.angle <= 50f)
-            {
-                //Debug.Log("JumpDOWN ANIMATION!!!!");
-                
-                isOnLedge = false;
-                OnSetIsOnLedge?.Invoke(isOnLedge);
-
-                var jumptype = sprintingInput ? jumpOffAction : jumpDownAction;
-
-                StartCoroutine(DoParkourAction(jumptype));
-            }
-        }
-
-    }
-
-    void HandleObstacleCheck(bool jumpInput)
-    {
-        // This causes ladder and parkour anims to work
-        if (jumpInput && !isInteracting && obstacleHitData.forwardHitFound && ((!ladderHitData.ladderHitFound && isOnLadder) || !isOnLadder))
-        {
-            foreach (var action in parkourActions)
-            {
-                if (action.CheckIfPossible(obstacleHitData,transform))
-                {
-                    StartCoroutine(DoParkourAction(action));
-                    break;
-                }
-            }
-        }
-    }
-
-    IEnumerator DoParkourAction(ParkourAction action)
-    {
-        isOnLedge = false;
-
-        isInteracting = true;
-        OnSetInteracting?.Invoke(isInteracting);
+        //TODO: Change Booleans in the State itself not here, so wont need to Invoke Events
+        //isOnLedge = false;
+        //isInteracting = true;
+        //OnSetInteracting?.Invoke(isInteracting);
 
         var matchTargetParams = new MatchTargetParams
         {
@@ -294,8 +311,9 @@ public class AnimatorManager : MonoBehaviour
         yield return DoAction(action.AnimName, matchTargetParams, action.TargetRotation,
             action.ResetMovementSpeed,action.RotateToObstacle, action.PostActionDelay, action.Mirror);
 
-        isInteracting = false;
-        OnSetInteracting?.Invoke(isInteracting);
+        onCoroutineFinishedCallback?.Invoke();
+        //isInteracting = false;
+        //OnSetInteracting?.Invoke(isInteracting);
     }
     #endregion
 
@@ -306,16 +324,16 @@ public class AnimatorManager : MonoBehaviour
         //Debug.Log("Reset Movement Speed " + resetMovementSpeed);
 
         SetRootMotion(true);
-        OnSetIsHanging?.Invoke(IsHanging);
+        //OnSetIsHanging?.Invoke(IsHanging);
 
         PlayTargetAnimation(animName);
-        animator.SetBool("MirrorAction", mirror);
+        Animator.SetBool("MirrorAction", mirror);
         if (resetMovementSpeed) OnResetSpeed?.Invoke(resetMovementSpeed);
 
         // we return null to wait for this frame to end before fetching the animator State
         yield return null;
 
-        var animState = animator.GetNextAnimatorStateInfo(0);
+        var animState = Animator.GetNextAnimatorStateInfo(0);
 
         if (!animState.IsName(animName))
         {
@@ -332,12 +350,12 @@ public class AnimatorManager : MonoBehaviour
 
             if (rotate)
                 transform.rotation = Quaternion.RotateTowards(transform.rotation,
-                    targetRotation, rotateTowardsObstacleSpeed * Time.deltaTime);
+                    targetRotation, RotateTowardsObstacleSpeed * Time.deltaTime);
 
             if (matchTargetParams != null)
                 MatchTarget(matchTargetParams);
 
-            if (animator.IsInTransition(0) && timer >= 0.5f)
+            if (Animator.IsInTransition(0) && timer >= 0.5f)
                 break;
 
             // return null makes it do nothing i.e it makes it wait till end of while loop?
@@ -347,8 +365,8 @@ public class AnimatorManager : MonoBehaviour
 
         yield return new WaitForSeconds(postActionDelay);
 
-        isInteracting = false;
-        OnSetInteracting?.Invoke(isInteracting);
+        //isInteracting = false;
+        //OnSetInteracting?.Invoke(isInteracting);
     }
 
     // TODO: fix climbing later rn these functions are not being called
@@ -407,7 +425,7 @@ public class AnimatorManager : MonoBehaviour
         // setting hanging to true before action in case of idleToHang cuz we need to disable rootMotion in the player controller
         if(anim == "IdleToHanging")
         {
-            animator.applyRootMotion = false;
+            Animator.applyRootMotion = false;
         }
         //IsHanging = true;
         //OnSetIsHanging?.Invoke(IsHanging);
@@ -428,24 +446,13 @@ public class AnimatorManager : MonoBehaviour
     }
     #endregion
 
-    void MatchTarget(MatchTargetParams mtp)
+    public void MatchTarget(MatchTargetParams mtp)
     {
-        if (animator.isMatchingTarget) return;
-        if (animator.IsInTransition(0)) return;
+        if (Animator.isMatchingTarget) return;
+        if (Animator.IsInTransition(0)) return;
 
-        animator.MatchTarget(mtp.pos,transform.rotation,
+        Animator.MatchTarget(mtp.pos,transform.rotation,
             mtp.bodyPart,new MatchTargetWeightMask(mtp.posWeight,0),
             mtp.startTime,mtp.targetTime);
     }
-
 }
-
-public class MatchTargetParams
-{
-    public Vector3 pos;
-    public AvatarTarget bodyPart;
-    public Vector3 posWeight;
-    public float startTime;
-    public float targetTime;
-}
-

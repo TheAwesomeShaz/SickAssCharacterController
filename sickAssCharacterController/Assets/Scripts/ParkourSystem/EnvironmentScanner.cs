@@ -7,25 +7,25 @@ using UnityEngine.EventSystems;
 public class EnvironmentScanner : MonoBehaviour
 {
     [Header("Obstacle Detection")]
-    [SerializeField] Vector3 forwardRayOffset = new Vector3(0f, 0.25f, 0f);
-    [SerializeField] float forwardRayLength = 1f;
-    [SerializeField] float heightRayLength = 5f;
-    [SerializeField] LayerMask obstacleLayer;
+    [SerializeField] private Vector3 forwardRayOffset = new Vector3(0f, 0.25f, 0f);
+    [SerializeField] private float forwardRayLength = 1f;
+    [SerializeField] private float heightRayLength = 5f;
+    [SerializeField] private LayerMask obstacleLayer;
 
-    [Header("Ledge Detection")]
-    [SerializeField] float ledgeCheckOriginOffset = 0.8f;
-    [SerializeField] float ledgeRayLength = 10f;
-    [Tooltip("Minimum Height required for ledge detection and jumping off ledge")]
-    [SerializeField] float minLedgeHeight = 0.75f;
+    [Header("Edge Detection")]
+    [SerializeField] private float EdgeCheckOriginOffset = 0.8f;
+    [SerializeField] private float EdgeRayLength = 20f;
+    [Tooltip("Minimum Height required for Edge detection and jumping off Edge")]
+    [SerializeField] private float minEdgeHeight = 0.75f;
 
     [Header("Climb Ledge Detection")]
-    [SerializeField] float climbLedgeRayLength = 1.5f;
-    [SerializeField] LayerMask climbLedgeLayer;
+    [SerializeField] private float climbLedgeRayLength = 1.5f;
+    [SerializeField] private LayerMask climbLedgeLayer;
 
     [Header("Ladder Detection")]
-    [SerializeField] float ladderRayLength = 1.5f;
-    [SerializeField] Vector3 ladderRayOriginOffset = new Vector3(0f, 1f, 0f);
-    [SerializeField] LayerMask ladderLayer;
+    [SerializeField] private float ladderRayLength = 1.5f;
+    [SerializeField] private Vector3 ladderRayOriginOffset = new Vector3(0f, 1f, 0f);
+    [SerializeField] private LayerMask ladderLayer;
    
 
 
@@ -80,39 +80,38 @@ public class EnvironmentScanner : MonoBehaviour
         return false;
     }
 
-    public bool EdgeLedgeCheck(Vector3 moveDir, out LedgeHitData edgeLedgeHitData)
+    public bool EdgeCheck(Vector3 moveDir, out EdgeHitData edgeHitData)
     {
-        edgeLedgeHitData = new LedgeHitData();
+        edgeHitData = new EdgeHitData();
+        if (moveDir == Vector3.zero) return false;
+        var origin = transform.position + moveDir * EdgeCheckOriginOffset + Vector3.up;
 
-        if(moveDir == Vector3.zero) return false;
-
-        var origin = transform.position + moveDir * ledgeCheckOriginOffset + Vector3.up;
-
-        if(Utils.ThreeRaycasts(origin, Vector3.down, 0.25f,transform, 
-            out List<RaycastHit> hits, ledgeRayLength, obstacleLayer,true))
+        if (Utils.ThreeRaycasts(origin, Vector3.down, 0.25f,transform, 
+            out List<RaycastHit> hits, EdgeRayLength, obstacleLayer,true))
         {
-            var validHits = hits.Where(h => transform.position.y - h.point.y > minLedgeHeight).ToList();
+
+            var validHits = hits.Where(h => transform.position.y - h.point.y > minEdgeHeight).ToList();
 
             if(validHits.Count > 0)
             {
                 // we need the normal of the ledge so we are casting a ray on the face of the ledge
-                var ledgeFaceRayOrigin = validHits[0].point;
+                var edgeFaceRayOrigin = validHits[0].point;
                 // we are moving the ray origin below feet of player (minus a lil value) on the face of ledge
-                ledgeFaceRayOrigin.y = transform.position.y - 0.1f;
+                edgeFaceRayOrigin.y = transform.position.y - 0.1f;
 
-                if(Physics.Raycast(ledgeFaceRayOrigin,transform.position-ledgeFaceRayOrigin,out RaycastHit ledgeFaceHit, 2f, obstacleLayer))
+                if(Physics.Raycast(edgeFaceRayOrigin,transform.position-edgeFaceRayOrigin,out RaycastHit edgeFaceHit, 2f, obstacleLayer))
                 {
-                    Debug.DrawLine(ledgeFaceRayOrigin, transform.position, Color.cyan);
+                    Debug.DrawLine(edgeFaceRayOrigin, transform.position, Color.cyan);
 
 
                     float obstacleHeight = transform.position.y - validHits[0].point.y;
-                    edgeLedgeHitData.angle = Vector3.Angle(transform.forward, ledgeFaceHit.normal);
-                    edgeLedgeHitData.height = obstacleHeight;
-                    edgeLedgeHitData.ledgeFaceHit = ledgeFaceHit;
+                    edgeHitData.angle = Vector3.Angle(transform.forward, edgeFaceHit.normal);
+                    edgeHitData.height = obstacleHeight;
+                    edgeHitData.edgeFaceHit = edgeFaceHit;
 
                     return true;
                 }
-        }
+             }
         }
         return false;
     }
@@ -142,11 +141,11 @@ public struct ObstacleHitData
     public RaycastHit heightHit;
 }
 
-public struct LedgeHitData
+public struct EdgeHitData
 {
     public float height;
     public float angle;
-    public RaycastHit ledgeFaceHit;
+    public RaycastHit edgeFaceHit;
 }
 
 public struct LadderHitData

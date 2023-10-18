@@ -11,17 +11,21 @@ public class PlayerWalkState : PlayerBaseState
 
     private readonly float _movementSpeedDampingValue = 0.7f;
 
-    public PlayerWalkState(PlayerStateMachine context, PlayerStateFactory playerStateFactory) : base(context, playerStateFactory) { }
+    public PlayerWalkState(PlayerStateMachine context, PlayerStateManager playerStateFactory) : base(context, playerStateFactory) { }
 
     public override void CheckSwitchStates()
     {
-        if (_ctx.NormalizedMoveAmount <= 0.01f)
+        if (_ctx.IsOnEdge || _ctx.EnvScanner.ObstacleCheck().forwardHitFound || _ctx.NormalizedMoveAmount <= 0.1f)
         {
-            SwitchState(_stateFactory.Idle());
+            SwitchState(_stateManager.Idle());
         }
         else if (_ctx.IsSprinting && _ctx.NormalizedMoveAmount > 0.5f)
         {
-            SwitchState(_stateFactory.Run());
+            SwitchState(_stateManager.Run());
+        }
+        if (!_ctx.IsInteracting && _ctx.EnvScanner.ObstacleCheck().forwardHitFound && _ctx.InputManager.JumpInput)
+        {
+            SwitchState(_stateManager.Parkour());
         }
     }
 
@@ -47,9 +51,9 @@ public class PlayerWalkState : PlayerBaseState
     
     private void SetMovementSpeed()
     {
-        _ctx.CurrentSpeed = Mathf.Lerp(_ctx.CurrentSpeed,_ctx.RunningSpeed,_movementSpeedDampingValue);
-        //_ctx.NormalizedMoveAmount = Mathf.Clamp(_ctx.MovementVelocity.magnitude / _ctx.CurrentSpeed, 0, 2);
-
+        if (!_ctx.IsInteracting && !_ctx.IsOnEdge) { 
+            _ctx.CurrentSpeed = Mathf.Lerp(_ctx.CurrentSpeed,_ctx.RunningSpeed,_movementSpeedDampingValue); 
+        }
     }
 
 }

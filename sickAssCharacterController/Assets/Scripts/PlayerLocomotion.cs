@@ -36,7 +36,7 @@ public class PlayerLocomotion : MonoBehaviour
     [SerializeField] Vector3 groundCheckOffset;
     [SerializeField] LayerMask groundLayer;
     [SerializeField] float gravityForce = -10;
-    [field: SerializeField] public LedgeHitData LedgeHitData { get; set; }
+    [field: SerializeField] public EdgeHitData LedgeHitData { get; set; }
 
     float currentGravity;
 
@@ -196,13 +196,11 @@ public class PlayerLocomotion : MonoBehaviour
     {
 
         isGrounded = Physics.CheckSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius, groundLayer);
-
-
         if (IsOnLadder) return;
 
         if (isGrounded)
         {
-            IsOnLedge = envScanner.EdgeLedgeCheck(desiredMoveDirection,out LedgeHitData ledgeHitData);
+            IsOnLedge = envScanner.EdgeCheck(desiredMoveDirection,out EdgeHitData ledgeHitData);
 
             currentGravity = -0.5f;
             
@@ -310,7 +308,7 @@ public class PlayerLocomotion : MonoBehaviour
     // TODO: add a looking down animation state to fix the falling off ledge error when brute force input and shee
     void HandleLedgeMovement()
     {
-        float signedLedgeNormalMoveAngle = Vector3.SignedAngle(LedgeHitData.ledgeFaceHit.normal, desiredMoveDirection,Vector3.up);
+        float signedLedgeNormalMoveAngle = Vector3.SignedAngle(LedgeHitData.edgeFaceHit.normal, desiredMoveDirection,Vector3.up);
         float ledgeNormalMoveAngle = Mathf.Abs(signedLedgeNormalMoveAngle);
 
         if (Vector3.Angle(desiredMoveDirection, transform.forward) >= 80) 
@@ -330,7 +328,7 @@ public class PlayerLocomotion : MonoBehaviour
             // angle is btwn 60 and 90, so limit velocity to horizontal direction
 
             // cross product of normal and up vector gives us the left vector
-            var left = Vector3.Cross(Vector3.up, LedgeHitData.ledgeFaceHit.normal);
+            var left = Vector3.Cross(Vector3.up, LedgeHitData.edgeFaceHit.normal);
             var direction = left * Mathf.Sign(signedLedgeNormalMoveAngle);
 
             movementVelocity = movementVelocity.magnitude * direction;

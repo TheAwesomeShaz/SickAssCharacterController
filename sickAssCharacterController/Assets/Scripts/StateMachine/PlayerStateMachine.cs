@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerStateMachine : MonoBehaviour
 {
@@ -18,12 +19,13 @@ public class PlayerStateMachine : MonoBehaviour
     [field: Header("Movement Flags")]
     [field: SerializeField] public bool IsSprinting { get; set; }
 
-    private Vector3 _desiredMoveDirection;
     [SerializeField] private bool _isGrounded;
     [SerializeField] private bool _isJumping;
-    [field: SerializeField] public bool IsOnLedge { get; set; }
+    [field: SerializeField] public bool IsOnEdge { get; set; }
+    [field: SerializeField] public bool IsInteracting { get; set; }
     [field: SerializeField] public bool IsOnLadder { get; set; }
     [field: SerializeField] public bool IsHanging { get; set; }
+    [field: SerializeField] public bool IsGrounded { get; private set; }
 
     // TODO: maybe turn these into properties too?
     // Ground Check Stuff..
@@ -32,7 +34,9 @@ public class PlayerStateMachine : MonoBehaviour
     [field: SerializeField] public Vector3 GroundCheckOffset { get; set; }
     [field: SerializeField] public LayerMask GroundLayer { get; set; }
     [field: SerializeField] public float GravityForce { get; set; } = -10;
-    [field: SerializeField] public LedgeHitData LedgeHitData { get; set; }
+    [field: SerializeField] public EdgeHitData EdgeHitData { get; set; }
+    [field: SerializeField] public float AutoJumpHeightLimit { get; private set; } = 2f;
+
 
 
     // Movement Speeds
@@ -42,10 +46,9 @@ public class PlayerStateMachine : MonoBehaviour
     [field: SerializeField] public float SprintingSpeed { get; private set; } = 7f;
 
     [SerializeField] private float _ladderClimbingSpeed = 0.5f;
-    [field: SerializeField] public float CurrentGravity { get; private set; }
+    [field: SerializeField] public float CurrentGravity { get; set; }
     [field: SerializeField] public float RotationSpeed { get; private set; } = 15f;
-    [field: SerializeField] public bool IsGrounded { get; private set; }
-    [field: SerializeField] public float NormalizedMoveAmount { get; private set; }
+    [field: SerializeField] public float NormalizedMoveAmount { get; set; }
 
     [field: SerializeField] public float CurrentSpeed { get; set; }
 
@@ -57,11 +60,11 @@ public class PlayerStateMachine : MonoBehaviour
     private Quaternion _targetRotation;
     [field: SerializeField] public Vector3 MoveDirection { get; set; }
     public Vector3 DesiredMoveDirection { get; set; }
-    public Vector3 MovementVelocity { get; set; }
+    [field:SerializeField] public Vector3 MovementVelocity { get; set; }
 
     // State variables
     public PlayerBaseState _currentState;
-    PlayerStateFactory _states;
+    PlayerStateManager _states;
 
     private void Awake()
     {
@@ -69,9 +72,11 @@ public class PlayerStateMachine : MonoBehaviour
         CameraObject = Camera.main.transform;
 
         // setup state
-        _states = new PlayerStateFactory(this);
+        _states = new PlayerStateManager(this);
         _currentState = _states.Grounded();
         _currentState.EnterState();
+
+
     }
 
     private void Update()
@@ -80,11 +85,14 @@ public class PlayerStateMachine : MonoBehaviour
         _currentState.UpdateStates();
         HandleGroundCheck();
         SetMovementDirection(InputManager.MovementInput,InputManager.HighProfileInput);
-        HandleRotation(InputManager.MovementInput);
+        if (!IsInteracting)
+        {
+            HandleRotation(InputManager.MovementInput);
+        }
+        Debug.Log("Current State is " + _currentState);
 
         // TODO: should this be here or in the Grounded state?
-
-        //AnimatorManager.UpdateAnimatorValues(0, NormalizedMoveAmount, InputManager.HighProfileInput);
+        //AnimatorManager.UpdateAnimatorValues(0, NormalizedMoveAmount, InputManager.);
     }
 
     private void LateUpdate()
@@ -95,25 +103,26 @@ public class PlayerStateMachine : MonoBehaviour
     private void HandleGroundCheck()
     {
         IsGrounded = Physics.CheckSphere(transform.TransformPoint(GroundCheckOffset), GroundCheckRadius, GroundLayer);
-        if (IsGrounded)
-        {
-            IsOnLedge = EnvScanner.EdgeLedgeCheck(DesiredMoveDirection, out LedgeHitData ledgeHitData);
+        //if (IsGrounded)
+        //{
+            // TODO: this stuff goes in the grounded state
+            //IsOnLedge = EnvScanner.EdgeCheck(DesiredMoveDirection, out EdgeHitData ledgeHitData);
 
-            CurrentGravity = -0.5f;
+            //CurrentGravity = -0.5f;
 
-            // TODO: Take this if block into another State
-            // limit LedgeMovement
+            //// TODO: Take this if block into another State?
+            // limit EdgeMovement
             //if (IsOnLedge)
             //{
             //    LedgeHitData = ledgeHitData;
-            //    //HandleLedgeMovement();
+            //    //LimitEdgeMovement();
             //}
-        }
-        else
-        {
-            CurrentGravity += GravityForce * Time.deltaTime;
-        }
-
+        //}
+        // TODO: move this into the FreeFall State
+        //if(!IsGrounded)
+        //{
+        //    CurrentGravity += GravityForce * Time.deltaTime;
+        //}
     }
 
     private void SetMovementDirection(Vector2 inputVector, bool highProfileInput)
@@ -122,17 +131,47 @@ public class PlayerStateMachine : MonoBehaviour
 
         IsSprinting = highProfileInput && NormalizedMoveAmount > 0.5f;
         //movement direction in front back direction
-        _desiredMoveDirection = CameraObject.forward * inputVector.y;
+        DesiredMoveDirection = CameraObject.forward * inputVector.y;
         //movement direction in right left direction
-        _desiredMoveDirection += CameraObject.right * inputVector.x;
+        DesiredMoveDirection += CameraObject.right * inputVector.x;
         //Keep the direction but reduce magnitude btwn 0 and 1
-        _desiredMoveDirection.Normalize();
+        DesiredMoveDirection.Normalize();
         // Dont want the player moving vertically upwards lmao
-        _desiredMoveDirection.y = CurrentGravity;
+        DesiredMoveDirection = new Vector3(DesiredMoveDirection.x,CurrentGravity,DesiredMoveDirection.z);
 
-        MoveDirection = _desiredMoveDirection;
+        MoveDirection = DesiredMoveDirection;
     }
-    
+
+    //void LimitEdgeMovement()
+    //{
+    //    float signedLedgeNormalMoveAngle = Vector3.SignedAngle(LedgeHitData.ledgeFaceHit.normal, DesiredMoveDirection, Vector3.up);
+    //    float ledgeNormalMoveAngle = Mathf.Abs(signedLedgeNormalMoveAngle);
+
+    //    if (Vector3.Angle(DesiredMoveDirection, transform.forward) >= 80)
+    //    {
+    //        // dont move just rotate
+    //        MovementVelocity = Vector3.zero;
+    //        return;
+    //    }
+
+    //    if (ledgeNormalMoveAngle < 60)
+    //    {
+    //        MovementVelocity = Vector3.zero;
+    //        MoveDirection = Vector3.zero;
+    //    }
+    //    else if (ledgeNormalMoveAngle < 90)
+    //    {
+    //        // angle is btwn 60 and 90, so limit velocity to horizontal direction
+
+    //        // cross product of normal and up vector gives us the left vector
+    //        var left = Vector3.Cross(Vector3.up, LedgeHitData.ledgeFaceHit.normal);
+    //        var direction = left * Mathf.Sign(signedLedgeNormalMoveAngle);
+
+    //        MovementVelocity = MovementVelocity.magnitude * direction;
+    //        MoveDirection = direction;
+    //    }
+    //}
+
     private void HandleRotation(Vector2 inputVector)
     {
         Vector3 targetDirection = MoveDirection;
@@ -148,6 +187,22 @@ public class PlayerStateMachine : MonoBehaviour
         Quaternion playerRotation = Quaternion.Slerp(transform.rotation, targetRotation, RotationSpeed * Time.deltaTime);
 
         transform.rotation = playerRotation;
+    }
+
+    /// <summary>
+    /// Sets Character Controller enabled, isInteracting, and rotates to obstacle Accordingly 
+    /// </summary>
+    /// <param name="hasControl">enables character controller, sets isInteracting to false, prevents rotate to obstacle</param>
+    public void SetControl(bool hasControl)
+    {
+        if (!hasControl)
+        {
+            // set animator moveAmount to 0
+            AnimatorManager.UpdateAnimatorValues(0, 0, IsSprinting);
+            _targetRotation = transform.rotation;
+        }
+        CharacterController.enabled = hasControl;
+        IsInteracting = !hasControl;
     }
 
     private void OnDrawGizmos()

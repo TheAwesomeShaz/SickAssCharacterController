@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class LandingBehaviour : StateMachineBehaviour
 {
-    PlayerLocomotion playerLocomotion;
+    PlayerStateMachine playerStateMachine;
     [SerializeField] float setControlFalseDelay = 0.2f;
     [SerializeField] float setControlTrueDelay = 0.2f;
     bool hasSetControlFalse;
@@ -14,14 +14,14 @@ public class LandingBehaviour : StateMachineBehaviour
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if(playerLocomotion == null) { playerLocomotion = animator.GetComponent<PlayerLocomotion>(); }
+        if(playerStateMachine == null) { playerStateMachine = animator.GetComponent<PlayerStateMachine>(); }
 
         hasSetControlFalse = false;
         hasSetControlTrue = false;
 
         if(setControlFalseDelay == 0) {
-            Debug.Log("Set Control False for normal Land anim");
-            playerLocomotion.SetControl(false);
+            //Debug.Log("Set Control False for normal Land anim");
+            playerStateMachine.SetControl(false);
             hasSetControlFalse = true;
         }
     }
@@ -31,15 +31,15 @@ public class LandingBehaviour : StateMachineBehaviour
     {
         if (!hasSetControlFalse && stateInfo.normalizedTime >= setControlFalseDelay)
         {
-            playerLocomotion.SetControl(false);
-            Debug.Log("SetControl is False");
+            playerStateMachine.SetControl(false);
+            //Debug.Log("SetControl is False");
             hasSetControlFalse = true;
         }
         
         if (!hasSetControlTrue && stateInfo.normalizedTime >= setControlTrueDelay)
         {
-            playerLocomotion.SetControl(true);
-            Debug.Log("Set Control is True");
+            playerStateMachine.SetControl(true);
+            //Debug.Log("Set Control is True");
             hasSetControlTrue = true;
         }
     }
@@ -49,9 +49,10 @@ public class LandingBehaviour : StateMachineBehaviour
     {
         if (stateInfo.IsName("FallRoll"))
         {
-            playerLocomotion.SetSpeedToRunning();
+            // TODO : Set Speed to Run speed in a non gae wae later
+            //playerStateMachine.SetSpeedToRunning();
         }
-        playerLocomotion.SetControl(true);
+        playerStateMachine.SetControl(true);
 
     }
 

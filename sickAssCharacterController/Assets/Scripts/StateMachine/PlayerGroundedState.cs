@@ -4,11 +4,10 @@ using System;
 
 public class PlayerGroundedState : PlayerBaseState
 {
-    bool isOnLedge;
+    private EdgeHitData edgeHitData;
     private Vector3 _desiredMoveDirection;
 
-
-    public PlayerGroundedState(PlayerStateMachine context, PlayerStateFactory playerStateFactory)
+    public PlayerGroundedState(PlayerStateMachine context, PlayerStateManager playerStateFactory)
     : base (context,playerStateFactory) 
     {
         _isRootState = true;
@@ -22,11 +21,33 @@ public class PlayerGroundedState : PlayerBaseState
         // if player is grounded and presses jump then:
         // if player is infront of a climbable object then switch to parkour super state (which again has many sub states)
         // if player taps and releases jump btn while running then jump state then fall then if something in front it can switch to grab 
-        //   which will be a state under the parkour super state ofc
+        // which will be a state under the parkour super state ofc
 
-        if (_ctx.InputManager.JumpInput)
+        var obstacleHitData = _ctx.EnvScanner.ObstacleCheck();
+
+
+        if (obstacleHitData.forwardHitFound && _ctx.InputManager.JumpInput)
         {
-            SwitchState(_stateFactory.Jump());
+            SwitchState(_stateManager.Parkour());
+        }
+
+        if (!obstacleHitData.forwardHitFound && _ctx.IsOnEdge)
+        {
+            bool shouldJump = true;
+            if (edgeHitData.height > _ctx.AutoJumpHeightLimit && !_ctx.InputManager.JumpInput)
+                shouldJump = false;
+
+            // if large angle then dont jump down
+            if (shouldJump && edgeHitData.angle <= 50f)
+            {
+                SwitchState (_stateManager.JumpFromEdge());
+            }
+
+        }
+
+        if (!_ctx.IsGrounded)
+        {
+            //SwitchState(_stateFactory.FreeFall());
         }
     }
 
@@ -40,62 +61,69 @@ public class PlayerGroundedState : PlayerBaseState
 
     public override void InitializeSubState()
     {
-        if (_ctx.NormalizedMoveAmount <= 0.1f)
+        if (_ctx.IsOnEdge || _ctx.NormalizedMoveAmount <= 0.1f)
         {
-            SetSubState(_stateFactory.Idle());
+            SetSubState(_stateManager.Idle());
         }
 
         else if (_ctx.NormalizedMoveAmount > 0.15f)
         {
-            SetSubState(_stateFactory.Walk());
+            SetSubState(_stateManager.Walk());
         }
 
         else if(_ctx.IsSprinting && _ctx.NormalizedMoveAmount > 0.5f)
         {
-            SetSubState(_stateFactory.Run());
+            SetSubState(_stateManager.Run());
         }
     }
 
     public override void UpdateState()
     {
         CheckSwitchStates();
-        LimitEdgeLedgeMovement();
-        HandleGroundedMovement();
+        if (!_ctx.IsInteracting)
+        {
+            HandleEdgeMovement();
+            HandleGroundedMovement();
+            HandleGravity();
+        }
+        // limit EdgeMovement
+    }
+
+    private void HandleGravity()
+    {
+        _ctx.CurrentGravity = -0.5f;
     }
 
     private void HandleGroundedMovement()
     {
-        Debug.Log("My substate is" + _currentSubState);
+        //Debug.Log("My substate is" + _currentSubState);
 
-        _ctx.MovementVelocity = _ctx.MoveDirection * _ctx.CurrentSpeed;
+        _ctx.MovementVelocity = _ctx.MoveDirection * (_ctx.CurrentSpeed*_ctx.NormalizedMoveAmount);
         _ctx.IsSprinting = _ctx.MovementVelocity.x != 0 && _ctx.InputManager.HighProfileInput && !_ctx.EnvScanner.ObstacleCheck().forwardHitFound;
 
-        //_ctx.NormalizedMoveAmount = Mathf.Clamp(_ctx.MovementVelocity.magnitude / _ctx.CurrentSpeed, 0, 2);
-
-        _ctx.AnimatorManager.UpdateAnimatorValues(0, _ctx.NormalizedMoveAmount, _ctx.IsSprinting);
-
-        if (!_ctx.EnvScanner.ObstacleCheck().forwardHitFound)
+        if (!_ctx.EnvScanner.ObstacleCheck().forwardHitFound && !_ctx.IsOnEdge)
         {
             _ctx.CharacterController.Move(_ctx.MovementVelocity * Time.deltaTime);
+            _ctx.AnimatorManager.UpdateAnimatorValues(0, _ctx.NormalizedMoveAmount, _ctx.IsSprinting);
         }
     }
 
     //TODO: The below stuff should go in a SubState?
-    private void LimitEdgeLedgeMovement()
+    private void HandleEdgeMovement()
     {
-        isOnLedge = _ctx.EnvScanner.EdgeLedgeCheck(_ctx.DesiredMoveDirection, out LedgeHitData ledgeHitData);
-        if (isOnLedge)
+        _ctx.IsOnEdge = _ctx.EnvScanner.EdgeCheck(_ctx.DesiredMoveDirection, out edgeHitData);
+        if (_ctx.IsOnEdge)
         {
-            HandleEdgeLedgeMovement();
+            LimitEdgeMovement();
         }
     }
 
     // limits ledge movement, prevents player from falling down from ledge
     // TODO: add a looking down animation state to fix the falling off ledge error when brute force input and shee
-    private void HandleEdgeLedgeMovement()
+    private void LimitEdgeMovement()
     {
-        float signedLedgeNormalMoveAngle = Vector3.SignedAngle(_ctx.LedgeHitData.ledgeFaceHit.normal, _ctx.DesiredMoveDirection, Vector3.up);
-        float ledgeNormalMoveAngle = Mathf.Abs(signedLedgeNormalMoveAngle);
+        float signedEdgeNormalMoveAngle = Vector3.SignedAngle(_ctx.EdgeHitData.edgeFaceHit.normal, _ctx.DesiredMoveDirection, Vector3.up);
+        float edgeNormalMoveAngle = Mathf.Abs(signedEdgeNormalMoveAngle);
 
         if (Vector3.Angle(_ctx.DesiredMoveDirection, _ctx.transform.forward) >= 80)
         {
@@ -104,17 +132,17 @@ public class PlayerGroundedState : PlayerBaseState
             return;
         }
 
-        if (ledgeNormalMoveAngle < 60)
+        if (edgeNormalMoveAngle < 60)
         {
             _ctx.MovementVelocity = Vector3.zero;
             _ctx.MoveDirection = Vector3.zero;
         }
-        else if (ledgeNormalMoveAngle < 90)
+        else if (edgeNormalMoveAngle < 90)
         {
             // angle is btwn 60 and 90, so limit velocity to horizontal direction
             // cross product of normal and up vector gives us the left vector
-            var left = Vector3.Cross(Vector3.up, _ctx.LedgeHitData.ledgeFaceHit.normal);
-            var direction = left * Mathf.Sign(signedLedgeNormalMoveAngle);
+            var left = Vector3.Cross(Vector3.up, _ctx.EdgeHitData.edgeFaceHit.normal);
+            var direction = left * Mathf.Sign(signedEdgeNormalMoveAngle);
             _ctx.MovementVelocity = _ctx.MovementVelocity.magnitude * direction;
             _ctx.MoveDirection = direction;
         }

@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 public class FallingLoopBehaviour : StateMachineBehaviour
 {
-    PlayerLocomotion playerLocomotion;
+    PlayerStateMachine playerStateMachine;
     [SerializeField] float groundedCheckDelay = 0.5f;
     bool hasTransitioned;
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
@@ -13,8 +13,8 @@ public class FallingLoopBehaviour : StateMachineBehaviour
     {
         hasTransitioned = false;
 
-        if (playerLocomotion == null) { playerLocomotion = animator.GetComponent<PlayerLocomotion>(); }
-        playerLocomotion.SetControl(true);
+        if (playerStateMachine == null) { playerStateMachine = animator.GetComponent<PlayerStateMachine>(); }
+        playerStateMachine.SetControl(true);
 
     }
 
@@ -22,9 +22,8 @@ public class FallingLoopBehaviour : StateMachineBehaviour
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
 
-        if (!hasTransitioned && stateInfo.normalizedTime >= groundedCheckDelay && playerLocomotion.isGrounded)
+        if (!hasTransitioned && stateInfo.normalizedTime >= groundedCheckDelay && playerStateMachine.IsGrounded)
         {
-            Debug.Log("Inside the condition");
             if (stateInfo.IsName("FallForward"))
                 animator.CrossFade("FallRoll", 0.2f);
 

@@ -2,15 +2,15 @@ public abstract class PlayerBaseState
 {
     protected bool _isRootState = false;
     protected PlayerStateMachine _ctx;
-    protected PlayerStateFactory _stateFactory;
+    protected PlayerStateManager _stateManager;
     protected PlayerBaseState _currentSubState;
     private PlayerBaseState _currentSuperState;
 
     
-    public PlayerBaseState(PlayerStateMachine context, PlayerStateFactory stateFactory)
+    public PlayerBaseState(PlayerStateMachine context, PlayerStateManager stateManager)
     {
         _ctx = context;
-        _stateFactory = stateFactory;
+        _stateManager = stateManager;
     }
 
     public abstract void EnterState();

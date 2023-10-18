@@ -35,8 +35,9 @@ public class PlayerManager : MonoBehaviour
         // when the controls starts making a bit more sense
         playerLocomotion.HandleAllMovement(inputManager.MovementInput,IsInteracting,inputManager.HighProfileInput);
 
-        animatorManager.HandleAllParkour(inputManager.JumpInput,IsInteracting, 
-            playerLocomotion.IsOnLedge, playerLocomotion.LedgeHitData,inputManager.HighProfileInput);       
+        //TODO call this from the Climb State in Update and Switch to Climb State in Grounded Root State
+        //animatorManager.HandleAllParkour(inputManager.JumpInput,IsInteracting, 
+        //    playerLocomotion.IsOnLedge, playerLocomotion.LedgeHitData,inputManager.HighProfileInput);       
 
         // Not Doing Climbing right now, will continue later if required currently shifted to making ladder system
         //animatorManager.HandleAllClimbing(inputManager.movementInput,inputManager.jumpInput,playerLocomotion.IsHanging,IsInteracting);

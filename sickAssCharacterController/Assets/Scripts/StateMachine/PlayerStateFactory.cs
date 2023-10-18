@@ -1,15 +1,32 @@
-public class PlayerStateFactory
-{
-    PlayerStateMachine _context;
+using System;
+using System.Collections.Generic;
+using UnityEditor.Rendering.LookDev;
 
-    public PlayerStateFactory(PlayerStateMachine context)
+public class PlayerStateManager
+{
+    private PlayerStateMachine _context;
+    Dictionary<Type, PlayerBaseState> _states = new();
+
+    public PlayerStateManager(PlayerStateMachine context)
     {
         _context = context;
+        _states[typeof(PlayerGroundedState)] = new PlayerGroundedState(_context, this);
+        _states[typeof(PlayerGroundedIdleState)] = new PlayerGroundedIdleState(_context, this);
+        _states[typeof(PlayerWalkState)] = new PlayerWalkState(_context, this);
+        _states[typeof(PlayerRunState)] = new PlayerRunState(_context, this);
+        _states[typeof(PlayerFreeFallState)] = new PlayerFreeFallState(_context, this);
+        _states[typeof(PlayerParkourState)] = new PlayerParkourState(_context, this);
+        _states[typeof(PlayerJumpFromEdgeState)] = new PlayerJumpFromEdgeState(_context, this);
+
+    }
+    public PlayerBaseState Grounded()
+    {
+        return new PlayerGroundedState(_context, this);
     }
 
     public PlayerBaseState Idle()
     {
-        return new PlayerIdleState(_context,this);
+        return new PlayerGroundedIdleState(_context, this);
     }
 
     public PlayerBaseState Walk()
@@ -22,13 +39,18 @@ public class PlayerStateFactory
         return new PlayerRunState(_context, this);
     }
 
-    public PlayerBaseState Jump()
+    public PlayerBaseState Parkour()
     {
-        return new PlayerJumpState(_context, this);
+        return new PlayerParkourState(_context, this);
     }
 
-    public PlayerBaseState Grounded()
+    internal PlayerBaseState JumpFromEdge()
     {
-        return new PlayerGroundedState(_context, this);
+        return new PlayerJumpFromEdgeState(_context, this);
+    }
+
+    public PlayerBaseState FreeFall()
+    {
+        return new PlayerFreeFallState(_context, this);
     }
 }
