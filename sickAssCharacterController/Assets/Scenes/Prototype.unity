@@ -4383,8 +4383,8 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 1
-  EdgeCheckOriginOffset: 0.8
-  EdgeRayLength: 20
+  EdgeCheckOriginOffset: 0.4
+  EdgeRayLength: 10
   minEdgeHeight: 0.75
   climbLedgeRayLength: 1.5
   climbLedgeLayer:
@@ -6217,7 +6217,8 @@ MonoBehaviour:
   <AutoJumpHeightLimit>k__BackingField: 2
   <WalkingSpeed>k__BackingField: 3
   <RunningSpeed>k__BackingField: 5
-  <SprintingSpeed>k__BackingField: 15
+  <SprintingSpeed>k__BackingField: 14
+  <ForwardJumpSpeed>k__BackingField: 6
   _ladderClimbingSpeed: 0.5
   <CurrentGravity>k__BackingField: 0
   <RotationSpeed>k__BackingField: 15
@@ -6225,6 +6226,7 @@ MonoBehaviour:
   <CurrentSpeed>k__BackingField: 0
   _movementSpeedDampingValue: 0.5
   <MoveDirection>k__BackingField: {x: 0, y: 0, z: 0}
+  <MovementVelocity>k__BackingField: {x: 0, y: 0, z: 0}
 --- !u!4 &8032149893935405790
 Transform:
   m_ObjectHideFlags: 0

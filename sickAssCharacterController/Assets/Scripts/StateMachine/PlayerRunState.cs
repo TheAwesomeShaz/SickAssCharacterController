@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerRunState : PlayerBaseState
 {
-    private readonly float _movementSpeedDampingValue = 1f;
+    private readonly float _movementSpeedDampingValue = 0.05f;
 
     public PlayerRunState(PlayerStateMachine context, PlayerStateManager playerStateFactory) :base(context, playerStateFactory){}
 
@@ -27,7 +27,6 @@ public class PlayerRunState : PlayerBaseState
 
     public override void EnterState()
     {
-        //_ctx.AnimatorManager.UpdateAnimatorValues(0, _ctx.NormalizedMoveAmount, _ctx.InputManager.HighProfileInput);
     }
 
     public override void ExitState()

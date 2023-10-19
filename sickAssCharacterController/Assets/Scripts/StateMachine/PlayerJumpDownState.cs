@@ -37,7 +37,8 @@ public class PlayerJumpFromEdgeState : PlayerBaseState
 
     private void HandleJumpFromEdge()
     {
-        var jumptype = _ctx.InputManager.HighProfileInput ? _ctx.AnimatorManager.JumpOffAction : _ctx.AnimatorManager.JumpDownAction;
+        _ctx.CurrentSpeed = Mathf.Lerp(_ctx.CurrentSpeed, _ctx.ForwardJumpSpeed + (_ctx.ForwardJumpSpeed * (_ctx.InputManager.HighProfileInput?1:0)), 1f);
+        var jumptype = _ctx.InputManager.HighProfileInput ?_ctx.AnimatorManager.JumpOffAction : _ctx.AnimatorManager.JumpDownAction;
         _ctx.StartCoroutine(_ctx.AnimatorManager.DoParkourAction(jumptype, OnCoroutineFinished));
     }
 
@@ -52,12 +53,8 @@ public class PlayerJumpFromEdgeState : PlayerBaseState
     public override void UpdateState()
     {
         _ctx.IsOnEdge = false;
-        HandleGravity();
         CheckSwitchStates();
     }
 
-    private void HandleGravity()
-    {
-        _ctx.CurrentGravity += _ctx.GravityForce * Time.deltaTime;
-    }
+   
 }

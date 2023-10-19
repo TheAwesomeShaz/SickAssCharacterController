@@ -51,20 +51,22 @@ public class PlayerFreeFallState : PlayerBaseState
 
     private void HandleFreeFallMovement()
     {
+
         // move forward while jumping, forward jumping speed is currentSpeed/2
-        //Vector3 forwardJumpForce = _ctx.transform.forward * _ctx.CurrentSpeed / 1.2f;
+
+        Vector3 forwardJumpForce = _ctx.transform.forward * _ctx.CurrentSpeed / 1.2f;
+        Vector3 downwardGravityForce = Vector3.up * _ctx.MoveDirection.y;
 
         //_ctx.MovementVelocity = forwardJumpForce + downwardGravityForce;
         //_ctx.CharacterController.Move(_ctx.MovementVelocity * Time.deltaTime);
 
-        _ctx.MovementVelocity = _ctx.MoveDirection * (_ctx.CurrentSpeed * _ctx.NormalizedMoveAmount);
-        Vector3 downwardGravityForce = Vector3.up * _ctx.MoveDirection.y;
+        _ctx.MovementVelocity = (forwardJumpForce *_ctx.NormalizedMoveAmount) + downwardGravityForce;
 
         _ctx.IsSprinting = _ctx.MovementVelocity.x != 0 && _ctx.InputManager.HighProfileInput && !_ctx.EnvScanner.ObstacleCheck().forwardHitFound;
 
         if (!_ctx.EnvScanner.ObstacleCheck().forwardHitFound)
         {
-            _ctx.CharacterController.Move(_ctx.MovementVelocity + downwardGravityForce * Time.deltaTime);
+            _ctx.CharacterController.Move(_ctx.MovementVelocity * Time.deltaTime);
             _ctx.AnimatorManager.UpdateAnimatorValues(0, _ctx.NormalizedMoveAmount, _ctx.IsSprinting);
         }
     }

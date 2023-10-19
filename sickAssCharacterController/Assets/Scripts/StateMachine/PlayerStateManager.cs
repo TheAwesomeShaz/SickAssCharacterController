@@ -44,7 +44,7 @@ public class PlayerStateManager
         return new PlayerParkourState(_context, this);
     }
 
-    internal PlayerBaseState JumpFromEdge()
+    public PlayerBaseState JumpFromEdge()
     {
         return new PlayerJumpFromEdgeState(_context, this);
     }

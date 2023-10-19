@@ -337,7 +337,7 @@ public class AnimatorManager : MonoBehaviour
 
         if (!animState.IsName(animName))
         {
-            Debug.LogError("Parkour Animation Name is spelled wrong \n current animation name is " + animState.GetHashCode() + " " +
+            Debug.LogError("Parkour Animation Name is spelled wrong \n current animation name is " + animState + " " +
                 "given name is " + animName);
         }
 

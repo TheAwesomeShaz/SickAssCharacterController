@@ -44,6 +44,7 @@ public class PlayerStateMachine : MonoBehaviour
     [field: SerializeField] public float WalkingSpeed { get; private set; } = 1.5f;
     [field: SerializeField] public float RunningSpeed { get; private set; } = 5f;
     [field: SerializeField] public float SprintingSpeed { get; private set; } = 7f;
+    [field: SerializeField] public float ForwardJumpSpeed { get; private set; } = 6f;
 
     [SerializeField] private float _ladderClimbingSpeed = 0.5f;
     [field: SerializeField] public float CurrentGravity { get; set; }
@@ -89,10 +90,6 @@ public class PlayerStateMachine : MonoBehaviour
         {
             HandleRotation(InputManager.MovementInput);
         }
-        Debug.Log("Current State is " + _currentState);
-
-        // TODO: should this be here or in the Grounded state?
-        //AnimatorManager.UpdateAnimatorValues(0, NormalizedMoveAmount, InputManager.);
     }
 
     private void LateUpdate()
@@ -103,26 +100,7 @@ public class PlayerStateMachine : MonoBehaviour
     private void HandleGroundCheck()
     {
         IsGrounded = Physics.CheckSphere(transform.TransformPoint(GroundCheckOffset), GroundCheckRadius, GroundLayer);
-        //if (IsGrounded)
-        //{
-            // TODO: this stuff goes in the grounded state
-            //IsOnLedge = EnvScanner.EdgeCheck(DesiredMoveDirection, out EdgeHitData ledgeHitData);
-
-            //CurrentGravity = -0.5f;
-
-            //// TODO: Take this if block into another State?
-            // limit EdgeMovement
-            //if (IsOnLedge)
-            //{
-            //    LedgeHitData = ledgeHitData;
-            //    //LimitEdgeMovement();
-            //}
-        //}
-        // TODO: move this into the FreeFall State
-        //if(!IsGrounded)
-        //{
-        //    CurrentGravity += GravityForce * Time.deltaTime;
-        //}
+      
     }
 
     private void SetMovementDirection(Vector2 inputVector, bool highProfileInput)
@@ -142,36 +120,7 @@ public class PlayerStateMachine : MonoBehaviour
         MoveDirection = DesiredMoveDirection;
     }
 
-    //void LimitEdgeMovement()
-    //{
-    //    float signedLedgeNormalMoveAngle = Vector3.SignedAngle(LedgeHitData.ledgeFaceHit.normal, DesiredMoveDirection, Vector3.up);
-    //    float ledgeNormalMoveAngle = Mathf.Abs(signedLedgeNormalMoveAngle);
-
-    //    if (Vector3.Angle(DesiredMoveDirection, transform.forward) >= 80)
-    //    {
-    //        // dont move just rotate
-    //        MovementVelocity = Vector3.zero;
-    //        return;
-    //    }
-
-    //    if (ledgeNormalMoveAngle < 60)
-    //    {
-    //        MovementVelocity = Vector3.zero;
-    //        MoveDirection = Vector3.zero;
-    //    }
-    //    else if (ledgeNormalMoveAngle < 90)
-    //    {
-    //        // angle is btwn 60 and 90, so limit velocity to horizontal direction
-
-    //        // cross product of normal and up vector gives us the left vector
-    //        var left = Vector3.Cross(Vector3.up, LedgeHitData.ledgeFaceHit.normal);
-    //        var direction = left * Mathf.Sign(signedLedgeNormalMoveAngle);
-
-    //        MovementVelocity = MovementVelocity.magnitude * direction;
-    //        MoveDirection = direction;
-    //    }
-    //}
-
+ 
     private void HandleRotation(Vector2 inputVector)
     {
         Vector3 targetDirection = MoveDirection;
@@ -199,6 +148,7 @@ public class PlayerStateMachine : MonoBehaviour
         {
             // set animator moveAmount to 0
             AnimatorManager.UpdateAnimatorValues(0, 0, IsSprinting);
+            MovementVelocity = new Vector3(0f, MovementVelocity.y, 0f);
             _targetRotation = transform.rotation;
         }
         CharacterController.enabled = hasControl;
