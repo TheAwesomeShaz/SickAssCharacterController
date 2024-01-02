@@ -13,11 +13,11 @@ the older implementations of parkour and Ledge Climbing can be deleted.
 - Currently the same stuff as Ledge and Climbing
 
 ### Todo
-- Transfer the whole system into a State Machine Pattern
-- Make the Animations for Movement Work Fluidly
-- Make the Parkour actions into Different states
-- Add a FALLING state that is currently missing here
-- Remove ALL BOOLS if possible
+- Transfer the whole system into a State Machine Pattern (DONE)
+- Make the Animations for Movement Work Fluidly (DONE)
+- Make the Parkour actions into Different states (DONE)
+- Add a FALLING state that is currently missing here (DONE)
+- Remove ALL BOOLS if possible (Almost one)
 
 ### Note
-- Do not STOP
+- Do not STOP (well...)
